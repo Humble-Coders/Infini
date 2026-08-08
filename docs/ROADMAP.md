@@ -2,22 +2,24 @@
 
 26 tickets across 6 milestones, ~6 weeks. One focused job per ticket.
 
-**Tickets are drafted one milestone ahead, not all at once.** Detail written in week 1 for work that happens in week 5 is detail that gets rewritten — by then the design system exists, the data model is real, and the ticket would be wrong. Run `/draft-ticket <what>` to flesh out the next milestone when the current one is underway.
+**All 26 are drafted and open as GitHub issues.** Ticket numbers match issue numbers exactly — T7 is issue #7.
 
-**Status:** M1 drafted and issued. M2–M6 are planned scope below.
+Expect the later ones to need revision. A ticket written in week 1 for work that happens in week 5 is written before the design system exists and before the data model is real. Re-read a ticket against reality before starting it, and run `/draft-ticket` again if it has drifted — the draft is a starting point, not a contract.
+
+**Status:** all issued and open. Start at [#1](https://github.com/Humble-Coders/Infini/issues/1).
 
 ---
 
-## M1 — Foundation ✍️ *drafted*
+## M1 — Foundation
 
 The ground everything stands on. Nothing else starts until T1 merges.
 
 | # | Ticket | Depends on |
 |---|---|---|
-| T1 | Migrate Vite → Next.js + TypeScript; purge foreign brand assets | — |
-| T2 | INFINI design system + `/styleguide` | T1 |
-| T3 | App shell — header, navigation, footer, Request-a-Quote CTA | T2 |
-| T4 | Firebase wiring + staging deployment + infra docs | T1 *(parallel with T2/T3)* |
+| [T1](https://github.com/Humble-Coders/Infini/issues/1) | Migrate Vite → Next.js + TypeScript; purge foreign brand assets | — |
+| [T2](https://github.com/Humble-Coders/Infini/issues/2) | INFINI design system + `/styleguide` | T1 |
+| [T3](https://github.com/Humble-Coders/Infini/issues/3) | App shell — header, navigation, footer, Request-a-Quote CTA | T2 |
+| [T4](https://github.com/Humble-Coders/Infini/issues/4) | Firebase wiring + staging deployment + infra docs | T1 *(parallel with T2/T3)* |
 
 🚩 **Gate:** T2's `/styleguide` is the design-direction review. T9 must not start before it happens.
 
@@ -29,10 +31,10 @@ The backend and the panel INFINI staff will actually use. Built before public pa
 
 | # | Ticket | Notes |
 |---|---|---|
-| T5 | Firestore schema, typed data accessors, security rules | All queries live in `lib/data/` |
-| T6 | Admin auth — Firebase Auth, custom claims, 3 roles, route guard | Super Admin / Content Editor / Leads Manager |
-| T7 | Admin shell — layout, navigation, dashboard | Permission-gated per role |
-| T8 | Media library — Storage upload, image management, alt text | Feeds every content type |
+| [T5](https://github.com/Humble-Coders/Infini/issues/5) | Firestore schema, typed data accessors, security rules | All queries live in `lib/data/` |
+| [T6](https://github.com/Humble-Coders/Infini/issues/6) | Admin auth — Firebase Auth, custom claims, 3 roles, route guard | Super Admin / Content Editor / Leads Manager |
+| [T7](https://github.com/Humble-Coders/Infini/issues/7) | Admin shell — layout, navigation, dashboard | Permission-gated per role |
+| [T8](https://github.com/Humble-Coders/Infini/issues/8) | Media library — Storage upload, image management, alt text | Feeds every content type |
 
 ---
 
@@ -42,14 +44,14 @@ The customer-facing site. Each content type ships with its admin CRUD in the sam
 
 | # | Ticket | Notes |
 |---|---|---|
-| T9 | Homepage | Value proposition within the first screen or two |
-| T10 | Industry pages (×7) + admin CRUD | Genuinely unique content each — not name-swapped clones |
-| T11 | Company & Capabilities | History, facility, capacity, materials, lead times |
-| T12 | Certifications + download | ISO 9001 / 13485 / 14001 / 45001; 13485 also on Medical |
-| T13 | Case studies + admin CRUD | Before/after; cross-linked from industry pages |
-| T14 | News / blog + admin CRUD | Draft and published states |
-| T15 | Testimonials + Events + admin CRUD | Ordering, publish/unpublish |
-| T16 | Legacy capability pages | `/technology`, `/validation`, `/deburring-polishing`, `/mirror-like-finish` — keep exact slugs |
+| [T9](https://github.com/Humble-Coders/Infini/issues/9) | Homepage | Value proposition within the first screen or two |
+| [T10](https://github.com/Humble-Coders/Infini/issues/10) | Industry pages (×7) + admin CRUD | Genuinely unique content each — not name-swapped clones |
+| [T11](https://github.com/Humble-Coders/Infini/issues/11) | Company & Capabilities | History, facility, capacity, materials, lead times |
+| [T12](https://github.com/Humble-Coders/Infini/issues/12) | Certifications + download | ISO 9001 / 13485 / 14001 / 45001; 13485 also on Medical |
+| [T13](https://github.com/Humble-Coders/Infini/issues/13) | Case studies + admin CRUD | Before/after; cross-linked from industry pages |
+| [T14](https://github.com/Humble-Coders/Infini/issues/14) | News / blog + admin CRUD | Draft and published states |
+| [T15](https://github.com/Humble-Coders/Infini/issues/15) | Testimonials + Events + admin CRUD | Ordering, publish/unpublish |
+| [T16](https://github.com/Humble-Coders/Infini/issues/16) | Legacy capability pages | `/technology`, `/validation`, `/deburring-polishing`, `/mirror-like-finish` — keep exact slugs |
 
 ---
 
@@ -59,8 +61,8 @@ The commercial point of the site.
 
 | # | Ticket | Notes |
 |---|---|---|
-| T17 | Request a Quote — form, Cloud Function, reCAPTCHA, email | **Firestore write precedes email send** |
-| T18 | Leads dashboard | Status tracking, internal notes, email-failure visibility |
+| [T17](https://github.com/Humble-Coders/Infini/issues/17) | Request a Quote — form, Cloud Function, reCAPTCHA, email | **Firestore write precedes email send** |
+| [T18](https://github.com/Humble-Coders/Infini/issues/18) | Leads dashboard | Status tracking, internal notes, email-failure visibility |
 
 ---
 
@@ -70,10 +72,10 @@ The contracted deliverables that are invisible until they're missing.
 
 | # | Ticket | Notes |
 |---|---|---|
-| T19 | SEO — per-page metadata, sitemap, structured data | Admin-editable where content is admin-managed |
-| T20 | 301 redirects + URL migration | The 12-URL map in PRD §7. **Launch-blocking.** |
-| T21 | GA4 + GTM + Request-a-Quote event tracking | |
-| T22 | Legal — Privacy, Terms, cookie consent | Consent must genuinely gate tracking |
+| [T19](https://github.com/Humble-Coders/Infini/issues/19) | SEO — per-page metadata, sitemap, structured data | Admin-editable where content is admin-managed |
+| [T20](https://github.com/Humble-Coders/Infini/issues/20) | 301 redirects + URL migration | The 12-URL map in PRD §7. **Launch-blocking.** |
+| [T21](https://github.com/Humble-Coders/Infini/issues/21) | GA4 + GTM + Request-a-Quote event tracking | |
+| [T22](https://github.com/Humble-Coders/Infini/issues/22) | Legal — Privacy, Terms, cookie consent | Consent must genuinely gate tracking |
 
 ---
 
@@ -81,10 +83,10 @@ The contracted deliverables that are invisible until they're missing.
 
 | # | Ticket | Notes |
 |---|---|---|
-| T23 | Security hardening — headers, rules audit, penetration pass | Current site rates poorly; this is an explicit requirement |
-| T24 | Performance optimization | Mobile is the bar, not desktop |
-| T25 | Cross-browser / cross-device QA | Chrome, Safari, Edge, Firefox × Win, macOS, Android, iOS |
-| T26 | Production deployment + `infini.co.in` cutover | Redirects live, analytics verified, Firebase project transfer |
+| [T23](https://github.com/Humble-Coders/Infini/issues/23) | Security hardening — headers, rules audit, penetration pass | Current site rates poorly; this is an explicit requirement |
+| [T24](https://github.com/Humble-Coders/Infini/issues/24) | Performance optimization | Mobile is the bar, not desktop |
+| [T25](https://github.com/Humble-Coders/Infini/issues/25) | Cross-browser / cross-device QA | Chrome, Safari, Edge, Firefox × Win, macOS, Android, iOS |
+| [T26](https://github.com/Humble-Coders/Infini/issues/26) | Production deployment + `infini.co.in` cutover | Redirects live, analytics verified, Firebase project transfer |
 
 ---
 
