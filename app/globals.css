@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans-loaded), ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: #060606;
+  --color-background-elevated: #0a0808;
+  --color-foreground: #f5f3f2;
+  --color-card: rgba(20, 18, 18, 0.65);
+  --color-card-foreground: #f5f3f2;
+  --color-popover: #0c0b0b;
+  --color-popover-foreground: #f5f3f2;
+  /* Fill color for buttons/backgrounds — paired with light text/foreground; darkened from the
+     brand red so bg-primary + text-primary-foreground clears WCAG AA (4.5:1). */
+  --color-primary: #c81820;
+  --color-primary-foreground: #f5f3f2;
+  --color-primary-muted: #2a1213;
+  --color-secondary: #171515;
+  --color-secondary-foreground: #f5f3f2;
+  --color-muted: #1d1b1b;
+  --color-muted-foreground: #a3a0a0;
+  /* Text/icon/link color on dark backgrounds — brighter than --color-primary so red text on
+     black clears WCAG AA (4.5:1); the two can't share one value, see docs/UI-STANDARDS.md. */
+  --color-accent: #f23540;
+  --color-accent-foreground: #f5f3f2;
+  --color-destructive: #d51f1f;
+  --color-destructive-foreground: #ffffff;
+  --color-border: rgba(245, 243, 242, 0.12);
+  --color-input: rgba(245, 243, 242, 0.16);
+  --color-input-background: rgba(20, 18, 18, 0.45);
+  --color-switch-background: #1d1b1b;
+  --color-ring: #f23540;
+
+  --color-primary-rgb: 200, 24, 32;
+  --color-accent-rgb: 242, 53, 64;
+  --color-foreground-rgb: 245, 243, 242;
+  --color-shadow-rgb: 0, 0, 0;
+
+  --color-sidebar: #0c0b0b;
+  --color-sidebar-foreground: #f5f3f2;
+  --color-sidebar-primary: #c81820;
+  --color-sidebar-primary-foreground: #f5f3f2;
+  --color-sidebar-accent: #171515;
+  --color-sidebar-accent-foreground: #f5f3f2;
+  --color-sidebar-border: rgba(245, 243, 242, 0.12);
+  --color-sidebar-ring: #f23540;
+
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  label {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  button {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  input {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: var(--color-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  button,
+  a,
+  input,
+  select {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(var(--color-accent-rgb), 0.35);
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--color-accent-rgb), 0.55);
+  }
+  select option {
+    background-color: var(--color-popover);
+    color: var(--color-popover-foreground);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

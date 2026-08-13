@@ -50,10 +50,12 @@ components/
   admin/               # admin-only components
 lib/
   firebase/client.ts   # browser SDK — safe for client bundles
-  firebase/admin.ts    # Admin SDK — SERVER ONLY, must `import "server-only"`
   data/                # typed Firestore accessors — the ONLY place queries live
   types/               # shared document types
-functions/             # Cloud Functions: RFQ handler, email, claims, revalidate
+backend/               # everything server-only lives here, never imported by client bundles
+  firebase/admin.ts    # Admin SDK — SERVER ONLY, must `import "server-only"`
+  functions/           # Cloud Functions: RFQ handler, email, claims, revalidate
+  firestore.rules firestore.indexes.json storage.rules
 ```
 
 **Data flow.** Public pages render on the server from `lib/data/*` accessors → Firestore. The admin panel writes through the client SDK, gated by rules. Form submissions go to a Cloud Function, never straight to Firestore from the browser.
@@ -62,7 +64,7 @@ functions/             # Cloud Functions: RFQ handler, email, claims, revalidate
 
 1. **All Firestore queries live in `lib/data/`.** No `getDocs`/`collection` calls inside components or pages. One typed accessor per read, so a schema change has one blast radius.
 2. **Every public query filters `published == true`.** Draft content must never leak to a public route. Enforce it in the accessor *and* in the security rules — both, not either.
-3. **`lib/firebase/admin.ts` is server-only.** It must start with `import "server-only"`. The Admin SDK bypasses all security rules; if it reaches a client bundle the database is effectively public.
+3. **`backend/firebase/admin.ts` is server-only.** It must start with `import "server-only"`. The Admin SDK bypasses all security rules; if it reaches a client bundle the database is effectively public.
 4. **Leads are write-only, server-side.** The browser never reads or writes `leads`. The RFQ Cloud Function is the sole writer. Only Super Admin and Leads Manager read them, through rules.
 5. **RFQ submission order is fixed:** validate → verify reCAPTCHA server-side → **write to Firestore** → send email → return success. Firestore is the system of record; email is a notification. Never make a lead's existence depend on SMTP succeeding. Log send failures and surface them in the admin dashboard so a silent outage is visible.
 6. **Authorization is server-side.** Roles live in Firebase Auth **custom claims**, enforced in Firestore/Storage rules. Hiding a button is not access control. Never gate on a role read from client state alone.

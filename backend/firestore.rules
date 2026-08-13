@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Deny-all default. Later tickets open specific paths deliberately as each
+// collection lands (see docs/PRD.md §4.4 and CLAUDE.md — never start
+// permissive "to unblock development").
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

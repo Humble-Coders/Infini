@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Deny-all default. T8 (media library) opens specific paths for
+// authenticated admin uploads once it lands.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

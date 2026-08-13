@@ -1,0 +1,55 @@
+# Firebase App Hosting build/runtime config for the staging backend.
+# Public (NEXT_PUBLIC_*) values can be set as plain env vars in the Firebase
+# console or here. Anything secret must be created with
+# `firebase apphosting:secrets:set <name>` and referenced by `secret:` below —
+# never written as a literal `value:` in this file.
+#
+# See docs/INFRA.md for the full list of variables this app expects and how
+# each one is provisioned.
+
+runConfig:
+  minInstances: 0
+
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_SITE_ENV
+    availability:
+      - BUILD
+      - RUNTIME
+  # Admin SDK — server-only, populated via Application Default Credentials on
+  # App Hosting. Only needed as explicit vars for local dev (see .env.example).
+  # - variable: FIREBASE_ADMIN_PROJECT_ID
+  #   secret: firebase-admin-project-id
+  #   availability:
+  #     - RUNTIME
+  # - variable: FIREBASE_ADMIN_CLIENT_EMAIL
+  #   secret: firebase-admin-client-email
+  #   availability:
+  #     - RUNTIME
+  # - variable: FIREBASE_ADMIN_PRIVATE_KEY
+  #   secret: firebase-admin-private-key
+  #   availability:
+  #     - RUNTIME
