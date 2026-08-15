@@ -18,14 +18,10 @@ export function IndustryCard({ industry }: { industry: Industry }) {
         {industry.name}
       </span>
 
-      <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr]">
-        <div className="overflow-hidden">
-          <span className="flex items-center gap-1.5 pt-1 text-xs text-accent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
-            Know More
-            <ArrowRight className="size-3.5" aria-hidden="true" />
-          </span>
-        </div>
-      </div>
+      <span className="flex items-center gap-1.5 pt-1 text-xs text-accent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
+        Know More
+        <ArrowRight className="size-3.5" aria-hidden="true" />
+      </span>
     </Link>
   );
 }
