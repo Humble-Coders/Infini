@@ -1,9 +1,35 @@
 rules_version = '2';
 
-// Deny-all default. T8 (media library) opens specific paths for
-// authenticated admin uploads once it lands.
+// All uploaded assets are public content once written — the media library
+// (T8) is the only thing that writes here, and everything it manages is
+// referenced from published public pages. See docs/DATA-MODEL.md.
 service firebase.storage {
   match /b/{bucket}/o {
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function canWrite() {
+      return request.auth != null && (role() == "superAdmin" || role() == "contentEditor");
+    }
+
+    // Images: max 10MB, image/* only.
+    function isValidImage() {
+      return request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches("image/.*");
+    }
+
+    // Certification/case-study documents: max 20MB, PDF only.
+    function isValidDocument() {
+      return request.resource.size < 20 * 1024 * 1024
+        && request.resource.contentType == "application/pdf";
+    }
+
+    match /media/{fileId} {
+      allow read: if true;
+      allow write: if canWrite() && (isValidImage() || isValidDocument());
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
