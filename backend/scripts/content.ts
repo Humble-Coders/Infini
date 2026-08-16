@@ -256,6 +256,12 @@ export function buildIndustries() {
   }));
 }
 
+// Both entries below are placeholder/dev-only content, not real customer
+// testimonials — deliberately published: false. T15's ticket is explicit:
+// "do not write placeholder quotes attributed to real companies, even
+// temporarily... a fabricated testimonial that reaches staging and gets
+// screenshotted is a serious problem." These stay unpublished until real,
+// client-supplied testimonials replace them.
 export function buildTestimonials() {
   return [
     {
@@ -267,7 +273,7 @@ export function buildTestimonials() {
       company: "Sample Manufacturing Co.",
       logoUrl: "",
       order: 1,
-      published: true,
+      published: false,
     },
     {
       id: "testimonial-2",
@@ -277,11 +283,15 @@ export function buildTestimonials() {
       company: "Sample Precision Ltd.",
       logoUrl: "",
       order: 2,
-      published: true,
+      published: false,
     },
   ];
 }
 
+// Placeholder — INFINI's actual attendance at IMTEX 2026 has not been
+// confirmed. Publishing an unconfirmed trade-show appearance is the same
+// class of misrepresentation risk the ticket calls out for testimonials.
+// Stays unpublished until a real, confirmed event replaces it.
 export function buildEvents(ts: TimestampFactory) {
   return [
     {
@@ -293,7 +303,7 @@ export function buildEvents(ts: TimestampFactory) {
       description: "INFINI at IMTEX, showcasing MMP surface-finishing capability for precision manufacturers.",
       images: [] as string[],
       link: "",
-      published: true,
+      published: false,
     },
   ];
 }
@@ -357,6 +367,7 @@ export function buildSettings() {
       { label: "Case Studies", href: "/case-studies" },
       { label: "Certifications", href: "/certifications" },
       { label: "News", href: "/news" },
+      { label: "Events", href: "/events" },
       { label: "Contact", href: "/contact" },
     ],
     footerLegalLinks: [
