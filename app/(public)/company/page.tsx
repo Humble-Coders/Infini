@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BadgeCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { getPage, getSection } from "@/lib/data/pages";
-import { getPublishedCertifications } from "@/lib/data/certifications";
+import { getActiveCertifications } from "@/lib/data/certifications";
+import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
 
 interface HeroCopy {
   eyebrow: string;
@@ -36,13 +36,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CompanyPage() {
-  const [page, certifications] = await Promise.all([getPage("company"), getPublishedCertifications()]);
+  const [page, certifications] = await Promise.all([getPage("company"), getActiveCertifications()]);
 
   const hero = getSection<HeroCopy>(page, "hero");
   const facts = getSection<FactsCopy>(page, "facts");
   const processSummary = getSection<TextBlockCopy>(page, "process");
   const quality = getSection<TextBlockCopy>(page, "quality");
-  const certNames = certifications.map((cert) => cert.name).join(", ");
 
   return (
     <main className="min-h-screen bg-background">
@@ -93,16 +92,8 @@ export default async function CompanyPage() {
 
       {certifications.length > 0 && (
         <section className="border-b border-border/60 py-16 sm:py-20">
-          <Container className="flex flex-col gap-6">
-            <h2 className="text-2xl font-light text-foreground sm:text-3xl">Certifications</h2>
-            <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">INFINI holds {certNames}.</p>
-            <Link
-              href="/certifications"
-              className="flex w-fit items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors duration-300 ease-out hover:border-primary hover:text-primary"
-            >
-              <BadgeCheck className="size-4 text-accent" aria-hidden="true" />
-              View certificate details
-            </Link>
+          <Container>
+            <CertificationsBlock certifications={certifications} />
           </Container>
         </section>
       )}

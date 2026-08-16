@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { getPage, getSection } from "@/lib/data/pages";
-import { getPublishedCertifications } from "@/lib/data/certifications";
+import { getActiveCertifications } from "@/lib/data/certifications";
 import { getSettings } from "@/lib/data/settings";
+import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
 
 interface HeroCopy {
   eyebrow: string;
@@ -39,14 +40,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CapabilitiesPage() {
   const [page, certifications, settings] = await Promise.all([
     getPage("capabilities"),
-    getPublishedCertifications(),
+    getActiveCertifications(),
     getSettings(),
   ]);
 
   const hero = getSection<HeroCopy>(page, "hero");
   const processCapabilities = getSection<ItemsCopy>(page, "processCapabilities");
   const capacity = getSection<TextBlockCopy>(page, "capacity");
-  const certNames = certifications.map((cert) => cert.name).join(", ");
   const legacyCapabilityLinks = settings?.nav.find((item) => item.href === "/capabilities")?.children ?? [];
 
   return (
@@ -113,16 +113,8 @@ export default async function CapabilitiesPage() {
 
       {certifications.length > 0 && (
         <section className="border-b border-border/60 py-16 sm:py-20">
-          <Container className="flex flex-col gap-6">
-            <h2 className="text-2xl font-light text-foreground sm:text-3xl">Certifications</h2>
-            <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">INFINI holds {certNames}.</p>
-            <Link
-              href="/certifications"
-              className="flex w-fit items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors duration-300 ease-out hover:border-primary hover:text-primary"
-            >
-              <BadgeCheck className="size-4 text-accent" aria-hidden="true" />
-              View certificate details
-            </Link>
+          <Container>
+            <CertificationsBlock certifications={certifications} />
           </Container>
         </section>
       )}
