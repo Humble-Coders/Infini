@@ -21,42 +21,49 @@ service cloud.firestore {
       return request.auth != null && role() == "contentEditor";
     }
 
+    function isLeadsManager() {
+      return request.auth != null && role() == "leadsManager";
+    }
+
     // Super Admin and Content Editor both have Content CRUD + Media per the
     // PRD §3B role matrix.
     function canWriteContent() {
       return isSuperAdmin() || isContentEditor();
     }
 
-    // Public content collections: public read of published documents only,
-    // writes restricted to Super Admin / Content Editor.
+    // Public content collections: public read of published documents only.
+    // Admins (canWriteContent()) can also read drafts — this branch doesn't
+    // depend on resource.data, so it holds for every document regardless of
+    // its published state, which is what lets an admin list/count drafts
+    // (T7 dashboard, and every future CRUD list view) without a query filter.
     match /industries/{docId} {
-      allow read: if resource.data.published == true;
+      allow read: if resource.data.published == true || canWriteContent();
       allow write: if canWriteContent();
     }
 
     match /caseStudies/{docId} {
-      allow read: if resource.data.published == true;
+      allow read: if resource.data.published == true || canWriteContent();
       allow write: if canWriteContent();
     }
 
     match /certifications/{docId} {
-      allow read: if resource.data.published == true;
+      allow read: if resource.data.published == true || canWriteContent();
       allow write: if canWriteContent();
     }
 
     match /testimonials/{docId} {
-      allow read: if resource.data.published == true;
+      allow read: if resource.data.published == true || canWriteContent();
       allow write: if canWriteContent();
     }
 
     match /events/{docId} {
-      allow read: if resource.data.published == true;
+      allow read: if resource.data.published == true || canWriteContent();
       allow write: if canWriteContent();
     }
 
     // news uses status ("draft" | "published") rather than a published bool.
     match /news/{docId} {
-      allow read: if resource.data.status == "published";
+      allow read: if resource.data.status == "published" || canWriteContent();
       allow write: if canWriteContent();
     }
 
@@ -88,13 +95,13 @@ service cloud.firestore {
       allow write: if isSuperAdmin();
     }
 
-    // leads is write-only from the server. No client — authenticated or
-    // not, any role — ever reads or writes it directly; the RFQ Cloud
-    // Function (T17) is the sole writer via the Admin SDK, which bypasses
-    // these rules. This explicit deny (rather than just omitting the match)
-    // documents the boundary and blocks accidental future permissive rules.
+    // leads is write-only from the server — no client, any role, ever
+    // writes it directly; the RFQ Cloud Function (T17) is the sole writer
+    // via the Admin SDK, which bypasses these rules. Read is limited to the
+    // two roles the PRD role matrix grants a Leads column: Super Admin and
+    // Leads Manager (needed for T7's dashboard widget and T18's screen).
     match /leads/{docId} {
-      allow read: if false;
+      allow read: if isSuperAdmin() || isLeadsManager();
       allow write: if false;
     }
 
