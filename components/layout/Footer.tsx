@@ -1,10 +1,27 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { navItems, footerLegalLinks } from "@/data/nav";
-import { contactDetails } from "@/data/contact";
+import type { NavLink, SettingsContact } from "@/lib/types";
 
-export function Footer() {
+function contactDetailsFrom(contact: SettingsContact | null) {
+  if (!contact) return [];
+  return [
+    { label: "Email", value: contact.email, href: `mailto:${contact.email}` },
+    { label: "Phone", value: contact.phone, href: `tel:${contact.phone.replace(/[^\d+]/g, "")}` },
+    { label: "Facility", value: contact.address, href: undefined },
+  ];
+}
+
+export function Footer({
+  navItems,
+  legalLinks,
+  contact,
+}: {
+  navItems: NavLink[];
+  legalLinks: NavLink[];
+  contact: SettingsContact | null;
+}) {
   const year = new Date().getFullYear();
+  const contactDetails = contactDetailsFrom(contact);
 
   return (
     <footer className="border-t border-border bg-background">
@@ -57,7 +74,7 @@ export function Footer() {
 
         <div className="flex flex-col gap-2">
           <h2 className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">Legal</h2>
-          {footerLegalLinks.map((link) => (
+          {legalLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}

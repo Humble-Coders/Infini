@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { showcaseCards } from "@/data/home-hero";
+import type { IndustryDoc, WithId } from "@/lib/types";
 import { ShowcaseCard } from "./ShowcaseCard";
 
 const AUTOPLAY_INTERVAL_MS = 5000;
@@ -22,7 +22,13 @@ const SLOT_STYLE: Record<-1 | 0 | 1, { x: string; scale: number; opacity: number
   1: { x: "62%", scale: 0.8, opacity: 0.5, zIndex: 10 },
 };
 
-export function HeroShowcase() {
+export function HeroShowcase({ industries }: { industries: WithId<IndustryDoc>[] }) {
+  const showcaseCards = industries.map((industry) => ({
+    id: industry.slug,
+    industry: industry.name,
+    headline: industry.hero.headline,
+  }));
+
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const prefersReducedMotion = useReducedMotion();
@@ -48,6 +54,7 @@ export function HeroShowcase() {
   }, [paused, prefersReducedMotion, next]);
 
   const current = showcaseCards[index];
+  if (cardCount === 0 || !current) return null;
 
   return (
     <div

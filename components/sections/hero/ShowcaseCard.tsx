@@ -1,5 +1,10 @@
-import type { ShowcaseCard as ShowcaseCardData } from "@/data/home-hero";
 import { cn } from "@/components/ui/utils";
+
+interface ShowcaseCardData {
+  id: string;
+  industry: string;
+  headline: string;
+}
 
 export function ShowcaseCard({
   card,

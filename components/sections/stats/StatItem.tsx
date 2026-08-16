@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { StatItemData } from "@/data/home-hero";
+import type { StatItemData } from "@/lib/types";
 import { cn } from "@/components/ui/utils";
 
 export function StatItem({ stat, index }: { stat: StatItemData; index: number }) {

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { industries } from "@/data/industries";
+import type { IndustryDoc, WithId } from "@/lib/types";
 
 interface ContactFormValues {
   name: string;
@@ -27,7 +27,7 @@ const INITIAL_VALUES: ContactFormValues = {
   message: "",
 };
 
-export function ContactForm() {
+export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] }) {
   const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
   const [submitted, setSubmitted] = useState(false);
 

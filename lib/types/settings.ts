@@ -15,6 +15,8 @@ export interface SettingsSocial {
 export interface NavLink {
   label: string;
   href: string;
+  /** Dropdown sub-items (desktop) / expandable section (mobile) — e.g. Capabilities' legacy MMP-process pages. */
+  children?: NavLink[];
 }
 
 export interface CookieBannerSettings {
@@ -28,6 +30,7 @@ export interface SettingsDoc {
   contact: SettingsContact;
   social: SettingsSocial;
   nav: NavLink[];
+  footerLegalLinks: NavLink[];
   defaultSeo: SeoMap;
   cookieBanner: CookieBannerSettings;
 }

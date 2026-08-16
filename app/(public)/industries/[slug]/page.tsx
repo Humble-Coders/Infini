@@ -4,24 +4,18 @@ import { notFound } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { industries } from "@/data/industries";
-import { caseStudies } from "@/data/case-studies";
+import { getIndustryBySlug, getPublishedIndustrySlugs } from "@/lib/data/industries";
+import { getCaseStudiesByIndustry } from "@/lib/data/caseStudies";
+import { getCertificationsByIds } from "@/lib/data/certifications";
 
-export function generateStaticParams() {
-  return industries.map((industry) => ({ slug: industry.slug }));
+export async function generateStaticParams() {
+  const slugs = await getPublishedIndustrySlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
-function getIndustry(slug: string) {
-  return industries.find((industry) => industry.slug === slug);
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const industry = getIndustry(slug);
+  const industry = await getIndustryBySlug(slug);
   if (!industry) return {};
 
   return {
@@ -35,16 +29,15 @@ export async function generateMetadata({
   };
 }
 
-export default async function IndustryDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function IndustryDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const industry = getIndustry(slug);
+  const industry = await getIndustryBySlug(slug);
   if (!industry) notFound();
 
-  const relatedCaseStudies = caseStudies.filter((caseStudy) => caseStudy.industry === industry.name);
+  const [relatedCaseStudies, certifications] = await Promise.all([
+    getCaseStudiesByIndustry(industry.id),
+    getCertificationsByIds(industry.relatedCertIds),
+  ]);
 
   return (
     <main className="min-h-screen bg-background">
@@ -53,16 +46,15 @@ export default async function IndustryDetailPage({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
-            background:
-              "radial-gradient(70% 60% at 50% 0%, rgba(var(--color-accent-rgb),0.14), transparent 70%)",
+            background: "radial-gradient(70% 60% at 50% 0%, rgba(var(--color-accent-rgb),0.14), transparent 70%)",
           }}
         />
         <Container className="relative flex flex-col gap-5">
           <span className="text-xs font-medium tracking-[0.2em] text-accent uppercase">{industry.hero.eyebrow}</span>
           <h1 className="max-w-3xl text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.05] font-light tracking-[-0.02em] text-foreground">
-            {industry.hero.heading}
+            {industry.hero.headline}
           </h1>
-          <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">{industry.hero.body}</p>
+          <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">{industry.hero.subheadline}</p>
           <div className="mt-2">
             <Button asChild size="lg">
               <Link href={`/request-a-quote?industry=${industry.slug}`}>Request a Quote</Link>
@@ -119,22 +111,27 @@ export default async function IndustryDetailPage({
         </Container>
       </section>
 
-      <section className="border-b border-border/60 py-16 sm:py-20">
-        <Container className="flex flex-col gap-6">
-          <h2 className="text-2xl font-light text-foreground sm:text-3xl">Relevant certifications</h2>
-          <ul className="flex flex-wrap gap-3">
-            {industry.certifications.map((cert) => (
-              <li
-                key={cert}
-                className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground"
-              >
-                <BadgeCheck className="size-4 text-accent" aria-hidden="true" />
-                {cert}
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </section>
+      {certifications.length > 0 && (
+        <section className="border-b border-border/60 py-16 sm:py-20">
+          <Container className="flex flex-col gap-6">
+            <h2 className="text-2xl font-light text-foreground sm:text-3xl">Relevant certifications</h2>
+            {/* Minimal badge display for now — T12 replaces this with the full reusable certifications block (logo, download, description). */}
+            <ul className="flex flex-wrap gap-3">
+              {certifications.map((cert) => (
+                <li key={cert.id}>
+                  <Link
+                    href="/certifications"
+                    className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <BadgeCheck className="size-4 text-accent" aria-hidden="true" />
+                    {cert.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+      )}
 
       <section className="border-b border-border/60 py-16 sm:py-20">
         <Container className="flex flex-col gap-10">
@@ -142,8 +139,8 @@ export default async function IndustryDetailPage({
           {relatedCaseStudies.length === 0 ? (
             <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border px-6 py-10 sm:px-10">
               <p className="max-w-lg text-sm text-muted-foreground sm:text-base">
-                Case studies for {industry.name} are in progress. Tell us about your components and we&rsquo;ll
-                walk you through comparable work directly.
+                Case studies for {industry.name} are in progress. Tell us about your components and we&rsquo;ll walk
+                you through comparable work directly.
               </p>
             </div>
           ) : (
@@ -151,7 +148,7 @@ export default async function IndustryDetailPage({
               {relatedCaseStudies.map((caseStudy) => (
                 <article key={caseStudy.slug} className="flex flex-col gap-3 rounded-xl border border-border p-6">
                   <h3 className="text-lg font-normal text-foreground">{caseStudy.title}</h3>
-                  <p className="text-sm text-muted-foreground">{caseStudy.summary}</p>
+                  <p className="text-sm text-muted-foreground">{caseStudy.challenge}</p>
                 </article>
               ))}
             </div>

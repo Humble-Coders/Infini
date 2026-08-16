@@ -6,14 +6,14 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { cn } from "@/components/ui/utils";
-import { navItems } from "@/data/nav";
+import type { NavLink } from "@/lib/types";
 
 const SCROLL_THRESHOLD_PX = 32;
 const TRANSITION = "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function Navbar() {
+export function Navbar({ navItems }: { navItems: NavLink[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [expandedMobileSections, setExpandedMobileSections] = useState<Set<string>>(new Set());

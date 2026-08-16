@@ -11,3 +11,4 @@ export * from "./event";
 export * from "./lead";
 export * from "./media";
 export * from "./settings";
+export * from "./homeSections";
