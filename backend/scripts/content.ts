@@ -339,7 +339,6 @@ export function buildSettings() {
       youtube: "",
     },
     nav: [
-      { label: "Home", href: "/" },
       { label: "Company", href: "/company" },
       {
         label: "Capabilities",
@@ -368,7 +367,7 @@ export function buildSettings() {
       { label: "Certifications", href: "/certifications" },
       { label: "News", href: "/news" },
       { label: "Events", href: "/events" },
-      { label: "Contact", href: "/contact" },
+      { label: "Contact", href: "/#contact" },
     ],
     footerLegalLinks: [
       { label: "Privacy Policy", href: "/privacy" },

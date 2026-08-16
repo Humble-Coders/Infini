@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,22 @@ const TRANSITION = "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/** Text wrapped with the hover/active underline — center-out scale, not a static border, so it reads as a deliberate interaction rather than a plain link style. Relies on an ancestor with `.group` for the hover trigger. */
+function NavLabel({ children, active }: { children: ReactNode; active?: boolean }) {
+  return (
+    <span className="relative inline-block">
+      {children}
+      <span
+        aria-hidden="true"
+        className={cn(
+          "absolute inset-x-0 -bottom-1 h-px origin-center bg-accent transition-transform duration-300 ease-out",
+          active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100"
+        )}
+      />
+    </span>
+  );
+}
+
 export function Navbar({ navItems }: { navItems: NavLink[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -23,6 +40,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
   const mobilePanelRef = useRef<HTMLDivElement>(null);
   // undefined when smooth scroll is off (prefers-reduced-motion) — no Lenis instance to stop/start.
   const lenis = useLenis();
+  const pathname = usePathname();
 
   const toggleMobileSection = useCallback((label: string) => {
     setExpandedMobileSections((current) => {
@@ -108,9 +126,15 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
 
   const linkClass = cn(
     TRANSITION,
-    "text-sm tracking-wide",
+    "group relative text-sm tracking-wide",
     scrolled ? "text-background/80 hover:text-background" : "text-foreground/90 hover:text-foreground"
   );
+
+  function isItemActive(item: NavLink): boolean {
+    if (item.href === "/") return pathname === "/";
+    if (item.href.startsWith("/#")) return false;
+    return pathname === item.href || pathname?.startsWith(`${item.href}/`);
+  }
 
   return (
     <header
@@ -158,7 +182,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
                         setOpenDropdown((current) => (current === item.label ? null : item.label))
                       }
                     >
-                      {item.label}
+                      <NavLabel active={isItemActive(item)}>{item.label}</NavLabel>
                       <ChevronDown
                         className={cn("size-3.5 transition-transform duration-300", openDropdown === item.label && "rotate-180")}
                         aria-hidden="true"
@@ -189,7 +213,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
                   </>
                 ) : (
                   <Link href={item.href} className={linkClass}>
-                    {item.label}
+                    <NavLabel active={isItemActive(item)}>{item.label}</NavLabel>
                   </Link>
                 )}
               </li>
@@ -197,13 +221,13 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           </ul>
 
           <div className="hidden items-center md:flex">
-            <Button asChild size="sm" variant="secondary">
+            <Button asChild size="sm" variant="default">
               <Link href="/request-a-quote">Request a Quote</Link>
             </Button>
           </div>
 
           <div className="flex items-center gap-1 md:hidden">
-            <Button asChild size="sm" variant="secondary" className="px-3 text-xs">
+            <Button asChild size="sm" variant="default" className="px-3 text-xs">
               <Link href="/request-a-quote">Request a Quote</Link>
             </Button>
             <button
@@ -244,7 +268,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
         >
           <Container>
             <div className="flex flex-col gap-3 border-b border-border py-4">
-              <Button asChild variant="secondary">
+              <Button asChild variant="default">
                 <Link href="/request-a-quote" onClick={closeMobileMenu}>
                   Request a Quote
                 </Link>
