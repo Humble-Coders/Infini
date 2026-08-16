@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
+import { useLenis } from "lenis/react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { cn } from "@/components/ui/utils";
@@ -20,6 +21,8 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
   const [scrolled, setScrolled] = useState(false);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
+  // undefined when smooth scroll is off (prefers-reduced-motion) — no Lenis instance to stop/start.
+  const lenis = useLenis();
 
   const toggleMobileSection = useCallback((label: string) => {
     setExpandedMobileSections((current) => {
@@ -49,11 +52,15 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
   }, []);
 
   // Body scroll lock + focus trap + Escape-to-close while the mobile menu is open.
+  // Lenis intercepts wheel/touch input directly, so `overflow: hidden` alone
+  // doesn't stop it — lenis.stop()/start() is the mechanism Lenis itself
+  // provides for exactly this.
   useEffect(() => {
     if (!mobileOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    lenis?.stop();
 
     const panel = mobilePanelRef.current;
     panel?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus();
@@ -84,9 +91,10 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
+      lenis?.start();
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [mobileOpen, closeMobileMenu]);
+  }, [mobileOpen, closeMobileMenu, lenis]);
 
   // Escape closes an open desktop dropdown too.
   useEffect(() => {
