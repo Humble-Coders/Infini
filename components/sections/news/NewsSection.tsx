@@ -9,13 +9,11 @@ function formatDate(timestamp: { toDate(): Date }): string {
   return timestamp.toDate().toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?: boolean }) {
+function NewsCard({ post }: { post: WithId<NewsDoc> }) {
   return (
     <Link
       href={`/news/${post.slug}`}
-      className={`group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 ease-out hover:border-primary hover:shadow-[0_20px_60px_-15px_rgba(var(--color-shadow-rgb),0.5)] ${
-        featured ? "sm:col-span-2 lg:col-span-2" : ""
-      }`}
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 ease-out hover:border-primary hover:shadow-[0_20px_60px_-15px_rgba(var(--color-shadow-rgb),0.5)]"
     >
       <div className="relative aspect-[2/1] overflow-hidden bg-muted">
         {post.coverImage ? (
@@ -23,7 +21,7 @@ function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?
             src={post.coverImage}
             alt={post.title}
             fill
-            sizes={featured ? "(min-width: 1024px) 66vw, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           />
         ) : (
@@ -54,7 +52,7 @@ function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?
             ))}
           </div>
         )}
-        <h3 className={`font-normal text-foreground ${featured ? "text-base sm:text-lg" : "text-sm"}`}>{post.title}</h3>
+        <h3 className="text-sm font-normal text-foreground">{post.title}</h3>
         <p className="line-clamp-2 text-xs text-muted-foreground">{post.excerpt}</p>
         <span className="mt-auto flex items-center gap-1.5 pt-1 text-xs text-accent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
           Read article
@@ -81,8 +79,8 @@ export function NewsSection({ copy, news }: { copy: TeaserCopy; news: WithId<New
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {news.map((post, index) => (
-              <NewsCard key={post.slug} post={post} featured={index === 0} />
+            {news.map((post) => (
+              <NewsCard key={post.slug} post={post} />
             ))}
           </div>
         )}
