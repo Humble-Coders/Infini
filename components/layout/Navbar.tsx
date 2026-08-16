@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
@@ -151,16 +152,8 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           aria-label="Primary"
           className={cn("flex items-center justify-between", TRANSITION, scrolled ? "h-16" : "h-24")}
         >
-          <Link
-            href="/"
-            className={cn("flex items-center gap-2", TRANSITION, scrolled ? "text-background" : "text-foreground")}
-            aria-label="INFINI home"
-          >
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-              <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.4" />
-              <path d="M14 3.5 L14 24.5 M3.5 14 L24.5 14" stroke="var(--color-primary)" strokeWidth="1.4" />
-            </svg>
-            <span className="text-lg font-semibold tracking-[0.2em]">INFINI</span>
+          <Link href="/" className={cn("flex items-center", TRANSITION)} aria-label="INFINI home">
+            <Image src="/Infini-MMP-01.png" alt="INFINI" width={263} height={78} className="h-12 w-auto sm:h-14" priority />
           </Link>
 
           <ul className="hidden items-center gap-7 md:flex">
