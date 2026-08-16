@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
-import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -40,10 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
           }}
         />
-        <AnnouncementBar />
-        <Navbar />
         {children}
-        <Footer />
         <Toaster
           position="top-right"
           toastOptions={{

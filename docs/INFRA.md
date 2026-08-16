@@ -99,10 +99,30 @@ App Hosting deploys automatically on push to the connected branch once the
 backend is created and linked in the Firebase console; no manual
 `firebase deploy` step is needed for the Next.js app itself.
 
+## Authentication (T6)
+
+| Field | Value |
+|---|---|
+| Sign-in provider | Email/Password, enabled at Console → Authentication → Sign-in method |
+| Public signup | None anywhere in the app — admin accounts are created only via the Super Admin's Users screen (`inviteAdminUser` Cloud Function) or the one-off bootstrap script below |
+| Session mechanism | Firebase session cookie (httpOnly, 5-day expiry), minted by `app/api/auth/session/route.ts` from a verified ID token — not the raw ID token itself |
+| Roles | `superAdmin` / `contentEditor` / `leadsManager`, stored as a Firebase Auth custom claim (`role`) and mirrored on `users/{uid}` for display. Set exclusively by the `setUserRole` / `inviteAdminUser` Cloud Functions (Super Admin only) |
+
+**Bootstrapping the first Super Admin.** There's no console UI for setting a
+custom claim, so the very first account is created by a one-off script rather
+than the (not-yet-existent, chicken-and-egg) Users screen:
+
+```bash
+npm run bootstrap-super-admin -- <email>
+```
+
+Requires `FIREBASE_ADMIN_*` vars in `.env` (or `gcloud auth application-default login`
+against this project). Prints a password-reset link once — send it to the
+account owner directly, never commit or log it beyond that.
+
 ## Out of scope here
 
 - Firestore collections/documents and typed accessors — T5.
-- Auth users, roles, custom claims — T6.
 - reCAPTCHA Enterprise key, SMTP app password, Cloud Functions config/secrets
   — T17 (these get their own entries in this file when that ticket lands).
 - Production backend, custom domain, DNS — T26.
