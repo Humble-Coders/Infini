@@ -6,6 +6,12 @@ import type { NextConfig } from "next";
 const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
 
 const nextConfig: NextConfig = {
+  images: {
+    // getDownloadURL() from Firebase Storage always resolves to this host,
+    // regardless of the project's bucket-naming style — needed so
+    // next/image (T8 media library, MediaPicker) can serve uploaded assets.
+    remotePatterns: [{ protocol: "https", hostname: "firebasestorage.googleapis.com" }],
+  },
   async headers() {
     if (isProduction) return [];
     return [

@@ -83,9 +83,20 @@ copy the three fields into your local `.env` and discard the JSON file.
 
 ## Storage
 
-- Rules: `backend/storage.rules` (committed, deny-all — T8 opens admin-upload paths).
-- Default bucket: `TODO.appspot.com` (auto-created with the project).
+- Rules: `backend/storage.rules` (committed — `media/` allows public read, Content
+  Editor/Super Admin write, 10MB image / 20MB PDF limits enforced in the rules).
+- Default bucket: `infini-2fdec.firebasestorage.app`.
 - Deploy rules with `firebase deploy --only storage:rules`.
+- **CORS (T8):** required for the browser-based upload SDK to work at all —
+  without it, `uploadBytesResumable`'s cross-origin PUT fails preflight.
+  Config: `backend/storage.cors.json`, applied via:
+  ```bash
+  gsutil cors set backend/storage.cors.json gs://infini-2fdec.firebasestorage.app
+  ```
+  Currently allows `localhost:3000`/`localhost:3100` (dev) and `infini.co.in`
+  (production). GCS CORS `origin` entries must be exact strings — no
+  wildcards — so **add the actual staging App Hosting domain to this file
+  and re-run the command above once T4's backend exists** with a real URL.
 
 ## Deploying
 
