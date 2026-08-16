@@ -17,7 +17,7 @@ function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?
         featured ? "sm:col-span-2 lg:col-span-2" : ""
       }`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+      <div className="relative aspect-[2/1] overflow-hidden bg-muted">
         {post.coverImage ? (
           <Image
             src={post.coverImage}
@@ -44,7 +44,7 @@ function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-1.5 p-3.5">
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {post.tags.slice(0, 2).map((tag) => (
@@ -54,8 +54,8 @@ function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?
             ))}
           </div>
         )}
-        <h3 className={`font-normal text-foreground ${featured ? "text-lg sm:text-xl" : "text-base"}`}>{post.title}</h3>
-        <p className="line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
+        <h3 className={`font-normal text-foreground ${featured ? "text-base sm:text-lg" : "text-sm"}`}>{post.title}</h3>
+        <p className="line-clamp-2 text-xs text-muted-foreground">{post.excerpt}</p>
         <span className="mt-auto flex items-center gap-1.5 pt-1 text-xs text-accent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
           Read article
           <ArrowRight className="size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" aria-hidden="true" />
@@ -80,7 +80,7 @@ export function NewsSection({ copy, news }: { copy: TeaserCopy; news: WithId<New
             <p className="max-w-lg text-sm text-muted-foreground sm:text-base">{copy.emptyState}</p>
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {news.map((post, index) => (
               <NewsCard key={post.slug} post={post} featured={index === 0} />
             ))}
