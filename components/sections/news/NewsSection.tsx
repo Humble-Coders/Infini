@@ -13,11 +13,11 @@ function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?
   return (
     <Link
       href={`/news/${post.slug}`}
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 ease-out hover:border-primary hover:shadow-[0_20px_60px_-15px_rgba(var(--color-shadow-rgb),0.5)] ${
+      className={`group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 ease-out hover:border-primary hover:shadow-[0_20px_60px_-15px_rgba(var(--color-shadow-rgb),0.5)] ${
         featured ? "sm:col-span-2 lg:col-span-2" : ""
       }`}
     >
-      <div className={`relative overflow-hidden bg-muted ${featured ? "aspect-[16/10] sm:aspect-[16/9]" : "aspect-[16/10]"}`}>
+      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
         {post.coverImage ? (
           <Image
             src={post.coverImage}
@@ -38,25 +38,25 @@ function NewsCard({ post, featured = false }: { post: WithId<NewsDoc>; featured?
         )}
         {/* Gradient scrim so the date chip stays legible over any image, and gives the card a finished, non-flat edge even without one. */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
-        <span className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-[11px] tracking-wide text-foreground/90 backdrop-blur-sm">
+        <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full border border-border/60 bg-background/60 px-2.5 py-0.5 text-[10px] tracking-wide text-foreground/90 backdrop-blur-sm">
           <Calendar className="size-3" aria-hidden="true" />
           {formatDate(post.publishedAt)}
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-6">
+      <div className="flex flex-1 flex-col gap-2 p-4">
         {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {post.tags.slice(0, 2).map((tag) => (
-              <span key={tag} className="rounded-full bg-secondary px-2.5 py-0.5 text-[11px] tracking-wide text-muted-foreground uppercase">
+              <span key={tag} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] tracking-wide text-muted-foreground uppercase">
                 {tag}
               </span>
             ))}
           </div>
         )}
-        <h3 className={`font-normal text-foreground ${featured ? "text-xl sm:text-2xl" : "text-lg"}`}>{post.title}</h3>
-        <p className={`text-muted-foreground ${featured ? "text-sm sm:text-base" : "text-sm"} line-clamp-3`}>{post.excerpt}</p>
-        <span className="mt-auto flex items-center gap-1.5 pt-2 text-xs text-accent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
+        <h3 className={`font-normal text-foreground ${featured ? "text-lg sm:text-xl" : "text-base"}`}>{post.title}</h3>
+        <p className="line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
+        <span className="mt-auto flex items-center gap-1.5 pt-1 text-xs text-accent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
           Read article
           <ArrowRight className="size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" aria-hidden="true" />
         </span>
@@ -80,7 +80,7 @@ export function NewsSection({ copy, news }: { copy: TeaserCopy; news: WithId<New
             <p className="max-w-lg text-sm text-muted-foreground sm:text-base">{copy.emptyState}</p>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {news.map((post, index) => (
               <NewsCard key={post.slug} post={post} featured={index === 0} />
             ))}
