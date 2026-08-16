@@ -144,7 +144,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
         "sticky top-0 z-50 border-b",
         scrolled
           ? "border-background/10 bg-foreground/95 shadow-md shadow-black/10 backdrop-blur-md"
-          : "border-transparent bg-gradient-to-r from-accent via-accent to-primary"
+          : "border-transparent bg-transparent"
       )}
     >
       <Container>
@@ -214,14 +214,13 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           </ul>
 
           <div className="hidden items-center md:flex">
-            {/* Red button reads fine on the white scrolled bar; on the red top-of-page bar it'd blend in, so it flips to the white/dark "inverse" variant there instead. */}
-            <Button asChild size="sm" variant={scrolled ? "default" : "inverse"}>
+            <Button asChild size="sm" variant="default">
               <Link href="/request-a-quote">Request a Quote</Link>
             </Button>
           </div>
 
           <div className="flex items-center gap-1 md:hidden">
-            <Button asChild size="sm" variant={scrolled ? "default" : "inverse"} className="px-3 text-xs">
+            <Button asChild size="sm" variant="default" className="px-3 text-xs">
               <Link href="/request-a-quote">Request a Quote</Link>
             </Button>
             <button
