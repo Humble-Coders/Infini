@@ -562,5 +562,186 @@ export function buildPages() {
         "INFINI's treatment capabilities: MMP surface finishing from controlled roughness to mirror-like brilliance, with measured, traceable batch validation."
       ),
     },
+    // The four pages below keep their exact legacy slugs (PRD decision D7,
+    // T16) — each independently ranks for its own search terms, and a
+    // redirect into a generic Capabilities hub would throw that away.
+    // Content is drafted from the equivalent pages on the live infini.co.in
+    // site, then genuinely expanded — not a reformat of the original.
+    technology: {
+      id: "technology" as const,
+      sections: [
+        {
+          type: "hero",
+          fields: {
+            eyebrow: "Technology",
+            heading: "The MMP process, explained.",
+            body: "MMP is the technology every INFINI treatment is built on — a mechanical-physical-catalyst process, not a chemical or acid-based one, that removes surface roughness with a precision conventional polishing can't match.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "What MMP actually is",
+            body: "MMP Technology is a mechanical-physical-catalyst surface treatment applied to components placed inside a processing tank. It's a licensed technology, not something INFINI invented in-house — INFINI holds the intellectual property license to apply it. That distinction matters for how it works: unlike chemical or acid-based finishing methods, which can alter a material's surface chemistry or mechanical properties, MMP removes material through a genuinely mechanical cutting action at a microscopic scale, leaving the underlying material unchanged.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "How frequency-based removal works",
+            body: "A surface isn't uniformly rough — it's a mix of roughness at different frequencies, from broad waviness down to fine microscopic texture. MMP maps a surface as exactly that: a collection of roughness frequencies, and treats them in order, removing the highest frequencies first and then working progressively lower. Because the process targets specific frequency ranges rather than abrading the whole surface indiscriminately, it can stop at any point along the way — treating only the roughness range that's actually a problem, and leaving the rest of the surface's character intact.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "Why the part's form survives treatment",
+            body: "Traditional polishing is abrasive across the whole surface, which means it doesn't discriminate between roughness that needs removing and fine geometric features that don't — sharp edges, small radii, engineered micro-textures all get worn down along with the roughness. Because MMP's material removal is selective rather than blanket abrasion, it preserves the part's form, including fine features that conventional polishing would alter or destroy.",
+          },
+        },
+        {
+          type: "list",
+          fields: {
+            heading: "Materials MMP treats",
+            items: [
+              "Stainless and high-speed steels",
+              "Copper, titanium, and nickel alloys",
+              "Carbide, ceramics, and precious metals",
+              "CVD- and PVD-coated components",
+              "CIM, MIM, and DMLS (additive/injection-molded metal) parts",
+            ],
+          },
+        },
+      ],
+      seo: baseSeo(
+        "MMP Technology — The Process Behind INFINI's Surface Finishing",
+        "How MMP (Micro Machining Process) technology works: a licensed mechanical-physical-catalyst treatment that removes surface roughness by frequency, preserving part form and fine geometric features."
+      ),
+    },
+    validation: {
+      id: "validation" as const,
+      sections: [
+        {
+          type: "hero",
+          fields: {
+            eyebrow: "Validation",
+            heading: "How a treatment gets validated before it runs at volume.",
+            body: "Every MMP treatment moves through three stages before it becomes a production process — technical validation, industrial validation, and industrial production — so nothing reaches volume without measured proof it does what it's supposed to.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "Technical validation",
+            body: "The process starts with analysis of the actual workpiece surface by measuring its roughness, not by assumption. INFINI accounts for the specific material being treated, establishes the customer's objectives and constraints, and runs a minimum of three MMP treatments so the customer can select the result that best matches what they need.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "Industrial validation",
+            body: "Once a target is agreed, treatment is applied to a production-representative batch quantity, establishing an initial surface roughness bell curve — the real spread of results a production run actually produces, not a single best-case sample. From there, a quality process is determined and implemented for traceability and control, and the customer verifies and approves the industrial process before it's used at scale.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "Industrial production",
+            body: "The final stage is where validation becomes an ongoing process rather than a one-time check: the customer validates production results, production scheduling is coordinated directly with them, and INFINI develops improvement strategies and measures service level over time — validation doesn't end when production starts, it continues alongside it.",
+          },
+        },
+      ],
+      seo: baseSeo(
+        "Validation Process — How INFINI Verifies Surface Finishing Results",
+        "INFINI's three-stage validation process for MMP surface treatment: technical validation, industrial validation, and industrial production, each measured and customer-verified before scaling up."
+      ),
+    },
+    "deburring-polishing": {
+      id: "deburring-polishing" as const,
+      sections: [
+        {
+          type: "hero",
+          fields: {
+            eyebrow: "Deburring & Polishing",
+            heading: "Deburring and polishing, and where MMP does it differently.",
+            body: "Traditional deburring and polishing get a surface smooth by removing material indiscriminately, by hand or by machine. MMP treats only the roughness that's actually a problem — with less material removed and a more consistent result.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "Traditional deburring and polishing",
+            body: "Polishing smooths and brightens a part's surface through abrasion — by hand, or by machine. The objective is a high-quality surface state, usually characterized by some combination of low roughness, gloss, and brightness. Deburring removes unwanted material — burrs left over from machining or forming — using files or grinders for small quantities, or barrel treatment for larger batches.",
+          },
+        },
+        {
+          type: "list",
+          fields: {
+            heading: "Common traditional techniques",
+            items: [
+              "Hand polishing",
+              "Automatic robotic polishing",
+              "Tribo finishing (mass vibratory finishing)",
+              "Pressurized abrasive paste (extrude honing)",
+              "REM process (acid attack followed by abrasion)",
+              "Laser or electron-beam polishing",
+            ],
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "Where MMP differs",
+            body: "MMP selectively treats only the actual roughness present on a surface, rather than abrading it uniformly — which is what makes it possible to reach a super-finished surface with only minuscule material removal. The process combines mechanical-physical-catalyst technology with a high-energy flux of engineered particles sized to match the specific roughness level being removed, delivering results with superior reproducibility and homogeneity from part to part, and preserving the part's original form rather than gradually wearing it down.",
+          },
+        },
+      ],
+      seo: baseSeo(
+        "Deburring & Polishing vs. MMP Technology",
+        "How traditional deburring and polishing compare to MMP surface treatment — less material removal, more consistent results, and preserved part geometry."
+      ),
+    },
+    "mirror-like-finish": {
+      id: "mirror-like-finish" as const,
+      sections: [
+        {
+          type: "hero",
+          fields: {
+            eyebrow: "Mirror-Like Finish",
+            heading: "A true mirror finish, without losing the part's form.",
+            body: "A mirror-like surface requires the total elimination of surface roughness — MMP gets there by selectively filtering out successive levels of roughness without changing the surface's underlying shape.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "What a mirror-like surface actually requires",
+            body: "Most finishing work targets a controlled roughness — smooth enough for the application, not necessarily roughness-free. A mirror-like finish is a different, stricter target: the total elimination of surface roughness across the treated area. MMP reaches that target by selectively filtering out successive levels of roughness, working from the coarsest down to the finest, without changing the basic form of the surface underneath.",
+          },
+        },
+        {
+          type: "textBlock",
+          fields: {
+            heading: "Strengths, and where it doesn't apply",
+            body: "Because material removal stays targeted to roughness rather than blanket abrasion, MMP reaches a mirror finish with far less material removed than traditional cutting-action polishing — which also means fine details and sharp edges survive treatment, and complex geometries finish uniformly rather than unevenly. The constraint is the flip side of how the process works: because MMP treats a surface uniformly, it can't fix form errors that need non-uniform material removal or reshaping. A part that's out of tolerance in a specific area needs localized correction first — that's a different problem than surface roughness, and outside what this process solves.",
+          },
+        },
+        {
+          type: "list",
+          fields: {
+            heading: "Where it's used",
+            items: [
+              "Medical implants and surgical instrumentation",
+              "Plastic injection mold cavities",
+              "Metal and ceramic injection-molded (MIM/CIM) components, where the surface lacks porosity",
+            ],
+          },
+        },
+      ],
+      seo: baseSeo(
+        "Mirror-Like Finish — MMP Surface Treatment",
+        "How INFINI achieves a true mirror-like finish through MMP surface treatment — total roughness elimination with minimal material removal, for medical implants, injection molds, and precision components."
+      ),
+    },
   };
 }

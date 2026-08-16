@@ -1,7 +1,20 @@
 import type { SeoMap } from "./seo";
 
-/** Singleton page IDs — one document per fixed page, `pages/{id}`. */
-export type PageId = "home" | "company" | "capabilities" | "contact";
+/**
+ * Singleton page IDs — one document per fixed page, `pages/{id}`. The four
+ * legacy-slug entries (T16, PRD decision D7) keep their exact URLs from the
+ * old site — no `/capabilities/` prefix — because they carry independent
+ * search ranking a redirect into a hub page would throw away.
+ */
+export type PageId =
+  | "home"
+  | "company"
+  | "capabilities"
+  | "contact"
+  | "technology"
+  | "validation"
+  | "deburring-polishing"
+  | "mirror-like-finish";
 
 /**
  * A page is composed of an ordered list of sections. Section shapes vary by

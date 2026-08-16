@@ -22,3 +22,22 @@ export function getSection<T>(page: PageDoc | null, type: string): T | null {
   const section = page?.sections.find((s: PageSection) => s.type === type);
   return section ? (section.fields as T) : null;
 }
+
+/**
+ * Every non-hero section on the T16 legacy capability pages uses just two
+ * section types — "textBlock" and "list" — in document order, so they can
+ * be read generically rather than each page.tsx pulling sections out by
+ * name one at a time.
+ */
+export function getContentBlocks(
+  page: PageDoc | null
+): Array<{ type: "text"; heading: string; body: string } | { type: "list"; heading: string; items: string[] }> {
+  if (!page) return [];
+  return page.sections
+    .filter((s) => s.type === "textBlock" || s.type === "list")
+    .map((s) =>
+      s.type === "list"
+        ? { type: "list" as const, heading: s.fields.heading as string, items: s.fields.items as string[] }
+        : { type: "text" as const, heading: s.fields.heading as string, body: s.fields.body as string }
+    );
+}
