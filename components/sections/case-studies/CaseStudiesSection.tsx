@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/container";
+import { CaseStudyCard } from "@/components/case-studies/CaseStudyCard";
 import type { CaseStudyDoc, TeaserCopy, WithId } from "@/lib/types";
 
 export function CaseStudiesSection({ copy, caseStudies }: { copy: TeaserCopy; caseStudies: WithId<CaseStudyDoc>[] }) {
@@ -17,10 +18,7 @@ export function CaseStudiesSection({ copy, caseStudies }: { copy: TeaserCopy; ca
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {caseStudies.map((caseStudy) => (
-              <article key={caseStudy.slug} className="flex flex-col gap-3 rounded-xl border border-border p-6">
-                <h3 className="text-lg font-normal text-foreground">{caseStudy.title}</h3>
-                <p className="text-sm text-muted-foreground">{caseStudy.challenge}</p>
-              </article>
+              <CaseStudyCard key={caseStudy.slug} caseStudy={caseStudy} />
             ))}
           </div>
         )}

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BadgeCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { getIndustryBySlug, getPublishedIndustrySlugs } from "@/lib/data/industries";
 import { getCaseStudiesByIndustry } from "@/lib/data/caseStudies";
 import { getCertificationsByIds } from "@/lib/data/certifications";
+import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
+import { CaseStudyCard } from "@/components/case-studies/CaseStudyCard";
 
 export async function generateStaticParams() {
   const slugs = await getPublishedIndustrySlugs();
@@ -113,22 +114,8 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
 
       {certifications.length > 0 && (
         <section className="border-b border-border/60 py-16 sm:py-20">
-          <Container className="flex flex-col gap-6">
-            <h2 className="text-2xl font-light text-foreground sm:text-3xl">Relevant certifications</h2>
-            {/* Minimal badge display for now — T12 replaces this with the full reusable certifications block (logo, download, description). */}
-            <ul className="flex flex-wrap gap-3">
-              {certifications.map((cert) => (
-                <li key={cert.id}>
-                  <Link
-                    href="/certifications"
-                    className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
-                  >
-                    <BadgeCheck className="size-4 text-accent" aria-hidden="true" />
-                    {cert.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <Container>
+            <CertificationsBlock certifications={certifications} heading="Relevant certifications" />
           </Container>
         </section>
       )}
@@ -146,10 +133,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
           ) : (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {relatedCaseStudies.map((caseStudy) => (
-                <article key={caseStudy.slug} className="flex flex-col gap-3 rounded-xl border border-border p-6">
-                  <h3 className="text-lg font-normal text-foreground">{caseStudy.title}</h3>
-                  <p className="text-sm text-muted-foreground">{caseStudy.challenge}</p>
-                </article>
+                <CaseStudyCard key={caseStudy.slug} caseStudy={caseStudy} />
               ))}
             </div>
           )}
