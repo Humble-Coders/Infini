@@ -11,12 +11,12 @@ Fill in each `TODO` **as you create the thing**, not from memory afterward.
 
 | Field | Value |
 |---|---|
-| Project name | TODO |
-| Project ID | TODO |
-| Project number | TODO |
-| Billing plan | Blaze (required — App Hosting, Cloud Functions, reCAPTCHA Enterprise do not run on Spark) |
-| Owner account | TODO — the Google account that created the project; transfers per D5 at handover |
-| Region (Firestore / Functions / App Hosting) | TODO — pick one region and use it everywhere; note it here |
+| Project name | infini |
+| Project ID | `infini-2fdec` |
+| Project number | `818899870427` |
+| Billing plan | Blaze (confirmed set — App Hosting, Cloud Functions, reCAPTCHA Enterprise do not run on Spark) |
+| Owner account | `nisheshsingla@gmail.com`; transfers per D5 at handover |
+| Region (Firestore / Functions / App Hosting) | Firestore default database (multi-region `nam5`, US); Cloud Functions deployed to `us-central1` (T6) — use `us-central1` for App Hosting too when that backend is created, to stay co-located |
 
 ## Budget alert
 
