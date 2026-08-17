@@ -1,9 +1,11 @@
+import Image from "next/image";
 import { cn } from "@/components/ui/utils";
 
 interface ShowcaseCardData {
   id: string;
   industry: string;
   headline: string;
+  image?: string;
 }
 
 export function ShowcaseCard({
@@ -27,11 +29,25 @@ export function ShowcaseCard({
     >
       <div
         className="relative flex h-full w-full flex-col justify-end p-5 sm:p-6"
-        style={{
-          background: `conic-gradient(from ${gradientAngle}deg at 50% 50%, var(--color-popover), var(--color-muted) 20%, var(--color-background) 45%, var(--color-primary-muted) 60%, var(--color-popover) 80%, var(--color-muted))`,
-        }}
+        style={
+          card.image
+            ? undefined
+            : {
+                background: `conic-gradient(from ${gradientAngle}deg at 50% 50%, var(--color-popover), var(--color-muted) 20%, var(--color-background) 45%, var(--color-primary-muted) 60%, var(--color-popover) 80%, var(--color-muted))`,
+              }
+        }
         aria-hidden="true"
       >
+        {card.image && (
+          <Image
+            src={card.image}
+            alt=""
+            fill
+            sizes="(min-width: 640px) 600px, 80vw"
+            className="object-cover"
+            priority={index === 0}
+          />
+        )}
         <div
           className="absolute inset-0 opacity-40"
           style={{

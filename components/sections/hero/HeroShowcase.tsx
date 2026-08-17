@@ -27,6 +27,7 @@ export function HeroShowcase({ industries }: { industries: WithId<IndustryDoc>[]
     id: industry.slug,
     industry: industry.name,
     headline: industry.hero.headline,
+    image: industry.hero.image,
   }));
 
   const [index, setIndex] = useState(0);

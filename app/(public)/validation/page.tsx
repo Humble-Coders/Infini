@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ShieldCheck } from "lucide-react";
 import { getPage, getSection, getContentBlocks } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { LegacyCapabilityContent } from "@/components/legacy-capability/LegacyCapabilityContent";
@@ -30,5 +31,5 @@ export default async function ValidationPage() {
 
   if (!hero) return null;
 
-  return <LegacyCapabilityContent hero={hero} blocks={blocks} relatedIndustries={relatedIndustries} />;
+  return <LegacyCapabilityContent hero={hero} blocks={blocks} relatedIndustries={relatedIndustries} icon={ShieldCheck} />;
 }

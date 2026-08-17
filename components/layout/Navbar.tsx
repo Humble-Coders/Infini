@@ -127,8 +127,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
 
   const linkClass = cn(
     TRANSITION,
-    "group relative text-sm tracking-wide",
-    scrolled ? "text-background/80 hover:text-background" : "text-foreground/90 hover:text-foreground"
+    "group relative text-sm tracking-wide text-foreground/90 hover:text-foreground"
   );
 
   function isItemActive(item: NavLink): boolean {
@@ -143,8 +142,8 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
         TRANSITION,
         "sticky top-0 z-50 border-b",
         scrolled
-          ? "border-background/10 bg-foreground/95 shadow-md shadow-black/10 backdrop-blur-md"
-          : "border-transparent bg-transparent"
+          ? "border-foreground/25 bg-foreground/40 shadow-lg shadow-black/20 backdrop-blur-xl"
+          : "border-foreground/15 bg-foreground/20 backdrop-blur-md"
       )}
     >
       <Container>
@@ -220,17 +219,10 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           </div>
 
           <div className="flex items-center gap-1 md:hidden">
-            <Button asChild size="sm" variant="default" className="px-3 text-xs">
-              <Link href="/request-a-quote">Request a Quote</Link>
-            </Button>
             <button
               type="button"
               ref={menuTriggerRef}
-              className={cn(
-                TRANSITION,
-                scrolled ? "text-background" : "text-foreground",
-                "-mr-2.5 flex size-11 items-center justify-center"
-              )}
+              className={cn(TRANSITION, "text-foreground -mr-2.5 flex size-11 items-center justify-center")}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-panel"
@@ -256,7 +248,12 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
         <div
           className={cn(
             "border-t border-border bg-background",
-            mobileOpen ? "max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain" : "overflow-hidden"
+            mobileOpen
+              ? cn(
+                  "overflow-y-auto overscroll-contain",
+                  scrolled ? "max-h-[calc(100dvh-4rem)]" : "max-h-[calc(100dvh-6rem)]"
+                )
+              : "overflow-hidden"
           )}
         >
           <Container>

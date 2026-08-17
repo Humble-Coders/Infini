@@ -13,9 +13,9 @@ function NewsCard({ post }: { post: WithId<NewsDoc> }) {
   return (
     <Link
       href={`/news/${post.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 ease-out hover:border-primary hover:shadow-[0_20px_60px_-15px_rgba(var(--color-shadow-rgb),0.5)]"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_30px_-18px_rgba(var(--color-shadow-rgb),0.6)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_24px_60px_-16px_rgba(var(--color-shadow-rgb),0.55)]"
     >
-      <div className="relative aspect-[2/1] overflow-hidden bg-muted">
+      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {post.coverImage ? (
           <Image
             src={post.coverImage}
@@ -34,29 +34,31 @@ function NewsCard({ post }: { post: WithId<NewsDoc> }) {
             }}
           />
         )}
-        {/* Gradient scrim so the date chip stays legible over any image, and gives the card a finished, non-flat edge even without one. */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
-        <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full border border-border/60 bg-background/60 px-2.5 py-0.5 text-[10px] tracking-wide text-foreground/90 backdrop-blur-sm">
-          <Calendar className="size-3" aria-hidden="true" />
-          {formatDate(post.publishedAt)}
-        </span>
+        {/* Gradient scrim so overlaid chips stay legible over any image, and gives the card a finished, non-flat edge even without one. */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/95 via-background/10 to-transparent" />
+
+        {post.tags[0] && (
+          <span className="absolute top-3 left-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-medium tracking-wide text-primary-foreground uppercase">
+            {post.tags[0]}
+          </span>
+        )}
+
+        <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2">
+          <span className="flex items-center gap-1 text-[11px] tracking-wide text-foreground/80">
+            <Calendar className="size-3" aria-hidden="true" />
+            {formatDate(post.publishedAt)}
+          </span>
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1.5 p-3.5">
-        {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {post.tags.slice(0, 2).map((tag) => (
-              <span key={tag} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] tracking-wide text-muted-foreground uppercase">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-        <h3 className="text-sm font-normal text-foreground">{post.title}</h3>
-        <p className="line-clamp-2 text-xs text-muted-foreground">{post.excerpt}</p>
-        <span className="mt-auto flex items-center gap-1.5 pt-1 text-xs text-accent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
+      <div className="flex flex-1 flex-col gap-2 p-5">
+        <h3 className="line-clamp-2 text-base font-normal text-foreground transition-colors duration-300 group-hover:text-primary">
+          {post.title}
+        </h3>
+        <p className="line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
+        <span className="mt-3 flex items-center gap-1.5 border-t border-border pt-3 text-xs font-medium text-accent">
           Read article
-          <ArrowRight className="size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" aria-hidden="true" />
+          <ArrowRight className="size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-1" aria-hidden="true" />
         </span>
       </div>
     </Link>
@@ -78,7 +80,7 @@ export function NewsSection({ copy, news }: { copy: TeaserCopy; news: WithId<New
             <p className="max-w-lg text-sm text-muted-foreground sm:text-base">{copy.emptyState}</p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {news.map((post) => (
               <NewsCard key={post.slug} post={post} />
             ))}

@@ -10,7 +10,14 @@ const nextConfig: NextConfig = {
     // getDownloadURL() from Firebase Storage always resolves to this host,
     // regardless of the project's bucket-naming style — needed so
     // next/image (T8 media library, MediaPicker) can serve uploaded assets.
-    remotePatterns: [{ protocol: "https", hostname: "firebasestorage.googleapis.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+      // TEMP DEMO — random placeholder photos for the industries carousel /
+      // news cards until real photography is supplied. Delete this pattern
+      // along with the overlays in lib/data/industries.ts and lib/data/news.ts.
+      { protocol: "https", hostname: "picsum.photos" },
+      { protocol: "https", hostname: "fastly.picsum.photos" },
+    ],
   },
   async headers() {
     if (isProduction) return [];

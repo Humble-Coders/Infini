@@ -4,12 +4,30 @@ import type { IndustryDoc, WithId } from "@/lib/types";
 
 const COLLECTION = "industries";
 
+// TEMP DEMO — random placeholder photos for the hero carousel, keyed by
+// slug so each industry gets a stable (but unrelated) image. Delete this
+// map and its use below, plus the picsum remotePatterns in next.config.ts,
+// once real photography is supplied.
+const DEMO_HERO_IMAGES: Record<string, string> = {
+  "cutting-tools": "https://picsum.photos/seed/infini-cutting-tools/1200/900",
+  "forge-stamping-die": "https://picsum.photos/seed/infini-forge-die/1200/900",
+  "plastic-injection-molds": "https://picsum.photos/seed/infini-injection-molds/1200/900",
+  "medical-implants": "https://picsum.photos/seed/infini-medical-implants/1200/900",
+  aerospace: "https://picsum.photos/seed/infini-aerospace/1200/900",
+  "additive-manufacturing": "https://picsum.photos/seed/infini-additive-mfg/1200/900",
+  "gears-transmission": "https://picsum.photos/seed/infini-gears/1200/900",
+};
+
 /** All 7 published industries, in display order. */
 export async function getPublishedIndustries(): Promise<WithId<IndustryDoc>[]> {
   const snap = await getDocs(
     query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
   );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as IndustryDoc) }));
+  return snap.docs.map((d) => {
+    const data = d.data() as IndustryDoc;
+    const heroImage = data.hero.image || DEMO_HERO_IMAGES[data.slug] || "";
+    return { id: d.id, ...data, hero: { ...data.hero, image: heroImage } };
+  });
 }
 
 /** A single published industry by slug, or null if it doesn't exist / isn't published. */
