@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
@@ -12,7 +11,6 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <SmoothScroll>
-      <AnnouncementBar />
       <Navbar navItems={settings?.nav ?? FALLBACK_NAV} />
       {children}
       <Footer
