@@ -8,9 +8,9 @@ import type { PageHeroCopy } from "@/lib/types";
 const RELATED_SLUGS = ["medical-implants", "plastic-injection-molds"];
 
 const FALLBACK: Metadata = {
-  title: "Mirror-Like Finish — MMP Surface Treatment",
+  title: "Mirror-Like Finish: MMP Surface Treatment",
   description:
-    "How INFINI achieves a true mirror-like finish through MMP surface treatment — total roughness elimination with minimal material removal.",
+    "How INFINI achieves a true mirror-like finish through MMP surface treatment, total roughness elimination with minimal material removal.",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page.seo.title,
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} — INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
   };
 }
 

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: post.seo.title,
     description: post.seo.description,
     openGraph: {
-      title: `${post.seo.title} — INFINI`,
+      title: `${post.seo.title} | INFINI`,
       description: post.seo.description,
       type: "article",
       images: post.seo.ogImage ? [post.seo.ogImage] : post.coverImage ? [post.coverImage] : undefined,

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: industry.seo.title,
     description: industry.seo.description,
     openGraph: {
-      title: `${industry.seo.title} — INFINI`,
+      title: `${industry.seo.title} | INFINI`,
       description: industry.seo.description,
       type: "website",
     },

@@ -19,8 +19,8 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
     slug: "demo-mmp-vs-traditional-polishing",
     title: "Why MMP treatment outperforms traditional polishing on complex geometry",
     excerpt:
-      "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem — here's what that means for parts with tight internal geometry.",
-    body: "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem — here's what that means for parts with tight internal geometry, fine features, and complex cavities that manual polishing struggles to reach evenly.",
+      "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for parts with tight internal geometry.",
+    body: "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for parts with tight internal geometry, fine features, and complex cavities that manual polishing struggles to reach evenly.",
     coverImage: "https://picsum.photos/seed/infini-news-mmp-polishing/1200/600",
     tags: ["technology", "MMP"],
     status: "published",

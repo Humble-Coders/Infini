@@ -133,7 +133,7 @@ export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] 
           id="contact-message"
           required
           rows={4}
-          placeholder="Component, material, tolerance, volume — whatever you have."
+          placeholder="Component, material, tolerance, volume, whatever you have."
           value={values.message}
           onChange={(event) => updateField("message", event.target.value)}
         />

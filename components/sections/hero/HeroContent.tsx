@@ -5,7 +5,7 @@ import type { HeroCopy } from "@/lib/types";
 
 const FALLBACK: HeroCopy = {
   heading: "A finish\nthat performs.",
-  body: "Precision surface-finishing for components precision manufacturers already trust — applied in-house, verified before it ships.",
+  body: "Precision surface-finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
   ctaNote: "No project too precise. Talk to our engineers.",
 };
 

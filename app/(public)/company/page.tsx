@@ -21,7 +21,7 @@ interface TextBlockCopy {
 }
 
 const FALLBACK: Metadata = {
-  title: "About INFINI — Precision Surface Finishing",
+  title: "About INFINI: Precision Surface Finishing",
   description:
     "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology from its treatment facility in Parwanoo, Himachal Pradesh, serving precision manufacturers across seven industries.",
 };
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page.seo.title,
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} — INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
   };
 }
 

@@ -9,13 +9,13 @@ import { CaseStudyCard } from "@/components/case-studies/CaseStudyCard";
 const COPY = {
   eyebrow: "Proven Work",
   heading: "Case studies.",
-  body: "Real components, real results — not a description of what INFINI could do, a record of what it did.",
+  body: "Real components, real results, not a description of what INFINI could do, a record of what it did.",
 };
 
 export const metadata: Metadata = {
   title: "Case Studies",
   description: COPY.body,
-  openGraph: { title: "Case Studies — INFINI", description: COPY.body, type: "website" },
+  openGraph: { title: "Case Studies | INFINI", description: COPY.body, type: "website" },
 };
 
 export default async function CaseStudiesIndexPage({

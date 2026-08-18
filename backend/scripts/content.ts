@@ -100,7 +100,7 @@ export function buildIndustries() {
       overview:
         "INFINI treats ground cutting-tool surfaces to reduce the friction and micro-roughness that drive edge chipping, built-up edge, and premature wear.",
       relevance:
-        "Grinding leaves directional roughness and micro-burrs along the cutting edge — exactly where friction and heat concentrate first. MMP treatment removes those peaks selectively, without touching the ground geometry or edge radius your tool designers specified, so the edge stays true while the surface that actually contacts the chip gets smoother.",
+        "Grinding leaves directional roughness and micro-burrs along the cutting edge, exactly where friction and heat concentrate first. MMP treatment removes those peaks selectively, without touching the ground geometry or edge radius your tool designers specified, so the edge stays true while the surface that actually contacts the chip gets smoother.",
       capabilities: [
         { title: "Edge-safe treatment", description: "Controlled material removal that improves surface finish without rounding or softening the cutting edge." },
         { title: "Rake and flank face finishing", description: "Reduced friction on rake and flank faces improves chip evacuation and lowers cutting temperatures." },
@@ -146,7 +146,7 @@ export function buildIndustries() {
       overview:
         "MMP treatment refines finish after EDM or milling without re-cutting the cavity geometry.",
       relevance:
-        "Injection molding transfers cavity surface texture to the part with almost no tolerance for inconsistency. MMP treatment gives mold makers a way to refine finish after EDM or milling — reducing the recast layer and micro-roughness that cause sink marks, flow lines, and ejection drag — without re-cutting the cavity geometry.",
+        "Injection molding transfers cavity surface texture to the part with almost no tolerance for inconsistency. MMP treatment gives mold makers a way to refine finish after EDM or milling, reducing the recast layer and micro-roughness that cause sink marks, flow lines, and ejection drag, all without re-cutting the cavity geometry.",
       capabilities: [
         { title: "Post-EDM finishing", description: "Removes the recast layer and micro-cracking left by EDM, a common source of surface defects on molded parts." },
         { title: "Ejection-surface treatment", description: "Lower surface friction on core and ejector surfaces reduces sticking and part drag during ejection." },
@@ -169,11 +169,11 @@ export function buildIndustries() {
       overview:
         "MMP treatment removes surface irregularities that concentrate stress and reduce fatigue life, run under ISO 13485-aligned process controls.",
       relevance:
-        "Implant surfaces need finishes verified to a measurable standard, not judged by eye. MMP treatment removes surface irregularities that concentrate stress and reduce fatigue life, while our process controls — process documentation, batch traceability, and contamination control — are run to ISO 13485-aligned standards appropriate for medical-grade work.",
+        "Implant surfaces need finishes verified to a measurable standard, not judged by eye. MMP treatment removes surface irregularities that concentrate stress and reduce fatigue life, while our process controls (process documentation, batch traceability, and contamination control) are run to ISO 13485-aligned standards appropriate for medical-grade work.",
       capabilities: [
         { title: "Fatigue-critical surface refinement", description: "Removes surface irregularities that act as stress-concentration points and reduce fatigue life under cyclic load." },
         { title: "Contamination-controlled process", description: "Treatment runs under process controls aligned to ISO 13485 requirements for medical device manufacturing." },
-        { title: "Traceable batch documentation", description: "Every treated batch is documented and traceable — a requirement our medical customers' quality systems depend on." },
+        { title: "Traceable batch documentation", description: "Every treated batch is documented and traceable, a requirement our medical customers' quality systems depend on." },
       ],
       applications: ["Orthopedic implants (hip, knee)", "Spinal fixation hardware", "Surgical instruments", "Dental implant components"],
       materials: ["Titanium and titanium alloys (Ti-6Al-4V)", "Cobalt-chrome alloys", "Medical-grade stainless steel (316L)"],
@@ -192,11 +192,11 @@ export function buildIndustries() {
       overview:
         "MMP treatment refines machined surfaces to reduce stress-concentration points, measured and documented against the agreed spec.",
       relevance:
-        "Aerospace components are specified against tight roughness tolerances precisely because surface irregularities initiate fatigue failure. MMP treatment refines machined surfaces to reduce those stress-concentration points, and every treated batch is measured against the agreed spec before it ships — verification a component's engineering file can reference.",
+        "Aerospace components are specified against tight roughness tolerances precisely because surface irregularities initiate fatigue failure. MMP treatment refines machined surfaces to reduce those stress-concentration points, and every treated batch is measured against the agreed spec before it ships, verification a component's engineering file can reference.",
       capabilities: [
         { title: "Fatigue-life-focused finishing", description: "Targets the surface roughness that acts as a crack-initiation site under cyclic loading." },
         { title: "Complex-geometry access", description: "Reaches internal passages, blends and fillets on structural and rotating parts that abrasive-only methods can't finish evenly." },
-        { title: "Measured, documented finish", description: "Roughness verified against the agreed target and recorded per batch — traceable for an aerospace quality file." },
+        { title: "Measured, documented finish", description: "Roughness verified against the agreed target and recorded per batch, traceable for an aerospace quality file." },
       ],
       applications: ["Structural airframe components", "Turbine and compressor blades", "Landing gear components", "Fastener and fitting hardware"],
       materials: ["Titanium alloys", "Nickel superalloys (Inconel)", "Aerospace-grade aluminum alloys", "High-strength steel"],
@@ -218,7 +218,7 @@ export function buildIndustries() {
         "Additive parts come off the build plate with roughness an order of magnitude higher than machined surfaces, concentrated on internal channels and overhangs that are difficult to reach any other way. MMP treatment reduces that as-built roughness and removes loosely sintered particles, improving both fatigue performance and flow characteristics on internal geometry standard finishing can't access.",
       capabilities: [
         { title: "Internal-channel finishing", description: "Reaches internal lattices, cooling channels and overhangs that line-of-sight polishing methods physically cannot access." },
-        { title: "Loose-particle removal", description: "Clears partially sintered powder particles from the surface — a contamination risk in downstream assembly or service." },
+        { title: "Loose-particle removal", description: "Clears partially sintered powder particles from the surface, a contamination risk in downstream assembly or service." },
         { title: "As-built roughness reduction", description: "Brings layer-line roughness down toward a verified, application-appropriate target." },
       ],
       applications: ["Conformal-cooled tooling inserts", "Lightweight lattice structures", "Complex ducting and manifolds", "Functional prototypes and low-volume production parts"],
@@ -238,7 +238,7 @@ export function buildIndustries() {
       overview:
         "MMP treatment refines tooth flank surfaces without altering the tooth profile or lead.",
       relevance:
-        "Two gear flanks in mesh transmit load across a surface that's rougher than it looks — those asperities are what generate whine, heat and scuffing wear over the gear's service life. MMP treatment refines tooth flank surfaces to reduce friction and noise without altering the tooth profile or lead your gear geometry was cut to.",
+        "Two gear flanks in mesh transmit load across a surface that's rougher than it looks, those asperities are what generate whine, heat and scuffing wear over the gear's service life. MMP treatment refines tooth flank surfaces to reduce friction and noise without altering the tooth profile or lead your gear geometry was cut to.",
       capabilities: [
         { title: "Tooth-flank finishing", description: "Reduces flank roughness that drives mesh noise and friction, without changing tooth profile or lead." },
         { title: "Scuffing resistance", description: "A smoother, more consistent surface reduces the asperity contact that leads to scuffing under high load." },
@@ -277,7 +277,7 @@ export function buildTestimonials() {
     },
     {
       id: "testimonial-2",
-      quote: "Documented, traceable, and repeatable — exactly what our quality system needed from a finishing partner.",
+      quote: "Documented, traceable, and repeatable: exactly what our quality system needed from a finishing partner.",
       personName: "Sample Contact",
       designation: "Quality Lead",
       company: "Sample Precision Ltd.",
@@ -374,7 +374,7 @@ export function buildSettings() {
       { label: "Terms of Service", href: "/terms" },
     ],
     defaultSeo: baseSeo(
-      "INFINI — Precision Surface-Finishing",
+      "INFINI | Precision Surface-Finishing",
       "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment."
     ),
     cookieBanner: {
@@ -394,7 +394,7 @@ export function buildPages() {
           type: "hero",
           fields: {
             heading: "A finish\nthat performs.",
-            body: "Precision surface-finishing for components precision manufacturers already trust — applied in-house, verified before it ships.",
+            body: "Precision surface-finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
             ctaNote: "No project too precise. Talk to our engineers.",
           },
         },
@@ -402,7 +402,7 @@ export function buildPages() {
           type: "stats",
           fields: {
             intro:
-              "Every component that leaves our tanks carries a finish engineers can measure and verify — not just a claim on a spec sheet.",
+              "Every component that leaves our tanks carries a finish engineers can measure and verify, not just a claim on a spec sheet.",
             items: [
               { value: "7", label: "Industries served" },
               { value: "ISO 9001", label: "Certified treatment process" },
@@ -415,7 +415,7 @@ export function buildPages() {
           fields: {
             eyebrow: "The MMP Process",
             heading: "A treatment, not a coating.",
-            body: "MMP (Micro Machining Process) is a mechanical-physical-chemical treatment performed in dedicated tanks. It selectively removes frequencies of surface roughness from components our customers manufacture — no material added, no dimensional drift, just a controlled finish verified against measurable roughness targets.",
+            body: "MMP (Micro Machining Process) is a mechanical-physical-chemical treatment performed in dedicated tanks. It selectively removes frequencies of surface roughness from components our customers manufacture, no material added, no dimensional drift, just a controlled finish verified against measurable roughness targets.",
             steps: [
               { step: "01", title: "Validation", description: "Component geometry, material and target roughness are assessed before treatment begins." },
               { step: "02", title: "Treatment", description: "The MMP process runs in-house, in tanks tuned to the component and finish required." },
@@ -445,7 +445,7 @@ export function buildPages() {
           fields: {
             eyebrow: "Trusted By",
             heading: "What manufacturers say.",
-            emptyState: "Client testimonials are being collected as projects complete — check back soon.",
+            emptyState: "Client testimonials are being collected as projects complete, check back soon.",
           },
         },
         {
@@ -461,13 +461,13 @@ export function buildPages() {
           fields: {
             eyebrow: "Get In Touch",
             heading: "Tell us what you need finished.",
-            body: "Share your component, tolerance and volume — our engineers will get back to you with a treatment recommendation, not a sales script.",
+            body: "Share your component, tolerance and volume, our engineers will get back to you with a treatment recommendation, not a sales script.",
           },
         },
       ],
       seo: baseSeo(
-        "INFINI — Precision Surface-Finishing",
-        "INFINI applies ISO 9001-certified MMP surface-finishing to components precision manufacturers already make — validated in-house, verified before it ships."
+        "INFINI | Precision Surface-Finishing",
+        "INFINI applies ISO 9001-certified MMP surface-finishing to components precision manufacturers already make, validated in-house, verified before it ships."
       ),
     },
     company: {
@@ -478,7 +478,7 @@ export function buildPages() {
           fields: {
             eyebrow: "Company",
             heading: "A specialist surface-finishing partner, not a manufacturer.",
-            body: "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology to components its customers manufacture — it does not manufacture the parts itself. The company operates from a treatment facility in Parwanoo, Himachal Pradesh, and serves precision manufacturers across seven industries.",
+            body: "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology to components its customers manufacture, it does not manufacture the parts itself. The company operates from a treatment facility in Parwanoo, Himachal Pradesh, and serves precision manufacturers across seven industries.",
           },
         },
         {
@@ -499,7 +499,7 @@ export function buildPages() {
           type: "process",
           fields: {
             heading: "How INFINI treats a surface",
-            body: "INFINI's MMP (Micro Machining Process) technology is a mechanical treatment, not a chemical one, applied to parts placed in a treatment tank. It maps a surface as a collection of roughness frequencies and removes the highest frequencies first, working progressively lower — which means the process can stop at any target roughness rather than over-treating the part. Because material removal is controlled and selective, MMP preserves the part's form, including fine features that conventional polishing would alter or destroy.",
+            body: "INFINI's MMP (Micro Machining Process) technology is a mechanical treatment, not a chemical one, applied to parts placed in a treatment tank. It maps a surface as a collection of roughness frequencies and removes the highest frequencies first, working progressively lower, which means the process can stop at any target roughness rather than over-treating the part. Because material removal is controlled and selective, MMP preserves the part's form, including fine features that conventional polishing would alter or destroy.",
           },
         },
         {
@@ -511,7 +511,7 @@ export function buildPages() {
         },
       ],
       seo: baseSeo(
-        "About INFINI — Precision Surface Finishing",
+        "About INFINI: Precision Surface Finishing",
         "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology from its treatment facility in Parwanoo, Himachal Pradesh, serving precision manufacturers across seven industries."
       ),
     },
@@ -523,7 +523,7 @@ export function buildPages() {
           fields: {
             eyebrow: "Capabilities",
             heading: "From controlled roughness to mirror-like brilliance.",
-            body: "MMP treatment covers a range of finishes on a single process — the same underlying technology takes a surface from a specified controlled roughness through to a mirror-like finish, depending on what the application needs.",
+            body: "MMP treatment covers a range of finishes on a single process, the same underlying technology takes a surface from a specified controlled roughness through to a mirror-like finish, depending on what the application needs.",
           },
         },
         {
@@ -538,7 +538,7 @@ export function buildPages() {
               {
                 title: "Geometry-preserving",
                 description:
-                  "Because material removal is controlled and selective rather than abrasive across the whole surface, MMP preserves the part's form — including fine features that conventional polishing would alter or destroy.",
+                  "Because material removal is controlled and selective rather than abrasive across the whole surface, MMP preserves the part's form, including fine features that conventional polishing would alter or destroy.",
               },
               {
                 title: "Measured and traceable",
@@ -557,7 +557,7 @@ export function buildPages() {
         },
       ],
       seo: baseSeo(
-        "Capabilities — MMP Surface Finishing Process",
+        "Capabilities: MMP Surface Finishing Process",
         "INFINI's treatment capabilities: MMP surface finishing from controlled roughness to mirror-like brilliance, with measured, traceable batch validation."
       ),
     },
@@ -574,28 +574,28 @@ export function buildPages() {
           fields: {
             eyebrow: "Technology",
             heading: "The MMP process, explained.",
-            body: "MMP is the technology every INFINI treatment is built on — a mechanical-physical-catalyst process, not a chemical or acid-based one, that removes surface roughness with a precision conventional polishing can't match.",
+            body: "MMP is the technology every INFINI treatment is built on, a mechanical-physical-catalyst process, not a chemical or acid-based one, that removes surface roughness with a precision conventional polishing can't match.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "What MMP actually is",
-            body: "MMP Technology is a mechanical-physical-catalyst surface treatment applied to components placed inside a processing tank. It's a licensed technology, not something INFINI invented in-house — INFINI holds the intellectual property license to apply it. That distinction matters for how it works: unlike chemical or acid-based finishing methods, which can alter a material's surface chemistry or mechanical properties, MMP removes material through a genuinely mechanical cutting action at a microscopic scale, leaving the underlying material unchanged.",
+            body: "MMP Technology is a mechanical-physical-catalyst surface treatment applied to components placed inside a processing tank. It's a licensed technology, not something INFINI invented in-house | INFINI holds the intellectual property license to apply it. That distinction matters for how it works: unlike chemical or acid-based finishing methods, which can alter a material's surface chemistry or mechanical properties, MMP removes material through a genuinely mechanical cutting action at a microscopic scale, leaving the underlying material unchanged.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "How frequency-based removal works",
-            body: "A surface isn't uniformly rough — it's a mix of roughness at different frequencies, from broad waviness down to fine microscopic texture. MMP maps a surface as exactly that: a collection of roughness frequencies, and treats them in order, removing the highest frequencies first and then working progressively lower. Because the process targets specific frequency ranges rather than abrading the whole surface indiscriminately, it can stop at any point along the way — treating only the roughness range that's actually a problem, and leaving the rest of the surface's character intact.",
+            body: "A surface isn't uniformly rough. It's a mix of roughness at different frequencies, from broad waviness down to fine microscopic texture. MMP maps a surface as exactly that: a collection of roughness frequencies, and treats them in order, removing the highest frequencies first and then working progressively lower. Because the process targets specific frequency ranges rather than abrading the whole surface indiscriminately, it can stop at any point along the way, treating only the roughness range that's actually a problem, and leaving the rest of the surface's character intact.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "Why the part's form survives treatment",
-            body: "Traditional polishing is abrasive across the whole surface, which means it doesn't discriminate between roughness that needs removing and fine geometric features that don't — sharp edges, small radii, engineered micro-textures all get worn down along with the roughness. Because MMP's material removal is selective rather than blanket abrasion, it preserves the part's form, including fine features that conventional polishing would alter or destroy.",
+            body: "Traditional polishing is abrasive across the whole surface, which means it doesn't discriminate between roughness that needs removing and fine geometric features that don't, sharp edges, small radii, engineered micro-textures all get worn down along with the roughness. Because MMP's material removal is selective rather than blanket abrasion, it preserves the part's form, including fine features that conventional polishing would alter or destroy.",
           },
         },
         {
@@ -613,7 +613,7 @@ export function buildPages() {
         },
       ],
       seo: baseSeo(
-        "MMP Technology — The Process Behind INFINI's Surface Finishing",
+        "MMP Technology: The Process Behind INFINI's Surface Finishing",
         "How MMP (Micro Machining Process) technology works: a licensed mechanical-physical-catalyst treatment that removes surface roughness by frequency, preserving part form and fine geometric features."
       ),
     },
@@ -625,7 +625,7 @@ export function buildPages() {
           fields: {
             eyebrow: "Validation",
             heading: "How a treatment gets validated before it runs at volume.",
-            body: "Every MMP treatment moves through three stages before it becomes a production process — technical validation, industrial validation, and industrial production — so nothing reaches volume without measured proof it does what it's supposed to.",
+            body: "Every MMP treatment moves through three stages before it becomes a production process: technical validation, industrial validation, and industrial production, so nothing reaches volume without measured proof it does what it's supposed to.",
           },
         },
         {
@@ -639,19 +639,19 @@ export function buildPages() {
           type: "textBlock",
           fields: {
             heading: "Industrial validation",
-            body: "Once a target is agreed, treatment is applied to a production-representative batch quantity, establishing an initial surface roughness bell curve — the real spread of results a production run actually produces, not a single best-case sample. From there, a quality process is determined and implemented for traceability and control, and the customer verifies and approves the industrial process before it's used at scale.",
+            body: "Once a target is agreed, treatment is applied to a production-representative batch quantity, establishing an initial surface roughness bell curve, the real spread of results a production run actually produces, not a single best-case sample. From there, a quality process is determined and implemented for traceability and control, and the customer verifies and approves the industrial process before it's used at scale.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "Industrial production",
-            body: "The final stage is where validation becomes an ongoing process rather than a one-time check: the customer validates production results, production scheduling is coordinated directly with them, and INFINI develops improvement strategies and measures service level over time — validation doesn't end when production starts, it continues alongside it.",
+            body: "The final stage is where validation becomes an ongoing process rather than a one-time check: the customer validates production results, production scheduling is coordinated directly with them, and INFINI develops improvement strategies and measures service level over time, validation doesn't end when production starts, it continues alongside it.",
           },
         },
       ],
       seo: baseSeo(
-        "Validation Process — How INFINI Verifies Surface Finishing Results",
+        "Validation Process: How INFINI Verifies Surface Finishing Results",
         "INFINI's three-stage validation process for MMP surface treatment: technical validation, industrial validation, and industrial production, each measured and customer-verified before scaling up."
       ),
     },
@@ -663,14 +663,14 @@ export function buildPages() {
           fields: {
             eyebrow: "Deburring & Polishing",
             heading: "Deburring and polishing, and where MMP does it differently.",
-            body: "Traditional deburring and polishing get a surface smooth by removing material indiscriminately, by hand or by machine. MMP treats only the roughness that's actually a problem — with less material removed and a more consistent result.",
+            body: "Traditional deburring and polishing get a surface smooth by removing material indiscriminately, by hand or by machine. MMP treats only the roughness that's actually a problem, with less material removed and a more consistent result.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "Traditional deburring and polishing",
-            body: "Polishing smooths and brightens a part's surface through abrasion — by hand, or by machine. The objective is a high-quality surface state, usually characterized by some combination of low roughness, gloss, and brightness. Deburring removes unwanted material — burrs left over from machining or forming — using files or grinders for small quantities, or barrel treatment for larger batches.",
+            body: "Polishing smooths and brightens a part's surface through abrasion, by hand or by machine. The objective is a high-quality surface state, usually characterized by some combination of low roughness, gloss, and brightness. Deburring removes unwanted material (burrs left over from machining or forming) using files or grinders for small quantities, or barrel treatment for larger batches.",
           },
         },
         {
@@ -691,13 +691,13 @@ export function buildPages() {
           type: "textBlock",
           fields: {
             heading: "Where MMP differs",
-            body: "MMP selectively treats only the actual roughness present on a surface, rather than abrading it uniformly — which is what makes it possible to reach a super-finished surface with only minuscule material removal. The process combines mechanical-physical-catalyst technology with a high-energy flux of engineered particles sized to match the specific roughness level being removed, delivering results with superior reproducibility and homogeneity from part to part, and preserving the part's original form rather than gradually wearing it down.",
+            body: "MMP selectively treats only the actual roughness present on a surface, rather than abrading it uniformly, which is what makes it possible to reach a super-finished surface with only minuscule material removal. The process combines mechanical-physical-catalyst technology with a high-energy flux of engineered particles sized to match the specific roughness level being removed, delivering results with superior reproducibility and homogeneity from part to part, and preserving the part's original form rather than gradually wearing it down.",
           },
         },
       ],
       seo: baseSeo(
         "Deburring & Polishing vs. MMP Technology",
-        "How traditional deburring and polishing compare to MMP surface treatment — less material removal, more consistent results, and preserved part geometry."
+        "How traditional deburring and polishing compare to MMP surface treatment, less material removal, more consistent results, and preserved part geometry."
       ),
     },
     "mirror-like-finish": {
@@ -708,21 +708,21 @@ export function buildPages() {
           fields: {
             eyebrow: "Mirror-Like Finish",
             heading: "A true mirror finish, without losing the part's form.",
-            body: "A mirror-like surface requires the total elimination of surface roughness — MMP gets there by selectively filtering out successive levels of roughness without changing the surface's underlying shape.",
+            body: "A mirror-like surface requires the total elimination of surface roughness, MMP gets there by selectively filtering out successive levels of roughness without changing the surface's underlying shape.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "What a mirror-like surface actually requires",
-            body: "Most finishing work targets a controlled roughness — smooth enough for the application, not necessarily roughness-free. A mirror-like finish is a different, stricter target: the total elimination of surface roughness across the treated area. MMP reaches that target by selectively filtering out successive levels of roughness, working from the coarsest down to the finest, without changing the basic form of the surface underneath.",
+            body: "Most finishing work targets a controlled roughness, smooth enough for the application, not necessarily roughness-free. A mirror-like finish is a different, stricter target: the total elimination of surface roughness across the treated area. MMP reaches that target by selectively filtering out successive levels of roughness, working from the coarsest down to the finest, without changing the basic form of the surface underneath.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "Strengths, and where it doesn't apply",
-            body: "Because material removal stays targeted to roughness rather than blanket abrasion, MMP reaches a mirror finish with far less material removed than traditional cutting-action polishing — which also means fine details and sharp edges survive treatment, and complex geometries finish uniformly rather than unevenly. The constraint is the flip side of how the process works: because MMP treats a surface uniformly, it can't fix form errors that need non-uniform material removal or reshaping. A part that's out of tolerance in a specific area needs localized correction first — that's a different problem than surface roughness, and outside what this process solves.",
+            body: "Because material removal stays targeted to roughness rather than blanket abrasion, MMP reaches a mirror finish with far less material removed than traditional cutting-action polishing, which also means fine details and sharp edges survive treatment, and complex geometries finish uniformly rather than unevenly. The constraint is the flip side of how the process works: because MMP treats a surface uniformly, it can't fix form errors that need non-uniform material removal or reshaping. A part that's out of tolerance in a specific area needs localized correction first. That's a different problem than surface roughness, and outside what this process solves.",
           },
         },
         {
@@ -738,8 +738,8 @@ export function buildPages() {
         },
       ],
       seo: baseSeo(
-        "Mirror-Like Finish — MMP Surface Treatment",
-        "How INFINI achieves a true mirror-like finish through MMP surface treatment — total roughness elimination with minimal material removal, for medical implants, injection molds, and precision components."
+        "Mirror-Like Finish: MMP Surface Treatment",
+        "How INFINI achieves a true mirror-like finish through MMP surface treatment, total roughness elimination with minimal material removal, for medical implants, injection molds, and precision components."
       ),
     },
   };

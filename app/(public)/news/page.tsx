@@ -16,7 +16,7 @@ const COPY = {
 export const metadata: Metadata = {
   title: "News",
   description: COPY.body,
-  openGraph: { title: "News — INFINI", description: COPY.body, type: "website" },
+  openGraph: { title: "News | INFINI", description: COPY.body, type: "website" },
 };
 
 function formatDate(timestamp: { toDate(): Date }): string {

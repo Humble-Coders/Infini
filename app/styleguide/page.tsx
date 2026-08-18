@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
-  title: "Styleguide — Infini",
+  title: "Styleguide | Infini",
   robots: { index: false, follow: false },
 };
 
@@ -97,7 +97,7 @@ export default function StyleguidePage() {
   return (
     <main className="min-h-screen bg-background pb-24">
       <Container className="flex flex-col gap-2 pt-16 pb-8">
-        <p className="text-xs font-medium tracking-[0.2em] text-accent uppercase">Internal only — noindex</p>
+        <p className="text-xs font-medium tracking-[0.2em] text-accent uppercase">Internal only, noindex</p>
         <h1 className="text-4xl font-medium text-foreground">Infini design system</h1>
         <p className="max-w-2xl text-muted-foreground">
           Every color token, type scale, and component state in one place. This route is excluded
@@ -106,19 +106,19 @@ export default function StyleguidePage() {
       </Container>
 
       <Container className="flex flex-col">
-        <Section title="Color tokens" description="All colours resolve to a CSS variable defined in app/globals.css — no hardcoded hex in components.">
+        <Section title="Color tokens" description="All colours resolve to a CSS variable defined in app/globals.css, no hardcoded hex in components.">
           <SwatchGrid />
         </Section>
 
         <Section title="Typography">
           <div className="flex flex-col gap-4">
-            <h1>Heading one — the quick brown fox</h1>
-            <h2>Heading two — the quick brown fox</h2>
-            <h3>Heading three — the quick brown fox</h3>
-            <h4>Heading four — the quick brown fox</h4>
-            <p className="text-lg text-foreground">Body large — precision surface-finishing for components you manufacture.</p>
-            <p className="text-base text-foreground">Body base — precision surface-finishing for components you manufacture.</p>
-            <p className="text-sm text-muted-foreground">Body small / muted — precision surface-finishing for components you manufacture.</p>
+            <h1>Heading one, the quick brown fox</h1>
+            <h2>Heading two, the quick brown fox</h2>
+            <h3>Heading three, the quick brown fox</h3>
+            <h4>Heading four, the quick brown fox</h4>
+            <p className="text-lg text-foreground">Body large, precision surface-finishing for components you manufacture.</p>
+            <p className="text-base text-foreground">Body base, precision surface-finishing for components you manufacture.</p>
+            <p className="text-sm text-muted-foreground">Body small / muted, precision surface-finishing for components you manufacture.</p>
             <p className="text-xs font-medium tracking-[0.2em] text-accent uppercase">Eyebrow label</p>
           </div>
         </Section>
@@ -219,7 +219,7 @@ export default function StyleguidePage() {
             <AccordionItem value="item-1">
               <AccordionTrigger>What is the MMP process?</AccordionTrigger>
               <AccordionContent>
-                Micro Machining Process — a precision surface-finishing treatment applied to
+                Micro Machining Process, a precision surface-finishing treatment applied to
                 components manufactured by our customers.
               </AccordionContent>
             </AccordionItem>

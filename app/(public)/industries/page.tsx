@@ -8,14 +8,14 @@ import { IndustryIcon } from "@/lib/constants/industryIcons";
 const COPY = {
   eyebrow: "Industries",
   heading: "Surface finishing engineered around your application.",
-  body: "Seven industries, seven different sets of surface-finish problems. Every page below reflects what actually matters for that application — not a generic template with the name swapped.",
+  body: "Seven industries, seven different sets of surface-finish problems. Every page below reflects what actually matters for that application, not a generic template with the name swapped.",
 };
 
 export const metadata: Metadata = {
   title: "Industries We Serve",
   description: COPY.body,
   openGraph: {
-    title: "Industries We Serve — INFINI",
+    title: "Industries We Serve | INFINI",
     description: COPY.body,
     type: "website",
   },

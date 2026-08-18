@@ -18,7 +18,7 @@ export function ClosingCta() {
           Send us the component. We&rsquo;ll tell you what finish it needs.
         </h2>
         <p className="max-w-lg text-sm text-background/70 sm:text-base">
-          Share your drawing, tolerance and volume — our engineers respond with a treatment
+          Share your drawing, tolerance and volume, our engineers respond with a treatment
           recommendation, not a sales script.
         </p>
         <Button asChild variant="inverse" size="lg" className="bg-background text-foreground px-8 hover:opacity-90">

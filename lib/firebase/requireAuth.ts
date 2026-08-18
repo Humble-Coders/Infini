@@ -7,7 +7,7 @@ import { auth, functions, storage } from "@/lib/firebase/client";
 export function requireAuth(): Auth {
   if (!auth) {
     throw new Error(
-      "Firebase Auth is not configured — copy .env.example to .env and set the NEXT_PUBLIC_FIREBASE_* keys."
+      "Firebase Auth is not configured. Copy .env.example to .env and set the NEXT_PUBLIC_FIREBASE_* keys."
     );
   }
   return auth;
@@ -17,7 +17,7 @@ export function requireAuth(): Auth {
 export function requireFunctions(): Functions {
   if (!functions) {
     throw new Error(
-      "Firebase Functions is not configured — copy .env.example to .env and set the NEXT_PUBLIC_FIREBASE_* keys."
+      "Firebase Functions is not configured. Copy .env.example to .env and set the NEXT_PUBLIC_FIREBASE_* keys."
     );
   }
   return functions;
@@ -27,7 +27,7 @@ export function requireFunctions(): Functions {
 export function requireStorage(): FirebaseStorage {
   if (!storage) {
     throw new Error(
-      "Firebase Storage is not configured — copy .env.example to .env and set the NEXT_PUBLIC_FIREBASE_* keys."
+      "Firebase Storage is not configured. Copy .env.example to .env and set the NEXT_PUBLIC_FIREBASE_* keys."
     );
   }
   return storage;

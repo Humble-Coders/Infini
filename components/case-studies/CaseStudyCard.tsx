@@ -19,7 +19,7 @@ export function CaseStudyCard({
         {caseStudy.afterImage ? (
           <Image
             src={caseStudy.afterImage}
-            alt={`${caseStudy.title} — finished result`}
+            alt={`${caseStudy.title}, finished result`}
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"

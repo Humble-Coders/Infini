@@ -10,7 +10,7 @@ import type { EventDoc, WithId } from "@/lib/types";
 const COPY = {
   eyebrow: "Events",
   heading: "Where to find INFINI.",
-  body: "Trade shows and announcements — upcoming appearances and a record of where we've been.",
+  body: "Trade shows and announcements, upcoming appearances and a record of where we've been.",
 };
 
 // Unlike other public pages, this one's upcoming/past split depends on
@@ -22,7 +22,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Events",
   description: COPY.body,
-  openGraph: { title: "Events — INFINI", description: COPY.body, type: "website" },
+  openGraph: { title: "Events | INFINI", description: COPY.body, type: "website" },
 };
 
 function formatDateRange(start: Date, end: Date): string {
@@ -144,7 +144,7 @@ export default async function EventsPage() {
         <Container className="flex flex-col gap-10">
           <h2 className="text-2xl font-light text-foreground sm:text-3xl">Upcoming</h2>
           {upcomingAndCurrent.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No upcoming events scheduled right now — check back soon.</p>
+            <p className="text-sm text-muted-foreground">No upcoming events scheduled right now, check back soon.</p>
           ) : (
             <div className="flex flex-col">
               {upcomingAndCurrent.map((event, index) => (

@@ -6,7 +6,7 @@ import { LegacyCapabilityContent } from "@/components/legacy-capability/LegacyCa
 import type { PageHeroCopy } from "@/lib/types";
 
 const FALLBACK: Metadata = {
-  title: "MMP Technology — The Process Behind INFINI's Surface Finishing",
+  title: "MMP Technology: The Process Behind INFINI's Surface Finishing",
   description:
     "How MMP (Micro Machining Process) technology works: a licensed mechanical-physical-catalyst treatment that removes surface roughness by frequency, preserving part form.",
 };
@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page.seo.title,
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} — INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
   };
 }
 

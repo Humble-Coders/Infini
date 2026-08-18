@@ -10,14 +10,14 @@ import { getActiveCertifications } from "@/lib/data/certifications";
 const COPY = {
   eyebrow: "Certifications",
   heading: "Certified, documented, and available to verify.",
-  body: "Every certificate INFINI holds, current and downloadable — for your supplier file or your own quality system.",
+  body: "Every certificate INFINI holds, current and downloadable, for your supplier file or your own quality system.",
 };
 
 export const metadata: Metadata = {
   title: "Certifications",
   description: COPY.body,
   openGraph: {
-    title: "Certifications — INFINI",
+    title: "Certifications | INFINI",
     description: COPY.body,
     type: "website",
   },
@@ -60,7 +60,7 @@ export default async function CertificationsPage() {
           {certifications.length === 0 ? (
             <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border px-6 py-10 sm:px-10">
               <p className="max-w-lg text-sm text-muted-foreground sm:text-base">
-                Certification details are being updated — check back shortly, or{" "}
+                Certification details are being updated, check back shortly, or{" "}
                 <Link href="/#contact" className="text-accent underline-offset-4 hover:underline">
                   contact us
                 </Link>{" "}

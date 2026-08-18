@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: caseStudy.seo.title,
     description: caseStudy.seo.description,
     openGraph: {
-      title: `${caseStudy.seo.title} — INFINI`,
+      title: `${caseStudy.seo.title} | INFINI`,
       description: caseStudy.seo.description,
       type: "article",
     },
@@ -119,7 +119,7 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
               <div key={image} className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted">
                 <Image
                   src={image}
-                  alt={`${caseStudy.title} — additional photo ${index + 1}`}
+                  alt={`${caseStudy.title}, additional photo ${index + 1}`}
                   fill
                   sizes="(min-width: 640px) 33vw, 100vw"
                   className="object-cover"

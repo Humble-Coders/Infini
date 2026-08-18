@@ -75,9 +75,9 @@ const DEMO_CASE_STUDIES: WithId<CaseStudyDoc>[] = [
   },
 ];
 
-const FALLBACK_TITLE = "INFINI — Precision Surface-Finishing";
+const FALLBACK_TITLE = "INFINI | Precision Surface-Finishing";
 const FALLBACK_DESCRIPTION =
-  "INFINI applies ISO 9001-certified MMP surface-finishing to components precision manufacturers already make — validated in-house, verified before it ships.";
+  "INFINI applies ISO 9001-certified MMP surface-finishing to components precision manufacturers already make, validated in-house, verified before it ships.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("home");

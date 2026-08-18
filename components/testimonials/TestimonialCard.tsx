@@ -19,7 +19,7 @@ export function TestimonialCard({ testimonial }: { testimonial: WithId<Testimoni
           </span>
         )}
         <span className="text-xs text-muted-foreground">
-          {testimonial.personName}, {testimonial.designation} — {testimonial.company}
+          {testimonial.personName}, {testimonial.designation}, {testimonial.company}
         </span>
       </figcaption>
     </figure>

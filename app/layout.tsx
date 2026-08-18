@@ -12,14 +12,14 @@ const manrope = Manrope({
 
 const SITE_NAME = "INFINI";
 const SITE_DESCRIPTION =
-  "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment — validation through mirror-like finish.";
+  "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment, validation through mirror-like finish.";
 
 export const metadata: Metadata = {
-  title: { default: `${SITE_NAME} — Precision Surface-Finishing`, template: `%s — ${SITE_NAME}` },
+  title: { default: `${SITE_NAME} | Precision Surface-Finishing`, template: `%s | ${SITE_NAME}` },
   description: SITE_DESCRIPTION,
   openGraph: {
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — Precision Surface-Finishing`,
+    title: `${SITE_NAME} | Precision Surface-Finishing`,
     description: SITE_DESCRIPTION,
     type: "website",
   },

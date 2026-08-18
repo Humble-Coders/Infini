@@ -8,7 +8,7 @@ import type { PageHeroCopy } from "@/lib/types";
 const RELATED_SLUGS = ["medical-implants", "aerospace"];
 
 const FALLBACK: Metadata = {
-  title: "Validation Process — How INFINI Verifies Surface Finishing Results",
+  title: "Validation Process: How INFINI Verifies Surface Finishing Results",
   description:
     "INFINI's three-stage validation process for MMP surface treatment: technical, industrial, and production validation, each measured and customer-verified.",
 };
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page.seo.title,
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} — INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
   };
 }
 

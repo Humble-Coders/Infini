@@ -22,7 +22,7 @@ interface TextBlockCopy {
 }
 
 const FALLBACK: Metadata = {
-  title: "Capabilities — MMP Surface Finishing Process",
+  title: "Capabilities: MMP Surface Finishing Process",
   description:
     "INFINI's treatment capabilities: MMP surface finishing from controlled roughness to mirror-like brilliance, with measured, traceable batch validation.",
 };
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page.seo.title,
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} — INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
   };
 }
 

@@ -10,7 +10,7 @@ const RELATED_SLUGS = ["cutting-tools", "forge-stamping-die", "gears-transmissio
 const FALLBACK: Metadata = {
   title: "Deburring & Polishing vs. MMP Technology",
   description:
-    "How traditional deburring and polishing compare to MMP surface treatment — less material removal, more consistent results, preserved part geometry.",
+    "How traditional deburring and polishing compare to MMP surface treatment, less material removal, more consistent results, preserved part geometry.",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page.seo.title,
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} — INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
   };
 }
 

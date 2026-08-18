@@ -11,7 +11,7 @@ function assertAcceptable(file: File) {
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf";
   if (!isImage && !isPdf) {
-    throw new MediaValidationError(`"${file.name}" isn't an image or a PDF — only those are accepted.`);
+    throw new MediaValidationError(`"${file.name}" isn't an image or a PDF. Only those are accepted.`);
   }
   const limit = isImage ? MAX_IMAGE_BYTES : MAX_DOCUMENT_BYTES;
   if (file.size > limit) {
