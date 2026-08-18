@@ -142,8 +142,8 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
         TRANSITION,
         "sticky top-0 z-50 border-b",
         scrolled
-          ? "border-foreground/25 bg-foreground/40 shadow-lg shadow-black/20 backdrop-blur-xl"
-          : "border-foreground/15 bg-foreground/20 backdrop-blur-md"
+          ? "border-foreground/10 bg-background/65 backdrop-blur-2xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(var(--color-foreground-rgb),0.07),0_8px_32px_-8px_rgba(var(--color-shadow-rgb),0.65)]"
+          : "border-foreground/10 bg-background"
       )}
     >
       <Container>
