@@ -17,8 +17,6 @@ export function ShowcaseCard({
   index: number;
   className?: string;
 }) {
-  const gradientAngle = 60 + index * 35;
-
   return (
     <figure
       className={cn(
@@ -27,17 +25,7 @@ export function ShowcaseCard({
         className
       )}
     >
-      <div
-        className="relative flex h-full w-full flex-col justify-end p-5 sm:p-6"
-        style={
-          card.image
-            ? undefined
-            : {
-                background: `conic-gradient(from ${gradientAngle}deg at 50% 50%, var(--color-popover), var(--color-muted) 20%, var(--color-background) 45%, var(--color-primary-muted) 60%, var(--color-popover) 80%, var(--color-muted))`,
-              }
-        }
-        aria-hidden="true"
-      >
+      <div className="relative flex h-full w-full flex-col justify-end" aria-hidden="true">
         {card.image && (
           <Image
             src={card.image}
@@ -48,20 +36,12 @@ export function ShowcaseCard({
             priority={index === 0}
           />
         )}
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage:
-              "repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 6px, rgba(var(--color-foreground-rgb),0.05) 7px)",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/10 to-transparent" />
-        <span className="relative w-fit rounded-full border border-border/70 bg-background/50 px-3 py-1 text-[10px] tracking-[0.15em] text-muted-foreground uppercase">
-          {card.industry}
-        </span>
-        <p className="relative mt-2 max-w-md text-base leading-snug text-foreground/90 sm:text-lg">
-          {card.headline}
-        </p>
+        <div className="relative flex flex-col gap-2 bg-black/70 p-5 sm:p-6">
+          <span className="w-fit rounded-full border border-white/25 bg-black/35 px-3 py-1 text-[10px] tracking-[0.15em] text-white/80 uppercase">
+            {card.industry}
+          </span>
+          <p className="max-w-md text-base leading-snug text-white/95 sm:text-lg">{card.headline}</p>
+        </div>
       </div>
       <span className="sr-only">{`${card.industry}: ${card.headline}`}</span>
     </figure>

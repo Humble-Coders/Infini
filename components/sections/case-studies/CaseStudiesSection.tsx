@@ -1,13 +1,16 @@
 import { Container } from "@/components/ui/container";
 import { CaseStudyCard } from "@/components/case-studies/CaseStudyCard";
+import { SectionBackground } from "@/components/sections/shared/SectionBackground";
+import { SectionEyebrow } from "@/components/sections/shared/SectionEyebrow";
 import type { CaseStudyDoc, TeaserCopy, WithId } from "@/lib/types";
 
 export function CaseStudiesSection({ copy, caseStudies }: { copy: TeaserCopy; caseStudies: WithId<CaseStudyDoc>[] }) {
   return (
-    <section className="relative border-t border-border/60 bg-background py-20 sm:py-28">
-      <Container className="flex flex-col gap-10">
+    <section className="relative overflow-hidden border-t border-border/60 bg-background py-20 sm:py-28">
+      <SectionBackground grid />
+      <Container className="relative flex flex-col gap-10">
         <div className="flex max-w-2xl flex-col gap-4">
-          <span className="text-xs font-medium tracking-[0.2em] text-accent uppercase">{copy.eyebrow}</span>
+          <SectionEyebrow>{copy.eyebrow}</SectionEyebrow>
           <h2 className="text-2xl font-light text-foreground sm:text-3xl">{copy.heading}</h2>
         </div>
 

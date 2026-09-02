@@ -1,6 +1,7 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { SectionBackground } from "@/components/sections/shared/SectionBackground";
+import { SectionEyebrow } from "@/components/sections/shared/SectionEyebrow";
 import { ContactForm } from "./ContactForm";
 import type { IndustryDoc, SettingsContact, TeaserCopy, WithId } from "@/lib/types";
 
@@ -30,7 +31,7 @@ export function ContactSection({
       <Container className="relative grid gap-14 lg:grid-cols-2 lg:gap-20">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
-            <span className="text-xs font-medium tracking-[0.2em] text-accent uppercase">{copy.eyebrow}</span>
+            <SectionEyebrow>{copy.eyebrow}</SectionEyebrow>
             <h2 className="max-w-md text-3xl font-light text-foreground sm:text-4xl">{copy.heading}</h2>
             {copy.body && <p className="max-w-md text-sm text-muted-foreground sm:text-base">{copy.body}</p>}
           </div>
@@ -40,7 +41,7 @@ export function ContactSection({
               const Icon = detail.icon;
               const content = (
                 <>
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border text-primary">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary-muted text-primary">
                     <Icon className="size-4" strokeWidth={1.5} aria-hidden="true" />
                   </span>
                   <span className="flex flex-col">

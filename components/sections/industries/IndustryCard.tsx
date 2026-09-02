@@ -9,7 +9,7 @@ export function IndustryCard({ industry }: { industry: WithId<IndustryDoc> }) {
       href={`/industries/${industry.slug}`}
       className="group flex flex-col items-center gap-4 rounded-xl px-4 py-8 text-center transition-transform duration-300 ease-out hover:-translate-y-1"
     >
-      <span className="flex size-16 items-center justify-center rounded-full border border-border text-foreground transition-all duration-300 ease-out group-hover:scale-110 group-hover:border-primary group-hover:text-primary group-hover:shadow-[0_0_0_6px_rgba(var(--color-accent-rgb),0.08)]">
+      <span className="flex size-16 items-center justify-center rounded-full border border-border bg-primary-muted text-foreground transition-all duration-300 ease-out group-hover:scale-110 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
         <IndustryIcon slug={industry.slug} className="size-7" strokeWidth={1.5} aria-hidden="true" />
       </span>
 

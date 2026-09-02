@@ -5,7 +5,7 @@ import type { StatItemData } from "@/lib/types";
 
 export function StatsSection({ intro, items }: { intro: string; items: StatItemData[] }) {
   return (
-    <section className="relative overflow-hidden bg-background py-20 sm:py-28">
+    <section className="relative overflow-hidden border-t border-border/60 bg-background-elevated py-20 sm:py-28">
       <SectionBackground />
       <Container className="relative flex flex-col items-center gap-16">
         <p className="max-w-2xl text-balance text-center text-lg text-foreground/90 sm:text-xl">{intro}</p>
