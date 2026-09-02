@@ -8,7 +8,6 @@ import { TechnologySection } from "@/components/sections/technology/TechnologySe
 import { CaseStudiesSection } from "@/components/sections/case-studies/CaseStudiesSection";
 import { TestimonialsSection } from "@/components/sections/testimonials/TestimonialsSection";
 import { NewsSection } from "@/components/sections/news/NewsSection";
-import { ClosingCta } from "@/components/sections/cta/ClosingCta";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
@@ -184,7 +183,6 @@ export default async function Home() {
       )}
       {testimonialsTeaser && <TestimonialsSection copy={testimonialsTeaser} testimonials={testimonials} />}
       {newsTeaser && <NewsSection copy={newsTeaser} news={news} />}
-      <ClosingCta />
       {contactTeaser && <ContactSection copy={contactTeaser} contact={settings?.contact ?? null} industries={industries} />}
     </main>
   );

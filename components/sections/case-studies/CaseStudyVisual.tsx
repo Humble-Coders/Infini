@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { CaseStudyResult } from "@/lib/types";
@@ -24,18 +25,34 @@ export function CaseStudyVisual({
   index: number;
   results: CaseStudyResult[];
 }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [isMmpTheme, setIsMmpTheme] = useState(false);
   const prefersReducedMotion = useReducedMotion();
-  const transition = { duration: prefersReducedMotion ? 0.01 : 0.5, ease: [0.16, 1, 0.3, 1] as const };
+
+  useEffect(() => {
+    const theme = rootRef.current?.closest("[data-theme]")?.getAttribute("data-theme");
+    setIsMmpTheme(theme === "mmp-industrial");
+  }, []);
+
+  // mmp-industrial gets a slower, plain opacity crossfade (no scale "zoom") — every
+  // other theme keeps the original snappier scale+fade below, untouched.
+  const transition = prefersReducedMotion
+    ? { duration: 0.01 }
+    : isMmpTheme
+      ? { duration: 1.1, ease: "easeInOut" as const }
+      : { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const };
+  const enterFrom = prefersReducedMotion || isMmpTheme ? { opacity: 0 } : { opacity: 0, scale: 0.98 };
+  const exitTo = prefersReducedMotion || isMmpTheme ? { opacity: 0 } : { opacity: 0, scale: 1.02 };
   const [firstLabel, secondLabel] = [results[0]?.label, results[1]?.label];
 
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md border border-border/60 bg-background-elevated lg:aspect-auto lg:h-full">
+    <div ref={rootRef} className="relative aspect-[4/3] w-full overflow-hidden rounded-md border border-border/60 bg-background-elevated lg:aspect-auto lg:h-full">
       <AnimatePresence mode="sync" initial={false}>
         <motion.div
           key={caseStudy.slug}
-          initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
+          initial={enterFrom}
           animate={{ opacity: 1, scale: 1 }}
-          exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
+          exit={exitTo}
           transition={transition}
           className="absolute inset-0"
         >

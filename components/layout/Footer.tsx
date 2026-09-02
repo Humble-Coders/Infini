@@ -24,7 +24,7 @@ export function Footer({
   const contactDetails = contactDetailsFrom(contact);
 
   return (
-    <footer className="border-t border-border bg-background">
+    <footer data-dark-scope className="border-t border-border bg-background">
       <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         <div className="flex flex-col gap-3 lg:col-span-1">
           <Link href="/" className="flex items-center gap-2 text-foreground" aria-label="INFINI home">

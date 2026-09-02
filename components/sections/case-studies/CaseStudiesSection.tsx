@@ -19,7 +19,7 @@ export function CaseStudiesSection({ copy, caseStudies }: { copy: TeaserCopy; ca
   const dossierData = caseStudies.map(({ seo, publishedAt, ...caseStudy }) => caseStudy);
 
   return (
-    <section className="relative overflow-hidden border-t border-border/60 bg-background py-14 sm:py-20 lg:py-28">
+    <section className="mmp-case-studies relative overflow-hidden border-t border-border/60 bg-background py-14 sm:py-20 lg:py-28">
       <SectionBackground grid />
       <Container className="relative flex flex-col gap-8 sm:gap-12 lg:gap-16">
         <CaseStudiesIntro eyebrow={copy.eyebrow} heading={copy.heading} body={copy.body} />

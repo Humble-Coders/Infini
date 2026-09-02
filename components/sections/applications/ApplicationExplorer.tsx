@@ -39,6 +39,7 @@ export function ApplicationExplorer({ industries }: { industries: IndustryApplic
   const [appIndex, setAppIndex] = useState(0);
   const prefersReducedMotion = useReducedMotion();
   const activeChipRef = useRef<HTMLButtonElement>(null);
+  const isFirstRender = useRef(true);
 
   const industry = industries[industryIndex];
   const application = industry?.applications[appIndex];
@@ -49,7 +50,15 @@ export function ApplicationExplorer({ industries }: { industries: IndustryApplic
   });
   const onAppKeyDown = useArrowKeyNav(industry?.applications.length ?? 1, setAppIndex);
 
+  // Skip on mount — `block: "nearest"` scrolls every ancestor needed to reveal
+  // the chip, the page included, and at mount this section is still off-screen
+  // below the hero. That yanked the whole window down on first render (i.e.
+  // every load), not just when a user actually changes the selection.
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     activeChipRef.current?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
   }, [appIndex, industryIndex]);
 

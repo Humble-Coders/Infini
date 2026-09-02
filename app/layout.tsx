@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import Script from "next/script";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -29,6 +30,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={manrope.variable}>
       <body>
+        {/*
+          The industries section pins scroll while it hijacks wheel input
+          (IndustriesSectionScroll), so a browser-restored mid-interaction
+          scroll position lands somewhere with no context — it reads as
+          "reload dropped me at the end of the industries section" rather
+          than a scroll restoration you'd ever want. beforeInteractive runs
+          before the browser's own auto-restore takes effect, so it wins.
+        */}
+        <Script id="disable-scroll-restoration" strategy="beforeInteractive">
+          {`try { if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } window.scrollTo(0, 0); } catch (e) {}`}
+        </Script>
         <div
           aria-hidden="true"
           className="pointer-events-none fixed inset-0 opacity-[0.035]"

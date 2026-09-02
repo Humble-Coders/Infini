@@ -41,9 +41,16 @@ export function CaseStudiesDossier({ caseStudies }: { caseStudies: DossierCaseSt
   const [canAutoRotate, setCanAutoRotate] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches
   );
+  const [isMmpTheme, setIsMmpTheme] = useState(false);
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const total = caseStudies.length;
+
+  useEffect(() => {
+    const theme = rootRef.current?.closest("[data-theme]")?.getAttribute("data-theme");
+    setIsMmpTheme(theme === "mmp-industrial");
+  }, []);
 
   const goTo = useCallback(
     (index: number) => {
@@ -85,10 +92,16 @@ export function CaseStudiesDossier({ caseStudies }: { caseStudies: DossierCaseSt
   const active = caseStudies[activeIndex];
   if (!active) return null;
   const results = resultsFor(active);
-  const fadeTransition = { duration: prefersReducedMotion ? 0.01 : 0.4, ease: [0.16, 1, 0.3, 1] as const };
+  // mmp-industrial gets a slower true crossfade (old text fades out as the new text fades in,
+  // no vertical pop) via AnimatePresence below — every other theme keeps the original
+  // entrance-only fade+rise, untouched.
+  const fadeTransition = isMmpTheme
+    ? { duration: prefersReducedMotion ? 0.01 : 0.9, ease: "easeInOut" as const }
+    : { duration: prefersReducedMotion ? 0.01 : 0.4, ease: [0.16, 1, 0.3, 1] as const };
 
   return (
     <div
+      ref={rootRef}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -196,14 +209,14 @@ export function CaseStudiesDossier({ caseStudies }: { caseStudies: DossierCaseSt
             id={`case-panel-${active.slug}`}
             role="tabpanel"
             aria-labelledby={`case-tab-${active.slug}`}
-            className="grid min-w-0 gap-4 lg:grid-cols-[1.35fr_1fr] lg:items-stretch"
+            className="mmp-case-panel grid min-w-0 gap-4 lg:grid-cols-[1.35fr_1fr] lg:items-stretch"
           >
             <CaseStudyVisual caseStudy={active} index={activeIndex} results={results} />
 
             <motion.div
               key={active.slug}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={isMmpTheme ? { opacity: 0 } : { opacity: 0, y: 8 }}
+              animate={isMmpTheme ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={fadeTransition}
               className="flex min-w-0 flex-col justify-between gap-5 p-1 sm:gap-6 sm:p-2 md:p-3"
             >

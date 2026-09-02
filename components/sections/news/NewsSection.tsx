@@ -33,7 +33,7 @@ export function NewsSection({ copy, news }: { copy: TeaserCopy; news: WithId<New
   }));
 
   return (
-    <section className="relative overflow-hidden border-t border-border/60 bg-background py-16 sm:py-24 lg:py-28">
+    <section className="mmp-news relative overflow-hidden border-t border-border/60 bg-background py-16 sm:py-24 lg:py-28">
       <SectionBackground grid />
       <Container className="relative flex flex-col gap-10 sm:gap-14">
         <NewsIntro eyebrow={copy.eyebrow} heading={copy.heading} body={copy.body} />

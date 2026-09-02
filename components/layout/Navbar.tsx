@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -55,7 +55,13 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
     });
   }, []);
 
-  useEffect(() => {
+  // Layout effect, not a plain effect — it runs before the browser paints,
+  // so on reload (page loads already scrolled, per native scroll restoration)
+  // the header commits its compact height before the first frame instead of
+  // snapping to it a frame later. That snap shifts all sticky-flow content up
+  // by SCROLL_THRESHOLD_PX under a fixed scrollY, which reads as the page
+  // scrolling down on its own.
+  useLayoutEffect(() => {
     function handleScroll() {
       setScrolled(window.scrollY > SCROLL_THRESHOLD_PX);
     }
@@ -138,6 +144,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
 
   return (
     <header
+      data-dark-scope
       className={cn(
         TRANSITION,
         "sticky top-0 z-50 border-b",
