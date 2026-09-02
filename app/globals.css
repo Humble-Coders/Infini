@@ -54,6 +54,8 @@
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-marquee-ltr: marquee-ltr 42s linear infinite;
+  --animate-marquee-rtl: marquee-rtl 50s linear infinite;
 }
 
 /*
@@ -255,6 +257,32 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Content is duplicated in the DOM, so translating exactly -50% loops seamlessly. */
+@keyframes marquee-ltr {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes marquee-rtl {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Hovering one logo dims its neighbors — pointer-capable devices only, so touch never gets stuck mid-dim. */
+@media (hover: hover) {
+  .trust-row:has(.trust-item:hover) .trust-item:not(:hover) {
+    opacity: 0.45;
   }
 }
 

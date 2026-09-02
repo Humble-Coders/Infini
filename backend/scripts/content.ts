@@ -435,7 +435,8 @@ export function buildPages() {
           type: "caseStudiesTeaser",
           fields: {
             eyebrow: "Proven Work",
-            heading: "Selected case studies.",
+            heading: "Case studies\nthat prove impact.",
+            body: "Real engineering challenges. Measurable results across the industries we serve.",
             emptyState:
               "We're publishing our first case studies shortly. In the meantime, tell us about your components and we'll walk you through comparable work directly.",
           },
@@ -451,8 +452,9 @@ export function buildPages() {
         {
           type: "newsTeaser",
           fields: {
-            eyebrow: "Latest",
-            heading: "News & insights.",
+            eyebrow: "News & Insights",
+            heading: "Latest research.\nReal impact.",
+            body: "Explore our latest research, technical studies, engineering insights and developments in precision surface technology.",
             emptyState: "Our first posts on treatment process, validation and industry standards are coming soon.",
           },
         },
