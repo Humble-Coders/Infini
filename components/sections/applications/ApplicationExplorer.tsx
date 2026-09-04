@@ -192,7 +192,7 @@ export function ApplicationExplorer({ industries }: { industries: IndustryApplic
             >
               <TechnicalPhoto
                 src={photoSrc(industry.slug, application.slug)}
-                alt={`${application.name} — ${industry.name}`}
+                alt={`${application.name}, ${industry.name}`}
                 index={appIndex}
               />
             </motion.div>

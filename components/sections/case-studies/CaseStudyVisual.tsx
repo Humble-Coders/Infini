@@ -58,7 +58,7 @@ export function CaseStudyVisual({
         >
           <Image
             src={caseStudy.afterImage || caseStudy.beforeImage}
-            alt={`${caseStudy.title} — finished component`}
+            alt={`${caseStudy.title}, finished component`}
             fill
             sizes="(min-width: 1024px) 55vw, 100vw"
             className="object-cover"
@@ -151,7 +151,7 @@ export function CaseStudyVisual({
           </motion.svg>
 
           <span className="pointer-events-none absolute bottom-3 left-4 font-mono text-[10px] tracking-[0.2em] text-white/70 uppercase">
-            {pad(index)} — {caseStudy.specs.material}
+            {pad(index)} · {caseStudy.specs.material}
           </span>
         </motion.div>
       </AnimatePresence>

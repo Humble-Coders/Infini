@@ -149,7 +149,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
         TRANSITION,
         "sticky top-0 z-50 border-b",
         scrolled
-          ? "border-foreground/10 bg-background/65 backdrop-blur-2xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(var(--color-foreground-rgb),0.07),0_8px_32px_-8px_rgba(var(--color-shadow-rgb),0.65)]"
+          ? "border-foreground/10 bg-background/85 backdrop-blur-2xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(var(--color-foreground-rgb),0.07),0_8px_32px_-8px_rgba(var(--color-shadow-rgb),0.65)]"
           : "border-foreground/10 bg-background"
       )}
     >
@@ -158,11 +158,11 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           aria-label="Primary"
           className={cn("flex items-center justify-between", TRANSITION, scrolled ? "h-16" : "h-24")}
         >
-          <Link href="/" className={cn("flex items-center", TRANSITION)} aria-label="INFINI home">
+          <Link href="/" className={cn("flex shrink-0 items-center", TRANSITION)} aria-label="INFINI home">
             <Image src="/Infini-MMP-01.png" alt="INFINI" width={263} height={78} className="h-12 w-auto sm:h-14" priority />
           </Link>
 
-          <ul className="hidden items-center gap-7 md:flex">
+          <ul className="hidden items-center gap-7 lg:flex">
             {navItems.map((item) => (
               <li
                 key={item.label}
@@ -219,13 +219,13 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
             ))}
           </ul>
 
-          <div className="hidden items-center md:flex">
+          <div className="hidden items-center lg:flex">
             <Button asChild size="sm" variant="default">
-              <Link href="/request-a-quote">Request a Quote</Link>
+              <Link href="/#contact">Request a Quote</Link>
             </Button>
           </div>
 
-          <div className="flex items-center gap-1 md:hidden">
+          <div className="flex items-center gap-1 lg:hidden">
             <button
               type="button"
               ref={menuTriggerRef}
@@ -248,7 +248,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
         aria-modal="true"
         aria-label="Mobile navigation"
         className={cn(
-          "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out md:hidden",
+          "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out lg:hidden",
           mobileOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         )}
       >
@@ -266,7 +266,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           <Container>
             <div className="flex flex-col gap-3 border-b border-border py-4">
               <Button asChild variant="default">
-                <Link href="/request-a-quote" onClick={closeMobileMenu}>
+                <Link href="/#contact" onClick={closeMobileMenu}>
                   Request a Quote
                 </Link>
               </Button>

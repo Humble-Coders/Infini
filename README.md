@@ -33,6 +33,46 @@ For Admin SDK access locally (`backend/firebase/admin.ts`), also set
 `FIREBASE_ADMIN_PRIVATE_KEY` in `.env` from a service account key — see the
 comments in `.env.example`. Not needed to run the public site.
 
+## Local preview without project credentials
+
+The public pages read from Firestore, so with an empty `.env` the home page
+throws. To work on the site with the real launch content and no access to the
+Firebase project, run the Firestore emulator and seed it (needs Java and the
+Firebase CLI):
+
+```bash
+firebase emulators:start --only firestore --project infini-2fdec
+```
+
+In a second terminal, seed it with the shared content from `backend/scripts/content.ts`:
+
+```bash
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 GCLOUD_PROJECT=infini-2fdec npx tsx backend/scripts/seed.ts
+```
+
+Then point the web SDK at the emulator in `.env` (any non-empty API key works,
+nothing reaches Google) and start `npm run dev`:
+
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=local-emulator
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=infini-2fdec
+NEXT_PUBLIC_FIREBASE_APP_ID=local
+NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+```
+
+`NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST` is only honoured when `NODE_ENV=development`
+(`lib/firebase/client.ts`), so it can never leak into a build.
+
+## Client colour review (temporary)
+
+The home page exists in two colourways for the client to compare: the brand
+red build at `/` and an MMP-blue variant at `/blue`. Both render the identical
+page through `components/layout/SiteShell.tsx`; the blue one only adds
+`data-theme="mmp-blue"`, which `app/globals.css` keys its token overrides on.
+A fixed "Colour" pill (`components/preview/ColourSwitcher.tsx`) flips between
+them. Once a colour is chosen, delete `app/(blue)`, the switcher, and the
+`[data-theme="mmp-blue"]` block (or promote its values into `@theme`).
+
 ## Firebase project
 
 Rules and config are committed as code (`firebase.json`, `backend/firestore.rules`,

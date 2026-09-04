@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import type { NavLink, SettingsContact } from "@/lib/types";
@@ -10,6 +11,9 @@ function contactDetailsFrom(contact: SettingsContact | null) {
     { label: "Facility", value: contact.address, href: undefined },
   ];
 }
+
+const COLUMN_HEADING = "font-mono text-[11px] font-medium tracking-[0.22em] text-muted-foreground uppercase";
+const COLUMN_LINK = "w-fit text-sm text-foreground/80 transition-colors hover:text-accent";
 
 export function Footer({
   navItems,
@@ -24,74 +28,67 @@ export function Footer({
   const contactDetails = contactDetailsFrom(contact);
 
   return (
-    <footer data-dark-scope className="border-t border-border bg-background">
-      <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-        <div className="flex flex-col gap-3 lg:col-span-1">
-          <Link href="/" className="flex items-center gap-2 text-foreground" aria-label="INFINI home">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-              <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.4" />
-              <path d="M14 3.5 L14 24.5 M3.5 14 L24.5 14" stroke="var(--color-primary)" strokeWidth="1.4" />
-            </svg>
-            <span className="text-base font-semibold tracking-[0.2em]">INFINI</span>
-          </Link>
-          <p className="text-sm text-muted-foreground">
-            A specialist surface-finishing partner to precision manufacturers.
-          </p>
-        </div>
-
-        <nav aria-label="Footer" className="flex flex-col gap-2">
-          <h2 className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">Navigate</h2>
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-sm text-foreground/80 transition-colors hover:text-foreground"
-            >
-              {item.label}
+    <footer data-dark-scope className="relative overflow-hidden border-t border-border bg-background">
+      <Container className="flex flex-col gap-16 py-16 sm:py-20">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+          <div className="flex flex-col gap-6 sm:col-span-2 lg:col-span-4">
+            <Link href="/" className="w-fit" aria-label="INFINI home">
+              <Image src="/Infini-MMP-01.png" alt="INFINI, Finish Unlimited, MMP Technology" width={263} height={78} className="h-12 w-auto" />
             </Link>
-          ))}
-        </nav>
+            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+              A specialist surface-finishing partner to precision manufacturers. MMP treatment applied in-house, verified before it ships.
+            </p>
+          </div>
 
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">Contact</h2>
-          <ul className="flex flex-col gap-2">
-            {contactDetails.map((detail) => (
-              <li key={detail.label}>
-                {detail.href ? (
-                  <a
-                    href={detail.href}
-                    className="text-sm text-foreground/80 transition-colors hover:text-foreground"
-                  >
-                    {detail.value}
-                  </a>
-                ) : (
-                  <span className="text-sm text-foreground/80">{detail.value}</span>
-                )}
-              </li>
+          <nav aria-label="Footer" className="flex flex-col gap-3 lg:col-span-2 lg:col-start-6">
+            <h2 className={COLUMN_HEADING}>Navigate</h2>
+            {navItems.map((item) => (
+              <Link key={item.label} href={item.href} className={COLUMN_LINK}>
+                {item.label}
+              </Link>
             ))}
-          </ul>
+          </nav>
+
+          <div className="flex flex-col gap-3 lg:col-span-3">
+            <h2 className={COLUMN_HEADING}>Contact</h2>
+            <ul className="flex flex-col gap-3">
+              {contactDetails.map((detail) => (
+                <li key={detail.label}>
+                  {detail.href ? (
+                    <a href={detail.href} className={COLUMN_LINK}>
+                      {detail.value}
+                    </a>
+                  ) : (
+                    <span className="text-sm text-foreground/80">{detail.value}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-3 lg:col-span-2">
+            <h2 className={COLUMN_HEADING}>Legal</h2>
+            {legalLinks.map((link) => (
+              <Link key={link.label} href={link.href} className={COLUMN_LINK}>
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">Legal</h2>
-          {legalLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="text-sm text-foreground/80 transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
+        <div className="flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-muted-foreground">
+            &copy; {year} INFINI Precision Pvt. Ltd. ISO 9001-certified MMP surface-finishing.
+          </p>
+          <p className="font-mono text-[11px] tracking-[0.24em] text-muted-foreground uppercase">Finish unlimited</p>
         </div>
       </Container>
 
-      <div className="border-t border-border py-6">
-        <Container>
-          <p className="text-xs text-muted-foreground">
-            &copy; {year} INFINI. ISO 9001-certified MMP surface-finishing.
-          </p>
-        </Container>
+      {/* Oversized wordmark, cropped by the footer's bottom edge — a brand sign-off, not content. */}
+      <div aria-hidden="true" className="pointer-events-none -mb-[3vw] select-none">
+        <p className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06]">
+          INFINI
+        </p>
       </div>
     </footer>
   );

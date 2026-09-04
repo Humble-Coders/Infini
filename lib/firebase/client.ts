@@ -1,5 +1,5 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getFirestore, type Firestore } from "firebase/firestore";
+import { connectFirestoreEmulator, getFirestore, type Firestore } from "firebase/firestore";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFunctions, type Functions } from "firebase/functions";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
@@ -15,6 +15,15 @@ const firebaseConfig = {
 
 const configured = Boolean(firebaseConfig.apiKey) && Boolean(firebaseConfig.projectId);
 
+/**
+ * Local-only: point the web SDK at `firebase emulators:start --only firestore`.
+ * Unlike the Admin SDK, the web SDK ignores FIRESTORE_EMULATOR_HOST, so this
+ * is an explicit opt-in. NEXT_PUBLIC_ so server and browser renders hit the
+ * same emulator; guarded on NODE_ENV so a stray value can never reach a build.
+ */
+const emulatorHost =
+  process.env.NODE_ENV === "development" ? process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST : undefined;
+
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
 let auth: Auth | null = null;
@@ -24,6 +33,11 @@ let storage: FirebaseStorage | null = null;
 if (configured) {
   app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   db = getFirestore(app);
+  if (emulatorHost) {
+    const [host, port] = emulatorHost.split(":");
+    // Idempotent for an identical host/port, so HMR re-evaluating this module is safe.
+    connectFirestoreEmulator(db, host, Number(port));
+  }
   auth = getAuth(app);
   functions = getFunctions(app);
   storage = getStorage(app);

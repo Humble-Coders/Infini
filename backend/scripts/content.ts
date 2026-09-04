@@ -393,9 +393,35 @@ export function buildPages() {
         {
           type: "hero",
           fields: {
+            eyebrow: "Precision surface finishing · MMP technology",
             heading: "A finish\nthat performs.",
             body: "Precision surface-finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
             ctaNote: "No project too precise. Talk to our engineers.",
+          },
+        },
+        {
+          type: "gallery",
+          fields: {
+            eyebrow: "What we finish",
+            heading: "Turbine rings, gears, implants, dies and cutting edges. Made by our customers, finished by us.",
+            // TEMP placeholder photography — public/images/placeholders/README.md. Replace with media-library URLs.
+            items: [
+              { src: "/images/placeholders/gallery-01-turbine-ring.jpg", alt: "Close-up of a mirror-polished bladed turbine ring with airfoil cutouts on a black background", label: "Aerospace", caption: "Bladed turbine ring, mirror-polished airfoils" },
+              { src: "/images/placeholders/gallery-02-spur-gear.jpg", alt: "Mirror-polished spur gear standing on edge on a black background", label: "Gears & Transmission", caption: "Spur gear, superfinished teeth and bore" },
+              { src: "/images/placeholders/gallery-03-knee-implant.jpg", alt: "Mirror-polished femoral knee implant component under low side lighting", label: "Medical Implants", caption: "Femoral knee implant, mirror finish" },
+              { src: "/images/placeholders/gallery-04-die-halves.jpg", alt: "Two machined steel die halves with corrugated cavities, the left cavity mirror-polished and the right still showing machining marks", label: "Forge, Stamping & Die", caption: "Die halves, cavities polished to mirror" },
+              { src: "/images/placeholders/gallery-05-carbide-drills.jpg", alt: "Solid carbide drills and end mills lying on a black reflective surface", label: "Cutting Tools", caption: "Solid carbide drills and end mills" },
+              { src: "/images/placeholders/gallery-06-additive-ring.jpg", alt: "Close-up of an additively manufactured metal ring with mirror-polished struts and grainy as-printed recesses", label: "Additive Manufacturing", caption: "Additive ring, polished struts, as-printed pockets" },
+            ],
+          },
+        },
+        {
+          type: "statement",
+          fields: {
+            label: "INFINI does not manufacture parts",
+            heading:
+              "We take the components you already make and give them a surface that performs.",
+            body: "MMP treatment removes surface roughness frequency by frequency, in-house, in our own tanks. The part keeps its form. Every batch is measured against your spec before it ships.",
           },
         },
         {
@@ -420,6 +446,11 @@ export function buildPages() {
               { step: "01", title: "Validation", description: "Component geometry, material and target roughness are assessed before treatment begins." },
               { step: "02", title: "Treatment", description: "The MMP process runs in-house, in tanks tuned to the component and finish required." },
               { step: "03", title: "Verification", description: "Every batch is measured against the agreed roughness spec before it ships." },
+            ],
+            // TEMP placeholder photography — public/images/placeholders/README.md. Replace with media-library URLs.
+            images: [
+              { src: "/images/placeholders/process-01-bevel-pinion.jpg", alt: "Spiral bevel pinion gear with mirror-polished tooth flanks on a white background", caption: "Spiral bevel pinion, superfinished flanks" },
+              { src: "/images/placeholders/process-02-turbo-wheels-before-after.jpg", alt: "Two turbocharger turbine wheels side by side: the left as cast with inspection marks, the right mirror-polished after MMP treatment", caption: "Turbocharger wheels: as cast vs MMP-finished" },
             ],
           },
         },

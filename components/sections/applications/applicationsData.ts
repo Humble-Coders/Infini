@@ -126,7 +126,7 @@ export const APPLICATIONS_BY_INDUSTRY: IndustryApplications[] = [
     name: "Stamping, Forging & Plastic Injection Mold",
     shortName: "Stamping & Mold",
     description:
-      "Finishing for the tooling that shapes everything else — where surface quality decides part quality and die life.",
+      "Finishing for the tooling that shapes everything else, where surface quality decides part quality and die life.",
     applications: [
       {
         slug: "injection-mold-inserts",

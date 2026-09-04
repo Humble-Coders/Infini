@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Instrument_Serif, JetBrains_Mono, Manrope } from "next/font/google";
 import Script from "next/script";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -8,6 +8,22 @@ import "./globals.css";
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-sans-loaded",
+  display: "swap",
+});
+
+/* Editorial accent face — one italic word per heading, nothing more. */
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif-loaded",
+  display: "swap",
+});
+
+/* Technical readouts, labels and data — the metrology voice of the brand. */
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono-loaded",
   display: "swap",
 });
 
@@ -28,7 +44,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={manrope.variable}>
+    <html lang="en" className={`${manrope.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
       <body>
         {/*
           The industries section pins scroll while it hijacks wheel input
