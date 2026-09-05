@@ -29,7 +29,7 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="hero-grid absolute inset-0" />
         <div className="absolute -bottom-48 -left-48 size-[42rem] rounded-full bg-[radial-gradient(closest-side,rgba(var(--color-primary-rgb),0.32),transparent)] blur-2xl" />
-        <InfinityMark className="absolute -top-[6%] -right-[18%] w-[92%] text-foreground sm:w-[70%] lg:-right-[8%] lg:top-[4%] lg:w-[52%]" />
+        <InfinityMark className="absolute -top-[6%] -right-[18%] w-[92%] text-foreground sm:w-[70%] lg:-right-[8%] lg:-top-[2%] lg:w-[46%] lg:max-w-[660px]" />
       </div>
 
       <Container className="relative grid min-h-[calc(100svh-6rem)] items-center gap-14 py-16 sm:py-20 lg:grid-cols-12 lg:gap-10 lg:py-24">
@@ -81,7 +81,9 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
         </div>
 
         <div className="hero-reveal lg:col-span-5" style={reveal(5)}>
-          <SurfaceProfile />
+          <div className="lg:translate-y-20">
+            <SurfaceProfile />
+          </div>
         </div>
       </Container>
     </section>
