@@ -63,16 +63,6 @@ NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
 `NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST` is only honoured when `NODE_ENV=development`
 (`lib/firebase/client.ts`), so it can never leak into a build.
 
-## Client colour review (temporary)
-
-The home page exists in two colourways for the client to compare: the brand
-red build at `/` and an MMP-blue variant at `/blue`. Both render the identical
-page through `components/layout/SiteShell.tsx`; the blue one only adds
-`data-theme="mmp-blue"`, which `app/globals.css` keys its token overrides on.
-A fixed "Colour" pill (`components/preview/ColourSwitcher.tsx`) flips between
-them. Once a colour is chosen, delete `app/(blue)`, the switcher, and the
-`[data-theme="mmp-blue"]` block (or promote its values into `@theme`).
-
 ## Firebase project
 
 Rules and config are committed as code (`firebase.json`, `backend/firestore.rules`,

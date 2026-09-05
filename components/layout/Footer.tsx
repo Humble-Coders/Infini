@@ -28,7 +28,7 @@ export function Footer({
   const contactDetails = contactDetailsFrom(contact);
 
   return (
-    <footer data-dark-scope className="relative overflow-hidden border-t border-border bg-background">
+    <footer className="relative overflow-hidden border-t border-border bg-background">
       <Container className="flex flex-col gap-16 py-16 sm:py-20">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           <div className="flex flex-col gap-6 sm:col-span-2 lg:col-span-4">

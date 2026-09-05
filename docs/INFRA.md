@@ -24,24 +24,29 @@ Fill in each `TODO` **as you create the thing**, not from memory afterward.
 scripts and `.firebaserc` all target the new project. Launch content was
 re-seeded from `backend/scripts/content.ts`, which fixed the em dashes the old
 project's documents still carried (they predated the copy rule in commit
-404fdb6). Outstanding on the new project, both need an account with owner-level
-access since the Admin SDK service account is not permitted to do either:
+404fdb6). Firestore rules and all ten composite indexes are deployed and verified: the
+site's queries return content and a public read of `leads` is correctly denied.
 
-- **Composite indexes are not deployed.** Until they are, every
-  `where(...) + orderBy(...)` read fails with `failed-precondition` and the
-  home page cannot render its industries, certifications, testimonials, news
-  or case studies.
-- **Firestore/Storage rules are not released.** Reads currently succeed only
-  because the project is still on its default allow-for-now rules, which
-  expire. `backend/firestore.rules` has been uploaded as a ruleset but not
-  promoted to the `cloud.firestore` release.
-
-Run both with an authorised account:
+The Admin SDK service account can write documents but is *not* permitted to
+create indexes or publish a rules release, so both were deployed with the
+`executives@humblesolutions.in` account, which owns the project. That account
+is set as the default for this working directory (`firebase login:use`).
 
 ```bash
-firebase login          # the account that owns infini-f4388
-firebase deploy --only firestore:rules,firestore:indexes,storage
+firebase deploy --only firestore:rules,firestore:indexes --account executives@humblesolutions.in
 ```
+
+**Still outstanding:**
+
+- **Firebase Storage is not provisioned.** `firebase deploy --only storage`
+  fails with "Firebase Storage has not been set up on project". It needs a
+  one-time Get Started click at
+  https://console.firebase.google.com/project/infini-f4388/storage , after
+  which `backend/storage.rules` can be deployed. The public site does not need
+  it (home-page imagery is served from `public/`), but the T8 media library does.
+- **Vercel still points at the old project.** Update the seven
+  `NEXT_PUBLIC_FIREBASE_*` values (including the new
+  `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`) in the Vercel environment and redeploy.
 
 ## Budget alert
 

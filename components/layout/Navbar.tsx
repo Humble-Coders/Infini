@@ -144,7 +144,6 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
 
   return (
     <header
-      data-dark-scope
       className={cn(
         TRANSITION,
         "sticky top-0 z-50 border-b",
