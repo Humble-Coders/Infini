@@ -22,7 +22,7 @@ const BASELINE = HEIGHT * 0.56;
 const TRANSITION_PX = 70;
 
 const RA_ROUGH = 3.2;
-const RA_FINE = 0.05;
+const RA_FINE = 0.02;
 
 const PAUSE_MS = 600;
 const SWEEP_MS = 4200;
@@ -185,7 +185,7 @@ export function SurfaceProfile() {
       ref={rootRef}
       className="relative flex flex-col gap-5 rounded-2xl border border-border bg-background-elevated/70 p-5 shadow-[0_40px_80px_-40px_rgba(var(--color-shadow-rgb),0.9)] backdrop-blur-sm sm:p-6"
       role="img"
-      aria-label="Animated surface-roughness trace: a rough machined profile is swept by the MMP process and left smooth, while its underlying form is preserved. Roughness falls from Ra 3.20 micrometres to Ra 0.05 micrometres."
+      aria-label="Animated surface-roughness trace: a rough machined profile is swept by the MMP process and left smooth, while its underlying form is preserved. Roughness falls from Ra 3.20 micrometres to Ra 0.02 micrometres."
     >
       <div className="flex items-center justify-between gap-4">
         <p className="font-mono text-[10px] tracking-[0.18em] whitespace-nowrap text-muted-foreground sm:text-[11px] sm:tracking-[0.22em]">

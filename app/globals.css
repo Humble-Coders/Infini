@@ -139,6 +139,62 @@
   -webkit-mask-image: radial-gradient(ellipse 70% 80% at 25% 15%, black 10%, transparent 75%);
 }
 
+/*
+ * Hero infinity mark. One shared 15s cycle: a red tracer (tail + halo + head)
+ * runs the loop by sweeping stroke-dashoffset from the path's full length down
+ * to zero, and the figure flares as the head crosses the start point again.
+ * `--infinity-length` is set inline by the component from its own geometry, so
+ * the dash maths cannot drift out of step with the path.
+ */
+.infinity-trail,
+.infinity-halo,
+.infinity-dot,
+.infinity-shine {
+  animation: infinity-trace var(--infinity-duration, 15s) linear infinite;
+}
+
+/* Gap of a full path length keeps exactly one dash on the curve at a time. */
+.infinity-trail {
+  stroke-dasharray: 30 var(--infinity-length);
+}
+.infinity-halo {
+  stroke-dasharray: 0.01 var(--infinity-length);
+  opacity: 0.75;
+}
+.infinity-dot {
+  stroke-dasharray: 0.01 var(--infinity-length);
+}
+
+.infinity-shine {
+  animation-name: infinity-shine;
+  stroke-opacity: 0;
+}
+
+@keyframes infinity-trace {
+  from {
+    stroke-dashoffset: var(--infinity-length);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Peaks at the lap boundary (100% of one cycle is 0% of the next). */
+@keyframes infinity-shine {
+  0% {
+    stroke-opacity: 0.5;
+  }
+  14% {
+    stroke-opacity: 0;
+  }
+  86% {
+    stroke-opacity: 0;
+  }
+  100% {
+    stroke-opacity: 0.5;
+  }
+}
+
 /* Staggered entrance for hero copy — pair with an inline animation-delay. */
 .hero-reveal {
   animation: fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -155,6 +211,13 @@
 @media (prefers-reduced-motion: reduce) {
   .statement-word {
     opacity: 1 !important;
+  }
+  /* The global reduce rule snaps animations to their end state, which would
+     otherwise leave the flare lit and the tail mid-curve. Park a single dot. */
+  .infinity-trail,
+  .infinity-halo,
+  .infinity-shine {
+    display: none;
   }
 }
 

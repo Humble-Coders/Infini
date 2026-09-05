@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useLenis } from "lenis/react";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { cn } from "@/components/ui/utils";
 import type { NavLink } from "@/lib/types";
@@ -218,12 +217,6 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
             ))}
           </ul>
 
-          <div className="hidden items-center lg:flex">
-            <Button asChild size="sm" variant="default">
-              <Link href="/#contact">Request a Quote</Link>
-            </Button>
-          </div>
-
           <div className="flex items-center gap-1 lg:hidden">
             <button
               type="button"
@@ -263,13 +256,6 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           )}
         >
           <Container>
-            <div className="flex flex-col gap-3 border-b border-border py-4">
-              <Button asChild variant="default">
-                <Link href="/#contact" onClick={closeMobileMenu}>
-                  Request a Quote
-                </Link>
-              </Button>
-            </div>
             <ul className="flex flex-col divide-y divide-border py-2">
               {navItems.map((item) => {
                 const isExpanded = expandedMobileSections.has(item.label);
