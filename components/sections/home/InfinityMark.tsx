@@ -3,8 +3,7 @@ import type { CSSProperties } from "react";
 /**
  * The brand's infinity loop (from the "Finish Unlimited" logo) as a large,
  * faint backdrop figure, with a red tracer running the loop: a glowing dot
- * pulls a short comet tail around the lemniscate, and the whole figure flares
- * as the dot completes each lap.
+ * travels the lemniscate, and the whole figure flares as it completes a lap.
  *
  * All motion is CSS driven off `stroke-dashoffset` (see globals.css), so there
  * is no JS and no hydration boundary. The animation needs the path's own
@@ -55,8 +54,7 @@ export function InfinityMark({ className }: { className?: string }) {
       {/* Flares as the tracer closes a lap. */}
       <path className="infinity-shine" d={PATH} stroke="var(--color-accent)" strokeWidth="1.5" />
 
-      {/* Comet tail, then its blurred halo, then the bright head. */}
-      <path className="infinity-trail" d={PATH} stroke="var(--color-accent)" strokeWidth="2.25" strokeLinecap="round" />
+      {/* Blurred halo behind the travelling dot, then the dot itself. */}
       <path
         className="infinity-halo"
         d={PATH}

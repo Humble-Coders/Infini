@@ -140,13 +140,12 @@
 }
 
 /*
- * Hero infinity mark. One shared 15s cycle: a red tracer (tail + halo + head)
- * runs the loop by sweeping stroke-dashoffset from the path's full length down
- * to zero, and the figure flares as the head crosses the start point again.
+ * Hero infinity mark. One shared 15s cycle: a glowing red dot runs the loop by
+ * sweeping stroke-dashoffset from the path's full length down to zero, and the
+ * figure flares as the dot crosses the start point again.
  * `--infinity-length` is set inline by the component from its own geometry, so
  * the dash maths cannot drift out of step with the path.
  */
-.infinity-trail,
 .infinity-halo,
 .infinity-dot,
 .infinity-shine {
@@ -154,9 +153,6 @@
 }
 
 /* Gap of a full path length keeps exactly one dash on the curve at a time. */
-.infinity-trail {
-  stroke-dasharray: 30 var(--infinity-length);
-}
 .infinity-halo {
   stroke-dasharray: 0.01 var(--infinity-length);
   opacity: 0.75;
@@ -214,7 +210,6 @@
   }
   /* The global reduce rule snaps animations to their end state, which would
      otherwise leave the flare lit and the tail mid-curve. Park a single dot. */
-  .infinity-trail,
   .infinity-halo,
   .infinity-shine {
     display: none;
