@@ -41,13 +41,13 @@ Firebase project, run the Firestore emulator and seed it (needs Java and the
 Firebase CLI):
 
 ```bash
-firebase emulators:start --only firestore --project infini-2fdec
+firebase emulators:start --only firestore --project infini-f4388
 ```
 
 In a second terminal, seed it with the shared content from `backend/scripts/content.ts`:
 
 ```bash
-FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 GCLOUD_PROJECT=infini-2fdec npx tsx backend/scripts/seed.ts
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 GCLOUD_PROJECT=infini-f4388 npx tsx backend/scripts/seed.ts
 ```
 
 Then point the web SDK at the emulator in `.env` (any non-empty API key works,
@@ -55,7 +55,7 @@ nothing reaches Google) and start `npm run dev`:
 
 ```
 NEXT_PUBLIC_FIREBASE_API_KEY=local-emulator
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=infini-2fdec
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=infini-f4388
 NEXT_PUBLIC_FIREBASE_APP_ID=local
 NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
 ```

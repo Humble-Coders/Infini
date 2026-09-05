@@ -13,7 +13,7 @@ import { cert, initializeApp, applicationDefault } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { buildCertifications, buildEvents, buildIndustries, buildNews, buildPages, buildSettings, buildTestimonials } from "./content";
 
-const EXPECTED_PROJECT_ID = "infini-2fdec";
+const EXPECTED_PROJECT_ID = "infini-f4388";
 const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 if (projectId !== EXPECTED_PROJECT_ID) {
   throw new Error(

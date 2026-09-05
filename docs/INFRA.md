@@ -12,11 +12,36 @@ Fill in each `TODO` **as you create the thing**, not from memory afterward.
 | Field | Value |
 |---|---|
 | Project name | infini |
-| Project ID | `infini-2fdec` |
-| Project number | `818899870427` |
+| Project ID | `infini-f4388` |
+| Project number | `897909801574` |
 | Billing plan | Blaze (confirmed set — App Hosting, Cloud Functions, reCAPTCHA Enterprise do not run on Spark) |
-| Owner account | `nisheshsingla@gmail.com`; transfers per D5 at handover |
+| Owner account | Holder of `infini-f4388`; transfers per D5 at handover |
 | Region (Firestore / Functions / App Hosting) | Firestore default database (multi-region `nam5`, US); Cloud Functions deployed to `us-central1` (T6) — use `us-central1` for App Hosting too when that backend is created, to stay co-located |
+
+## Project history
+
+**2026-09-05 — moved from `infini-2fdec` to `infini-f4388`.** The app, seed
+scripts and `.firebaserc` all target the new project. Launch content was
+re-seeded from `backend/scripts/content.ts`, which fixed the em dashes the old
+project's documents still carried (they predated the copy rule in commit
+404fdb6). Outstanding on the new project, both need an account with owner-level
+access since the Admin SDK service account is not permitted to do either:
+
+- **Composite indexes are not deployed.** Until they are, every
+  `where(...) + orderBy(...)` read fails with `failed-precondition` and the
+  home page cannot render its industries, certifications, testimonials, news
+  or case studies.
+- **Firestore/Storage rules are not released.** Reads currently succeed only
+  because the project is still on its default allow-for-now rules, which
+  expire. `backend/firestore.rules` has been uploaded as a ruleset but not
+  promoted to the `cloud.firestore` release.
+
+Run both with an authorised account:
+
+```bash
+firebase login          # the account that owns infini-f4388
+firebase deploy --only firestore:rules,firestore:indexes,storage
+```
 
 ## Budget alert
 
@@ -85,13 +110,13 @@ copy the three fields into your local `.env` and discard the JSON file.
 
 - Rules: `backend/storage.rules` (committed — `media/` allows public read, Content
   Editor/Super Admin write, 10MB image / 20MB PDF limits enforced in the rules).
-- Default bucket: `infini-2fdec.firebasestorage.app`.
+- Default bucket: `infini-f4388.firebasestorage.app`.
 - Deploy rules with `firebase deploy --only storage:rules`.
 - **CORS (T8):** required for the browser-based upload SDK to work at all —
   without it, `uploadBytesResumable`'s cross-origin PUT fails preflight.
   Config: `backend/storage.cors.json`, applied via:
   ```bash
-  gsutil cors set backend/storage.cors.json gs://infini-2fdec.firebasestorage.app
+  gsutil cors set backend/storage.cors.json gs://infini-f4388.firebasestorage.app
   ```
   Currently allows `localhost:3000`/`localhost:3100` (dev) and `infini.co.in`
   (production). GCS CORS `origin` entries must be exact strings — no

@@ -11,6 +11,8 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  // Optional: only used by Analytics (see initAnalytics below).
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 const configured = Boolean(firebaseConfig.apiKey) && Boolean(firebaseConfig.projectId);
@@ -45,6 +47,27 @@ if (configured) {
   console.warn(
     "Infini: Firebase is not configured. Copy .env.example to .env and add your Firebase web app keys."
   );
+}
+
+/**
+ * Firebase Analytics, started on demand from the browser.
+ *
+ * Deliberately not initialised at module load: this module is imported by
+ * server components (via lib/data/*), and `getAnalytics()` throws outside a
+ * browser. It is also not called anywhere yet on purpose. Analytics is T21 and
+ * cookie consent is T22, so switching collection on belongs with the consent
+ * banner rather than ahead of it. Once that lands, call this from a client
+ * component after consent:
+ *
+ *   useEffect(() => { void initAnalytics(); }, []);
+ *
+ * Resolves to null when unsupported, unconfigured, or run on the server.
+ */
+export async function initAnalytics() {
+  if (typeof window === "undefined" || !app || !firebaseConfig.measurementId) return null;
+  const { getAnalytics, isSupported } = await import("firebase/analytics");
+  if (!(await isSupported())) return null;
+  return getAnalytics(app);
 }
 
 export { app, db, auth, functions, storage };

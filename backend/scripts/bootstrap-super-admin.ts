@@ -20,7 +20,7 @@ import { getFirestore, FieldValue } from "firebase-admin/firestore";
 // have active, and created a Super Admin in the wrong Firebase project.
 process.loadEnvFile(".env");
 
-const EXPECTED_PROJECT_ID = "infini-2fdec";
+const EXPECTED_PROJECT_ID = "infini-f4388";
 
 const email = process.argv[2];
 if (!email) {

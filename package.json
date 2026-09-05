@@ -12,7 +12,8 @@
     "test:rules": "firebase emulators:exec --only firestore \"tsx backend/firestore.rules.test.ts\"",
     "test:storage-rules": "firebase emulators:exec --only storage \"tsx backend/storage.rules.test.ts\"",
     "bootstrap-super-admin": "tsx backend/scripts/bootstrap-super-admin.ts",
-    "seed-real-content": "tsx backend/scripts/seed-real-content.ts"
+    "seed-real-content": "tsx backend/scripts/seed-real-content.ts",
+    "fix-em-dashes": "tsx backend/scripts/fix-em-dashes.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

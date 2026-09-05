@@ -20,7 +20,7 @@ if (!process.env.FIRESTORE_EMULATOR_HOST) {
   );
 }
 
-const app = initializeApp({ projectId: process.env.GCLOUD_PROJECT ?? "infini-2fdec" });
+const app = initializeApp({ projectId: process.env.GCLOUD_PROJECT ?? "infini-f4388" });
 const db = getFirestore(app);
 
 async function seed() {
