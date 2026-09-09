@@ -6,6 +6,16 @@ import { ArrowLeft } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { getNewsBySlug, getPublishedNewsSlugs } from "@/lib/data/news";
 import { NewsBody } from "@/components/news/NewsBody";
+import { ogTitle, pageTitle } from "@/lib/seo";
+
+
+/*
+ * ISR window. Without this the route re-renders and re-reads Firestore on
+ * every request, so returning to a page costs the same round trips as
+ * arriving the first time. Publishing should still revalidate the path for
+ * an immediate update; this is the floor, not the mechanism.
+ */
+export const revalidate = 600;
 
 export async function generateStaticParams() {
   const slugs = await getPublishedNewsSlugs();
@@ -18,10 +28,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!post) return {};
 
   return {
-    title: post.seo.title,
+    title: pageTitle(post.seo.title),
     description: post.seo.description,
     openGraph: {
-      title: `${post.seo.title} | INFINI`,
+      title: ogTitle(post.seo.title),
       description: post.seo.description,
       type: "article",
       images: post.seo.ogImage ? [post.seo.ogImage] : post.coverImage ? [post.coverImage] : undefined,

@@ -5,7 +5,7 @@ import { QuickActions } from "@/components/admin/QuickActions";
 
 // Which widgets render is permission-gated in code (not just Firestore
 // rules) so a Leads Manager's dashboard never even attempts a content-count
-// read it would be denied anyway — the acceptance criterion is "no failed
+// read it would be denied anyway, the acceptance criterion is "no failed
 // permission errors in the console", not just "denied gracefully".
 export default async function AdminDashboardPage() {
   const session = await requireSession();

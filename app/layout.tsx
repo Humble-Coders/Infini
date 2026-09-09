@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Instrument_Serif, JetBrains_Mono, Manrope } from "next/font/google";
 import Script from "next/script";
 import type { ReactNode } from "react";
+import { RouteCurtain } from "@/components/layout/RouteCurtain";
 import { Toaster } from "sonner";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { SmokeCursor } from "@/components/ui/smoke-cursor";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -11,7 +14,7 @@ const manrope = Manrope({
   display: "swap",
 });
 
-/* Editorial accent face — one italic word per heading, nothing more. */
+/* Editorial accent face, one italic word per heading, nothing more. */
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
@@ -20,7 +23,7 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
-/* Technical readouts, labels and data — the metrology voice of the brand. */
+/* Technical readouts, labels and data, the metrology voice of the brand. */
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono-loaded",
@@ -45,11 +48,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${manrope.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        {/* Fetch the curtain clip at top priority: it is the first thing on
+            screen, so it must not queue behind the page's own assets. */}
+        <link rel="preload" as="video" href="/infinity_animation.mp4" type="video/mp4" />
+      </head>
       <body>
+        <ScrollProgress />
+        <SmokeCursor />
         {/*
           The industries section pins scroll while it hijacks wheel input
           (IndustriesSectionScroll), so a browser-restored mid-interaction
-          scroll position lands somewhere with no context — it reads as
+          scroll position lands somewhere with no context, it reads as
           "reload dropped me at the end of the industries section" rather
           than a scroll restoration you'd ever want. beforeInteractive runs
           before the browser's own auto-restore takes effect, so it wins.
@@ -65,6 +75,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
           }}
         />
+        <RouteCurtain />
         {children}
         <Toaster
           position="top-right"

@@ -1,10 +1,10 @@
 /**
  * Populates REAL launch content (industries, certifications, settings,
  * pages, sample testimonials/events/news) into the actual Firebase project
- * — unlike seed.ts, which only ever targets the emulator. Content itself
+ *, unlike seed.ts, which only ever targets the emulator. Content itself
  * lives in content.ts, shared between the two so they can't drift apart.
  *
- * Run once via `npm run seed-real-content`. Safe to re-run — every write is
+ * Run once via `npm run seed-real-content`. Safe to re-run, every write is
  * a `set()` on a fixed doc ID, so re-running just re-applies the same
  * content rather than duplicating it.
  */
@@ -18,7 +18,7 @@ const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBL
 if (projectId !== EXPECTED_PROJECT_ID) {
   throw new Error(
     `Refusing to run: resolved projectId is "${projectId ?? "(unset)"}", expected "${EXPECTED_PROJECT_ID}". ` +
-      "Check NEXT_PUBLIC_FIREBASE_PROJECT_ID in .env before re-running — this script writes real Firestore data."
+      "Check NEXT_PUBLIC_FIREBASE_PROJECT_ID in .env before re-running, this script writes real Firestore data."
   );
 }
 

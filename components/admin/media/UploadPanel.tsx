@@ -25,7 +25,7 @@ interface PendingFile {
 
 /**
  * Drag-and-drop / multi-file upload. Save is blocked per-file without alt
- * text — the T8 acceptance criterion — enforced here before uploadMediaFile
+ * text, the T8 acceptance criterion, enforced here before uploadMediaFile
  * is even called, and again in lib/data/media.ts's createMedia as a backstop.
  */
 export function UploadPanel({ onUploaded }: { onUploaded: (item: WithId<MediaDoc>) => void }) {

@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { BadgeCheck, Download, ShieldCheck } from "lucide-react";
+import { Download, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
-import { SectionBackground } from "@/components/sections/shared/SectionBackground";
+import { PhotoHero } from "@/components/sections/shared/PhotoHero";
+import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
+import { Marquee } from "@/components/ui/marquee";
 import { getActiveCertifications } from "@/lib/data/certifications";
+
+
+/*
+ * ISR window. Without this the route re-renders and re-reads Firestore on
+ * every request, so returning to a page costs the same round trips as
+ * arriving the first time. Publishing should still revalidate the path for
+ * an immediate update; this is the floor, not the mechanism.
+ */
+export const revalidate = 600;
 
 const COPY = {
   eyebrow: "Certifications",
@@ -39,106 +48,93 @@ export default async function CertificationsPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <section className="relative overflow-hidden border-b border-border/60 py-20 sm:py-28">
-        <SectionBackground grid />
-        <ShieldCheck
-          strokeWidth={0.6}
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-10 -bottom-20 size-72 text-foreground/[0.05] sm:size-96"
-        />
-        <Container className="relative flex flex-col gap-4">
-          <span className="text-xs font-medium tracking-[0.2em] text-accent uppercase">{COPY.eyebrow}</span>
-          <h1 className="max-w-2xl text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.05] font-light tracking-[-0.02em] text-foreground">
-            {COPY.heading}
-          </h1>
-          <p className="max-w-xl text-sm text-muted-foreground sm:text-base">{COPY.body}</p>
-        </Container>
-      </section>
+      <PhotoHero
+        eyebrow={COPY.eyebrow}
+        heading={COPY.heading}
+        body={COPY.body}
+        image={HERO_IMAGERY.certifications.src}
+        imageAlt={HERO_IMAGERY.certifications.alt}
+        badges={[{ label: "ISO 9001:2015" }, { label: "ISO 13485" }, { label: "ISO 14001" }, { label: "ISO 45001" }]}
+      />
 
-      <section className="py-16 sm:py-20">
+      {/* Infinite cert-name marquee, pauses on hover */}
+      {certifications.length > 0 && (
+        <section className="bg-background border-b border-border py-10">
+          <Container>
+            <Marquee speed={38}>
+              {[...certifications, ...certifications].map((cert, i) => (
+                <span
+                  key={`${cert.id}-${i}`}
+                  className="mx-4 flex shrink-0 items-center gap-3 whitespace-nowrap font-mono text-sm tracking-[0.08em] uppercase"
+                >
+                  <ShieldCheck className="size-4 shrink-0 text-accent" strokeWidth={1.75} aria-hidden="true" />
+                  <span className="text-foreground">{cert.name}</span>
+                  <span aria-hidden="true" className="text-accent">/</span>
+                </span>
+              ))}
+            </Marquee>
+          </Container>
+        </section>
+      )}
+
+      <section data-surface="light" className="bg-background py-20 sm:py-28">
         <Container>
           {certifications.length === 0 ? (
             <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border px-6 py-10 sm:px-10">
               <p className="max-w-lg text-sm text-muted-foreground sm:text-base">
                 Certification details are being updated, check back shortly, or{" "}
-                <Link href="/#contact" className="text-accent underline-offset-4 hover:underline">
+                <Link href="/contact" className="text-accent underline-offset-4 hover:underline">
                   contact us
                 </Link>{" "}
                 for current documentation.
               </p>
             </div>
           ) : (
-            <div className="grid gap-5 lg:grid-cols-2">
-              {certifications.map((cert) => (
+            <div className="border-t border-border">
+              {certifications.map((cert, index) => (
                 <article
                   key={cert.id}
-                  className="group flex flex-col gap-5 rounded-xl border border-border bg-card p-6 transition-all duration-300 ease-out hover:border-primary hover:shadow-[0_20px_60px_-15px_rgba(var(--color-shadow-rgb),0.5)] sm:p-8"
+                  className="group grid gap-4 border-b border-border py-7 transition-colors duration-300 hover:bg-foreground/[0.03] focus-within:bg-foreground/[0.03] sm:grid-cols-[2.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-8"
                 >
-                  <div className="flex items-start gap-4">
-                    <span className="flex size-14 shrink-0 items-center justify-center rounded-full border border-border bg-background">
-                      {cert.logoUrl ? (
-                        <Image src={cert.logoUrl} alt={`${cert.name} logo`} width={36} height={36} className="object-contain" />
-                      ) : (
-                        <BadgeCheck className="size-7 text-accent" aria-hidden="true" />
-                      )}
-                    </span>
-                    <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-1">
-                      <h2 className="text-xl leading-tight font-normal text-foreground">{cert.name}</h2>
-                      {cert.certificateNumber && (
-                        <span className="w-fit rounded-full bg-secondary px-2.5 py-0.5 text-xs tracking-wide text-muted-foreground">
-                          Cert. no. {cert.certificateNumber}
+                  <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div className="flex min-w-0 flex-col gap-2">
+                    <h2 className="flex items-center gap-2.5 text-xl font-semibold tracking-[-0.01em] text-foreground transition-colors duration-300 group-hover:text-accent sm:text-2xl">
+                      <ShieldCheck className="size-5 shrink-0 text-accent" strokeWidth={1.75} aria-hidden="true" />
+                      {cert.name}
+                    </h2>
+                    {cert.description && (
+                      <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{cert.description}</p>
+                    )}
+                    <p className="font-mono text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
+                      {cert.certificateNumber && <>Cert. no. {cert.certificateNumber} · </>}
+                      Issued {formatDate(cert.issuedDate)} · valid to {formatDate(cert.validUntil)}
+                      {isExpiringSoon(cert.validUntil) && (
+                        <span className="ml-2 rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-medium tracking-wide text-accent">
+                          Renewing soon
                         </span>
                       )}
-                    </div>
+                    </p>
                   </div>
-
-                  {cert.description && <p className="text-sm text-muted-foreground sm:text-base">{cert.description}</p>}
-
-                  <dl className="grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border/60 pt-5">
-                    <div>
-                      <dt className="text-xs tracking-wide text-muted-foreground uppercase">Issued</dt>
-                      <dd className="text-sm text-foreground/90">{formatDate(cert.issuedDate)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs tracking-wide text-muted-foreground uppercase">Valid until</dt>
-                      <dd className="flex items-center gap-2 text-sm text-foreground/90">
-                        {formatDate(cert.validUntil)}
-                        {isExpiringSoon(cert.validUntil) && (
-                          <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-medium tracking-wide text-accent uppercase">
-                            Renewing soon
-                          </span>
-                        )}
-                      </dd>
-                    </div>
-                  </dl>
-
-                  <div className="mt-auto pt-1">
+                  <div className="sm:justify-self-end">
                     {cert.fileUrl ? (
-                      <Button asChild variant="outline" className="w-fit gap-2">
-                        <a href={cert.fileUrl} download aria-label={`Download ${cert.name} certificate (PDF)`}>
-                          <Download className="size-4" aria-hidden="true" />
-                          Download PDF
-                        </a>
-                      </Button>
+                      <a
+                        href={cert.fileUrl}
+                        download
+                        aria-label={`Download ${cert.name} certificate (PDF)`}
+                        className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-all duration-300 hover:border-accent hover:bg-accent hover:text-accent-foreground focus-visible:border-accent focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none"
+                      >
+                        <Download className="size-4" aria-hidden="true" />
+                      </a>
                     ) : (
-                      <p className="text-xs text-muted-foreground">Certificate PDF available on request.</p>
+                      <p className="text-xs whitespace-nowrap text-muted-foreground">PDF on request</p>
                     )}
                   </div>
                 </article>
               ))}
             </div>
           )}
-        </Container>
-      </section>
-
-      <section className="border-t border-border/60 py-16 sm:py-20">
-        <Container className="flex flex-col items-center gap-6 text-center">
-          <h2 className="max-w-xl text-2xl font-light text-foreground sm:text-3xl">
-            Need a certificate for your supplier file?
-          </h2>
-          <Button asChild size="lg" className="px-8">
-            <Link href="/#contact">Contact Us</Link>
-          </Button>
         </Container>
       </section>
     </main>

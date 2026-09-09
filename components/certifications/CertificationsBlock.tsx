@@ -4,7 +4,7 @@ import { BadgeCheck, Download } from "lucide-react";
 import type { CertificationDoc, WithId } from "@/lib/types";
 
 /**
- * Reusable compact certifications teaser — used on industry pages
+ * Reusable compact certifications teaser, used on industry pages
  * (filtered to that industry's relatedCertIds) and Company/Capabilities
  * (the full active list). The full per-certificate content page is
  * app/(public)/certifications/page.tsx, not this component.

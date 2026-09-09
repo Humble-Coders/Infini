@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 /**
- * Shared delete-confirmation pattern for every admin CRUD screen — nothing
+ * Shared delete-confirmation pattern for every admin CRUD screen, nothing
  * destructive should ever be one click. Shows pending state during the
  * async delete and a toast on success/error; stays open on error so the
  * user can retry instead of losing their place.

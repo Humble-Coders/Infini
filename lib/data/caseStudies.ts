@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { requireDb } from "./firestore";
 import type { CaseStudyDoc, WithId } from "@/lib/types";
@@ -5,7 +6,7 @@ import type { CaseStudyDoc, WithId } from "@/lib/types";
 const COLLECTION = "caseStudies";
 
 /** All published case studies, newest first. */
-export async function getPublishedCaseStudies(): Promise<WithId<CaseStudyDoc>[]> {
+async function getPublishedCaseStudiesUncached(): Promise<WithId<CaseStudyDoc>[]> {
   const snap = await getDocs(
     query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("publishedAt", "desc"))
   );
@@ -13,7 +14,7 @@ export async function getPublishedCaseStudies(): Promise<WithId<CaseStudyDoc>[]>
 }
 
 /** A single published case study by slug, or null. */
-export async function getCaseStudyBySlug(slug: string): Promise<WithId<CaseStudyDoc> | null> {
+async function getCaseStudyBySlugUncached(slug: string): Promise<WithId<CaseStudyDoc> | null> {
   const snap = await getDocs(
     query(
       collection(requireDb(), COLLECTION),
@@ -27,7 +28,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<WithId<CaseStudy
 }
 
 /** Published case studies cross-linked to a given industry, for that industry's page. */
-export async function getCaseStudiesByIndustry(industryId: string): Promise<WithId<CaseStudyDoc>[]> {
+async function getCaseStudiesByIndustryUncached(industryId: string): Promise<WithId<CaseStudyDoc>[]> {
   const snap = await getDocs(
     query(
       collection(requireDb(), COLLECTION),
@@ -39,8 +40,25 @@ export async function getCaseStudiesByIndustry(industryId: string): Promise<With
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as CaseStudyDoc) }));
 }
 
-/** All published case study slugs — for generateStaticParams. */
-export async function getPublishedCaseStudySlugs(): Promise<string[]> {
+/** All published case study slugs, for generateStaticParams. */
+async function getPublishedCaseStudySlugsUncached(): Promise<string[]> {
   const caseStudies = await getPublishedCaseStudies();
   return caseStudies.map((caseStudy) => caseStudy.slug);
 }
+
+/*
+ * Reads are memoised per request with React's `cache()`.
+ *
+ * A page and its `generateMetadata` run in the same pass and routinely ask for
+ * the same document, so an uncached accessor cost two identical round trips on
+ * every request. `cache()` collapses those to one.
+ *
+ * It has to be `cache()` and not `unstable_cache`: the latter serialises what it
+ * stores, which strips `.toDate()` off every Firestore Timestamp and breaks
+ * every date on the site. This only dedupes within a single render, so
+ * documents arrive exactly as Firestore returned them.
+ */
+export const getPublishedCaseStudies = cache(getPublishedCaseStudiesUncached);
+export const getCaseStudyBySlug = cache(getCaseStudyBySlugUncached);
+export const getCaseStudiesByIndustry = cache(getCaseStudiesByIndustryUncached);
+export const getPublishedCaseStudySlugs = cache(getPublishedCaseStudySlugsUncached);

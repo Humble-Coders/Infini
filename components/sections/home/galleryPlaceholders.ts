@@ -1,7 +1,7 @@
 import type { GalleryCopy, HomeImage } from "@/lib/types";
 
 /*
- * TEMP placeholder photography — see public/images/placeholders/README.md.
+ * TEMP placeholder photography, see public/images/placeholders/README.md.
  * These are the in-code fallbacks the home page renders until `pages/home`
  * carries its own `gallery.items` / `technology.images`; the seed content in
  * backend/scripts/content.ts mirrors this list so the emulator matches.

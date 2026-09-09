@@ -1,11 +1,22 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Building2 } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
+import { NetworkMap } from "@/components/sections/shared/NetworkMap";
+import { TrustSection } from "@/components/sections/home/TrustSection";
+import { PhotoHero } from "@/components/sections/shared/PhotoHero";
+import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
+import { ogTitle, pageTitle } from "@/lib/seo";
+
+
+/*
+ * ISR window. Without this the route re-renders and re-reads Firestore on
+ * every request, so returning to a page costs the same round trips as
+ * arriving the first time. Publishing should still revalidate the path for
+ * an immediate update; this is the floor, not the mechanism.
+ */
+export const revalidate = 600;
 
 interface HeroCopy {
   eyebrow: string;
@@ -26,13 +37,28 @@ const FALLBACK: Metadata = {
     "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology from its treatment facility in Parwanoo, Himachal Pradesh, serving precision manufacturers across seven industries.",
 };
 
+/*
+ * The MMP network as published by mmptechnology.com: BinC in France and
+ * Switzerland, MicroTek in the United States, and the licensed plants in
+ * Germany, India, Japan and China. INFINI's own plant is the highlighted row.
+ */
+const NETWORK_SITES = [
+  { name: "St Priest", company: "BinC Industries, France", lat: 45.7, lon: 4.94 },
+  { name: "Commugny", company: "BinC Industries, Switzerland", lat: 46.3, lon: 6.16 },
+  { name: "Cincinnati", company: "MicroTek Finishing, United States", lat: 39.1032, lon: -84.512 },
+  { name: "Stuttgart", company: "First Surface, Germany", lat: 48.7758, lon: 9.1829 },
+  { name: "Parwanoo", company: "INFINI Precision Pvt. Ltd., India", lat: 30.8372, lon: 76.9618, primary: true },
+  { name: "Tokyo", company: "INFINI Japan", lat: 35.6762, lon: 139.6503 },
+  { name: "Shanghai", company: "Bridge Fine Works, China", lat: 31.2304, lon: 121.4737 },
+];
+
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("company");
   if (!page) return FALLBACK;
   return {
-    title: page.seo.title,
+    title: pageTitle(page.seo.title),
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }
 
@@ -46,32 +72,22 @@ export default async function CompanyPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      {hero && (
-        <section className="relative overflow-hidden border-b border-border/60 py-20 sm:py-28">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background: "radial-gradient(70% 60% at 50% 0%, rgba(var(--color-accent-rgb),0.14), transparent 70%)",
-            }}
-          />
-          <Building2
-            strokeWidth={0.6}
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-10 -bottom-20 size-72 text-foreground/[0.05] sm:size-96"
-          />
-          <Container className="relative flex flex-col gap-5">
-            <span className="text-xs font-medium tracking-[0.2em] text-accent uppercase">{hero.eyebrow}</span>
-            <h1 className="max-w-3xl text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.05] font-light tracking-[-0.02em] text-foreground">
-              {hero.heading}
-            </h1>
-            <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">{hero.body}</p>
-          </Container>
-        </section>
-      )}
+      <PhotoHero
+        eyebrow={hero?.eyebrow ?? "Company"}
+        heading={hero?.heading ?? "A specialist surface-finishing partner, not a manufacturer."}
+        body={hero?.body}
+        stats={[
+          { label: "Facility", value: "Parwanoo" },
+          { label: "Certifications", value: String(certifications.length) },
+        ]}
+        image={HERO_IMAGERY.company.src}
+        imageAlt={HERO_IMAGERY.company.alt}
+        badges={[{ label: "Parwanoo, Himachal Pradesh" }, { label: "MMP licensed plant" }, { label: "Seven-site network" }]}
+      />
+      
 
       {facts && (
-        <section className="border-b border-border/60 py-16 sm:py-20">
+        <section data-surface="light" className="bg-background border-b border-border/60 py-16 sm:py-20">
           <Container>
             <dl className="flex flex-wrap divide-x divide-border border-y border-border">
               {facts.items.map((fact) => (
@@ -85,14 +101,16 @@ export default async function CompanyPage() {
         </section>
       )}
 
+      <TrustSection tone="surface" />
+
       {processSummary && (
-        <section className="border-b border-border/60 py-16 sm:py-24">
+        <section data-surface="light" className="bg-background border-b border-border py-16 sm:py-24">
           <Container className="flex flex-col gap-8 sm:flex-row sm:items-start">
             <div className="flex shrink-0 items-start gap-4 sm:w-56">
-              <span className="font-mono text-sm text-accent/70 tabular-nums">01</span>
+              <span className="font-mono text-sm text-accent tabular-nums">01</span>
               <h2 className="text-2xl leading-[1.1] font-light text-foreground sm:text-3xl">{processSummary.heading}</h2>
             </div>
-            <p className="max-w-2xl border-l border-accent/40 pl-6 text-lg leading-relaxed font-light text-foreground/85 sm:pl-8 sm:text-xl">
+            <p className="max-w-2xl border-l border-accent/40 pl-6 text-lg leading-relaxed font-light text-foreground sm:pl-8 sm:text-xl">
               {processSummary.body}
             </p>
           </Container>
@@ -100,7 +118,7 @@ export default async function CompanyPage() {
       )}
 
       {quality && (
-        <section className="border-b border-border/60 py-16 sm:py-24">
+        <section data-surface="light" className="bg-background border-b border-border/60 py-16 sm:py-24">
           <Container className="flex flex-col gap-8 sm:flex-row sm:items-start">
             <div className="flex shrink-0 items-start gap-4 sm:w-56">
               <span className="font-mono text-sm text-accent/70 tabular-nums">02</span>
@@ -120,17 +138,17 @@ export default async function CompanyPage() {
           </Container>
         </section>
       )}
+      <NetworkMap
+        eyebrow="The network"
+        heading="One process. Seven plants. Four continents."
+        body="MMP was industrialised in France in 2002 and licensed outward from there. INFINI runs the Indian plant, to the same process and the same standards as every other site on this map."
+        stats={[
+          { value: "7", label: "Plants worldwide", detail: "France, Switzerland, Germany, the United States, India, Japan and China." },
+          { value: "2002", label: "Process industrialised", detail: "MMP was first run in production at St Priest, then licensed outward." },
+        ]}
+        sites={NETWORK_SITES}
+      />
 
-      <section className="py-16 sm:py-20">
-        <Container className="flex flex-col items-center gap-6 text-center">
-          <h2 className="max-w-xl text-2xl font-light text-foreground sm:text-3xl">
-            Have a component that needs finishing?
-          </h2>
-          <Button asChild size="lg" className="px-8">
-            <Link href="/request-a-quote">Request a Quote</Link>
-          </Button>
-        </Container>
-      </section>
     </main>
   );
 }

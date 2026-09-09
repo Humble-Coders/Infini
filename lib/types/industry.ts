@@ -12,14 +12,14 @@ export interface IndustryCapability {
   description: string;
 }
 
-/** `industries` collection — the 7 industry pages. */
+/** `industries` collection, the 7 industry pages. */
 export interface IndustryDoc {
   slug: string;
   name: string;
   order: number;
   hero: IndustryHero;
   overview: string;
-  /** Why surface finish matters for this industry specifically — the detail page's "Why it matters" section. */
+  /** Why surface finish matters for this industry specifically, the detail page's "Why it matters" section. */
   relevance: string;
   capabilities: IndustryCapability[];
   applications: string[];

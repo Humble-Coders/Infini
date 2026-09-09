@@ -8,7 +8,7 @@ import { SESSION_COOKIE, SESSION_MAX_AGE_MS } from "@/lib/auth/constants";
  * Exchanges a freshly-signed-in Firebase ID token for an httpOnly session
  * cookie. Called by the client right after `signInWithEmailAndPassword`, and
  * again after a role change to refresh the cookie's embedded claims (see
- * app/admin/users/page.tsx) — so a role change takes effect without the user
+ * app/admin/users/page.tsx), so a role change takes effect without the user
  * needing to sign out and back in.
  */
 export async function POST(request: NextRequest) {

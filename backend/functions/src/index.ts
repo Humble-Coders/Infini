@@ -31,8 +31,7 @@ function assertValidRole(role: unknown): asserts role is Role {
 /**
  * Creates a new admin account: Firebase Auth user + role custom claim +
  * mirrored users/{uid} Firestore doc. Super Admin only. Returns a
- * password-reset link for the Super Admin to hand to the new user directly —
- * there is no automated invite email yet (that lands with T17's SMTP
+ * password-reset link for the Super Admin to hand to the new user directly, * there is no automated invite email yet (that lands with T17's SMTP
  * dispatch); nothing is ever set with a committed or logged password.
  */
 export const inviteAdminUser = onCall(async (request) => {

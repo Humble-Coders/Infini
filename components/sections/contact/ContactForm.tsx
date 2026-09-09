@@ -1,9 +1,15 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import dynamic from "next/dynamic";
 import { ArrowRight, CheckCircle2, Lock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+const MagneticButton = dynamic(
+  () => import("@/components/ui/magnetic-button").then((m) => m.MagneticButton),
+  { ssr: false }
+);
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -191,22 +197,24 @@ export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] 
       </div>
 
       <div className="flex flex-col items-center gap-3">
-        <Button
-          type="submit"
-          className={cn(
-            "group flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-medium text-primary-foreground",
-            "shadow-[0_12px_28px_-12px_rgba(var(--color-primary-rgb),0.55)] transition-all duration-250",
-            "hover:-translate-y-0.5 hover:opacity-90 hover:shadow-[0_16px_32px_-12px_rgba(var(--color-primary-rgb),0.6)]"
-          )}
-        >
-          <Send className="size-4" strokeWidth={1.75} aria-hidden="true" />
-          Send Enquiry
-          <ArrowRight
-            className="size-4 transition-transform duration-250 group-hover:translate-x-1"
-            strokeWidth={1.75}
-            aria-hidden="true"
-          />
-        </Button>
+        <MagneticButton strength={0.25} className="w-full">
+          <Button
+            type="submit"
+            className={cn(
+              "group flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-medium text-primary-foreground",
+              "shadow-[0_12px_28px_-12px_rgba(var(--color-primary-rgb),0.55)] transition-all duration-250",
+              "hover:-translate-y-0.5 hover:opacity-90 hover:shadow-[0_16px_32px_-12px_rgba(var(--color-primary-rgb),0.6)]"
+            )}
+          >
+            <Send className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            Send Enquiry
+            <ArrowRight
+              className="size-4 transition-transform duration-250 group-hover:translate-x-1"
+              strokeWidth={1.75}
+              aria-hidden="true"
+            />
+          </Button>
+        </MagneticButton>
         <p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
           <Lock className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
           Your information is kept confidential.

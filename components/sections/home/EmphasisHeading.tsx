@@ -2,7 +2,7 @@ import { Fragment } from "react";
 
 /**
  * Renders admin-authored heading copy (`\n` = line break) with the final word
- * set in the serif italic accent — the one editorial flourish the type system
+ * set in the serif italic accent, the one editorial flourish the type system
  * allows, applied consistently so CMS edits pick it up without markup.
  */
 export function EmphasisHeading({ text }: { text: string }) {

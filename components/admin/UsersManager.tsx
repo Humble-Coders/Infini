@@ -46,8 +46,7 @@ export function UsersManager({ currentUid }: { currentUid: string }) {
     }
   }
 
-  // listUsers() needs a signed-in client with the superAdmin claim in place —
-  // wait for Firebase Auth's persisted session to rehydrate before querying.
+  // listUsers() needs a signed-in client with the superAdmin claim in place, // wait for Firebase Auth's persisted session to rehydrate before querying.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(requireAuth(), (user) => {
       if (user) void refresh();

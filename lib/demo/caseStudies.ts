@@ -1,6 +1,6 @@
 import type { CaseStudyDoc, WithId } from "@/lib/types";
 
-// TEMP DEMO DATA — hardcoded so the homepage section has something to show
+// TEMP DEMO DATA, hardcoded so the homepage section has something to show
 // before real case studies are seeded in Firestore. Images are seeded
 // picsum.photos placeholders (see the remotePatterns note in next.config.ts).
 // Remove this file once content is authored in Firestore.

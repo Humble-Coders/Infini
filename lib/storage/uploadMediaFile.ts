@@ -37,7 +37,7 @@ export interface UploadedFile {
  * Compresses (images only), uploads to Storage under a flat media/ path
  * (matches backend/storage.rules' single-segment `media/{fileId}` match),
  * and resolves once the download URL is available. Storage rules re-enforce
- * the same size/type limits server-side — this client check exists so a
+ * the same size/type limits server-side, this client check exists so a
  * rejected file fails fast with a clear message instead of a slow round trip.
  */
 export async function uploadMediaFile(file: File, onProgress?: (percent: number) => void): Promise<UploadedFile> {
@@ -72,7 +72,7 @@ export async function uploadMediaFile(file: File, onProgress?: (percent: number)
   };
 }
 
-/** Removes the underlying Storage object — call after deleting the Firestore index doc, or the two can drift apart on partial failure. */
+/** Removes the underlying Storage object, call after deleting the Firestore index doc, or the two can drift apart on partial failure. */
 export async function deleteMediaFile(path: string): Promise<void> {
   await deleteObject(ref(requireStorage(), path));
 }

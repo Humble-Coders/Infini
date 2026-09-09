@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, TrendingDown, TrendingUp } from "lucide-react";
+import { cn } from "@/components/ui/utils";
 import type { CaseStudyResult } from "@/lib/types";
 
 export interface CaseStudyCardData {
@@ -23,7 +24,18 @@ const RESULT_ICONS = { down: TrendingDown, up: TrendingUp, check: Check } as con
  * scroll one card at a time. Text-forward on purpose: the outcome chips and the
  * material/process/duration line carry the credibility, not a stock photo.
  */
-export function CaseStudiesRail({ items }: { items: CaseStudyCardData[] }) {
+export function CaseStudiesRail({
+  items,
+  linkToDetail = true,
+}: {
+  items: CaseStudyCardData[];
+  /**
+   * False when the rail is showing the in-code demo studies (lib/demo/caseStudies),
+   * whose slugs have no Firestore document behind them, so linking them would send
+   * every card to a 404.
+   */
+  linkToDetail?: boolean;
+}) {
   const railRef = useRef<HTMLUListElement>(null);
 
   function scrollByCard(direction: -1 | 1) {
@@ -42,7 +54,13 @@ export function CaseStudiesRail({ items }: { items: CaseStudyCardData[] }) {
       >
         {items.map((item, index) => (
           <li key={item.id} className="w-[86vw] shrink-0 snap-start sm:w-[420px]">
-            <article className="group relative flex h-full flex-col gap-6 rounded-2xl border border-border bg-card p-7 transition-[transform,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-foreground/25 hover:shadow-[0_32px_64px_-40px_rgba(var(--color-shadow-rgb),0.4)] sm:p-8">
+            <article
+              className={cn(
+                "group relative flex h-full flex-col gap-6 rounded-2xl border border-border bg-card p-7 shadow-[0_18px_50px_-30px_rgba(var(--color-primary-rgb),0.35)] sm:p-8",
+                linkToDetail &&
+                  "transition-[transform,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-foreground/25 hover:shadow-[0_28px_90px_-24px_rgba(var(--color-primary-rgb),0.6)]"
+              )}
+            >
               <div className="flex items-center justify-between gap-4">
                 <span className="font-mono text-[11px] tracking-[0.2em] text-accent uppercase">{item.industry}</span>
                 <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
@@ -51,12 +69,16 @@ export function CaseStudiesRail({ items }: { items: CaseStudyCardData[] }) {
               </div>
 
               <h3 className="text-2xl leading-[1.1] font-semibold tracking-[-0.025em] text-foreground">
-                <Link
-                  href={`/case-studies/${item.slug}`}
-                  className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none group-focus-within:text-accent"
-                >
-                  {item.title}
-                </Link>
+                {linkToDetail ? (
+                  <Link
+                    href={`/case-studies/${item.slug}`}
+                    className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none group-focus-within:text-accent"
+                  >
+                    {item.title}
+                  </Link>
+                ) : (
+                  item.title
+                )}
               </h3>
 
               <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{item.challenge}</p>

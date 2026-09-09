@@ -1,5 +1,5 @@
 /**
- * Client-side only (uses the DOM canvas/Image APIs) — resizes an oversized
+ * Client-side only (uses the DOM canvas/Image APIs), resizes an oversized
  * photo down to a sensible maximum dimension and re-encodes it as JPEG
  * before it ever reaches Storage. Non-image files (PDFs) and images already
  * under the limit pass through untouched. Returns the (possibly resized)
@@ -24,7 +24,7 @@ export async function prepareImageForUpload(file: File): Promise<PreparedImage> 
   const originalDimensions = { width: bitmap.width, height: bitmap.height };
   const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
 
-  // Already within bounds and not enormous — don't burn a re-encode for nothing.
+  // Already within bounds and not enormous, don't burn a re-encode for nothing.
   if (scale === 1 && file.size < 2 * 1024 * 1024) {
     bitmap.close();
     return { file, ...originalDimensions };
@@ -46,7 +46,7 @@ export async function prepareImageForUpload(file: File): Promise<PreparedImage> 
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY));
   if (!blob || blob.size >= file.size) {
-    // Compression didn't help (or failed) — keep the original bytes and
+    // Compression didn't help (or failed), keep the original bytes and
     // report ITS dimensions, not the (unused) resized canvas's.
     return { file, ...originalDimensions };
   }

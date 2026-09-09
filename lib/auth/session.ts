@@ -17,7 +17,7 @@ export interface SessionUser {
  * The authoritative auth check. Runs in the Node runtime (layouts/route
  * handlers), unlike middleware which only runs on the Edge and can't call
  * the Admin SDK. Role comes from the verified custom claim on the session
- * cookie — never trust anything read from client state.
+ * cookie, never trust anything read from client state.
  */
 export async function verifySession(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
@@ -30,7 +30,7 @@ export async function verifySession(): Promise<SessionUser | null> {
     if (!role) return null;
     return { uid: decoded.uid, email: decoded.email ?? "", role };
   } catch {
-    // Expired, revoked, or forged cookie — treat as signed out.
+    // Expired, revoked, or forged cookie, treat as signed out.
     return null;
   }
 }

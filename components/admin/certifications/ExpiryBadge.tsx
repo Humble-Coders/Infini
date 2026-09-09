@@ -4,12 +4,12 @@ import type { FirestoreTimestamp } from "@/lib/types";
 
 const WARNING_WINDOW_DAYS = 60;
 
-/** Pure — takes the day count rather than calling Date.now() itself, since computing "now" during render trips the React Compiler's purity rule. Compute this once when the data loads (see CertificationsManager), not per render. */
+/** Pure, takes the day count rather than calling Date.now() itself, since computing "now" during render trips the React Compiler's purity rule. Compute this once when the data loads (see CertificationsManager), not per render. */
 export function daysUntilExpiry(validUntil: FirestoreTimestamp, now: number): number {
   return Math.ceil((validUntil.toDate().getTime() - now) / (1000 * 60 * 60 * 24));
 }
 
-/** Flags a certificate approaching or past its validUntil date — the T12 acceptance criterion for admin expiry visibility. */
+/** Flags a certificate approaching or past its validUntil date, the T12 acceptance criterion for admin expiry visibility. */
 export function ExpiryBadge({ daysRemaining }: { daysRemaining: number }) {
   if (daysRemaining < 0) {
     return <Badge tone="destructive">Expired {Math.abs(daysRemaining)}d ago</Badge>;

@@ -13,7 +13,7 @@ import type { WithId, MediaDoc } from "@/lib/types";
 type Accept = "image" | "pdf" | "all";
 
 /**
- * Reusable "choose existing or upload new" picker — the piece every future
+ * Reusable "choose existing or upload new" picker, the piece every future
  * content-CRUD ticket (T10–T16) drops in wherever it needs an image or
  * certificate PDF field. Standalone: owns its own open state, its own data
  * fetch, and doesn't assume anything about the calling form beyond onSelect.

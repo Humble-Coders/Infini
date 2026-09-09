@@ -15,7 +15,7 @@ export interface CaseStudyResult {
   direction: "down" | "up" | "check";
 }
 
-/** `caseStudies` collection — proven work, cross-linked to an industry. */
+/** `caseStudies` collection, proven work, cross-linked to an industry. */
 export interface CaseStudyDoc {
   slug: string;
   title: string;

@@ -10,12 +10,14 @@ export interface SettingsSocial {
   linkedin: string;
   instagram: string;
   youtube: string;
+  whatsapp?: string;
+  maps?: string;
 }
 
 export interface NavLink {
   label: string;
   href: string;
-  /** Dropdown sub-items (desktop) / expandable section (mobile) — e.g. Capabilities' legacy MMP-process pages. */
+  /** Dropdown sub-items (desktop) / expandable section (mobile), e.g. Capabilities' legacy MMP-process pages. */
   children?: NavLink[];
 }
 
@@ -25,7 +27,7 @@ export interface CookieBannerSettings {
   policyUrl: string;
 }
 
-/** `settings` collection — singleton global site config, doc ID `global`. */
+/** `settings` collection, singleton global site config, doc ID `global`. */
 export interface SettingsDoc {
   contact: SettingsContact;
   social: SettingsSocial;

@@ -28,10 +28,13 @@ export function ProvenWork({
   copy,
   caseStudies,
   industries,
+  linkToDetail = true,
 }: {
   copy: TeaserCopy | null;
   caseStudies: WithId<CaseStudyDoc>[];
   industries: WithId<IndustryDoc>[];
+  /** False while the demo studies stand in for an empty Firestore collection. */
+  linkToDetail?: boolean;
 }) {
   const { eyebrow, heading, body, emptyState } = { ...FALLBACK, ...(copy ?? {}) };
 
@@ -76,7 +79,7 @@ export function ProvenWork({
             {emptyState}
           </p>
         ) : (
-          <CaseStudiesRail items={items} />
+          <CaseStudiesRail items={items} linkToDetail={linkToDetail} />
         )}
       </Container>
     </section>

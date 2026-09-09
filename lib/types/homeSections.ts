@@ -1,5 +1,5 @@
 /**
- * Typed shapes for `pages/home`'s section `fields` — narrowed at the point
+ * Typed shapes for `pages/home`'s section `fields`, narrowed at the point
  * of use via `getSection<T>()` (lib/data/pages.ts), since `PageSection` itself
  * stays untyped to accommodate any future section `type`.
  */
@@ -11,7 +11,7 @@ export interface HeroCopy {
   ctaNote: string;
 }
 
-/** The one-paragraph "what INFINI is" block under the hero — revealed word by word on scroll. */
+/** The one-paragraph "what INFINI is" block under the hero, revealed word by word on scroll. */
 export interface StatementCopy {
   label?: string;
   heading: string;

@@ -33,6 +33,16 @@ function lemniscate(a = 100, steps = 180, cx = 120, cy = 60) {
 
 const { d: PATH, length: LENGTH } = lemniscate();
 
+/**
+ * The loop's geometry, exported so the route curtain draws the identical figure.
+ * Sharing one path means the opening mark and the hero mark can never drift into
+ * two subtly different infinity signs.
+ */
+export const INFINITY_PATH = PATH;
+export const INFINITY_VIEWBOX = "0 0 240 120";
+/** Path length, so a dash-based draw-on can be set up without measuring in the browser. */
+export const INFINITY_LENGTH = LENGTH;
+
 export function InfinityMark({ className }: { className?: string }) {
   return (
     <svg

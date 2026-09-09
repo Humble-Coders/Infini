@@ -20,19 +20,21 @@ export interface AdminNavItem {
   label: string;
   href: string;
   icon: LucideIcon;
-  /** Roles allowed to see this link. Convenience only — Firestore rules (T6) are the real gate. */
+  /** Roles allowed to see this link. Convenience only, Firestore rules (T6) are the real gate. */
   roles: Role[];
 }
 
 const ALL_ROLES: Role[] = ["superAdmin", "contentEditor", "leadsManager"];
 const CONTENT_ROLES: Role[] = ["superAdmin", "contentEditor"];
 
-/** The 13 sections from the T7 ticket. Every href resolves to a real page — a stub for anything not built yet — so nothing 404s. */
+/** The 13 sections from the T7 ticket. Every href resolves to a real page, a stub for anything not built yet, so nothing 404s. */
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard, roles: ALL_ROLES },
   { label: "Leads", href: "/admin/leads", icon: Inbox, roles: ["superAdmin", "leadsManager"] },
   { label: "Pages", href: "/admin/pages", icon: FileText, roles: CONTENT_ROLES },
   { label: "Industries", href: "/admin/industries", icon: Factory, roles: CONTENT_ROLES },
+  { label: "What MMP Changes", href: "/admin/benefits", icon: Factory, roles: CONTENT_ROLES },
+  { label: "Component Types", href: "/admin/component-types", icon: Factory, roles: CONTENT_ROLES },
   { label: "Company & Capabilities", href: "/admin/company-capabilities", icon: Building2, roles: CONTENT_ROLES },
   { label: "Certifications", href: "/admin/certifications", icon: Award, roles: CONTENT_ROLES },
   { label: "Case Studies", href: "/admin/case-studies", icon: BookOpen, roles: CONTENT_ROLES },

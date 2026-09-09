@@ -1,7 +1,7 @@
 /**
  * Verifies the size/type limits in backend/storage.rules are enforced by
  * the rules themselves, not just the client-side checks in
- * lib/storage/uploadMediaFile.ts — the T8 acceptance criterion explicitly
+ * lib/storage/uploadMediaFile.ts, the T8 acceptance criterion explicitly
  * calls for a direct SDK upload attempt, not just trusting the UI.
  *
  * Run via `npm run test:storage-rules` (wraps this in `firebase
@@ -17,7 +17,7 @@ import type firebase from "firebase/compat/app";
 import "firebase/compat/storage";
 
 if (!process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
-  throw new Error("FIREBASE_STORAGE_EMULATOR_HOST is not set — run this via `npm run test:storage-rules`, not directly.");
+  throw new Error("FIREBASE_STORAGE_EMULATOR_HOST is not set, run this via `npm run test:storage-rules`, not directly.");
 }
 
 function bytes(size: number): Uint8Array {
@@ -25,7 +25,7 @@ function bytes(size: number): Uint8Array {
 }
 
 // The compat SDK's .put() returns an UploadTask (thenable, not a strict
-// Promise) — assertSucceeds/assertFails need a real Promise.
+// Promise), assertSucceeds/assertFails need a real Promise.
 function putFile(fileRef: firebase.storage.Reference, size: number, contentType: string): Promise<unknown> {
   return Promise.resolve(fileRef.put(bytes(size), { contentType }));
 }
@@ -40,14 +40,14 @@ async function run() {
   const leadsManager = testEnv.authenticatedContext("leads-uid", { role: "leadsManager" });
   const contentEditor = testEnv.authenticatedContext("editor-uid", { role: "contentEditor" });
 
-  // Public read of anything under media/ — next/image and direct <img> both need this.
+  // Public read of anything under media/, next/image and direct <img> both need this.
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await putFile(context.storage().ref("media/seed.jpg"), 1024, "image/jpeg");
   });
   await assertSucceeds(unauthenticated.storage().ref("media/seed.jpg").getDownloadURL());
   console.log("✓ public can read media/*");
 
-  // Unauthenticated and Leads Manager cannot write at all — content upload is Content Editor / Super Admin only.
+  // Unauthenticated and Leads Manager cannot write at all, content upload is Content Editor / Super Admin only.
   await assertFails(putFile(unauthenticated.storage().ref("media/x.jpg"), 1024, "image/jpeg"));
   await assertFails(putFile(leadsManager.storage().ref("media/x.jpg"), 1024, "image/jpeg"));
   console.log("✓ unauthenticated and Leads Manager cannot upload");
@@ -56,7 +56,7 @@ async function run() {
   await assertSucceeds(putFile(contentEditor.storage().ref("media/ok.jpg"), 1024 * 1024, "image/jpeg"));
   console.log("✓ Content Editor can upload an image under the size limit");
 
-  // Oversized image (>10MB) is rejected even for an authorized role — the whole point of this test.
+  // Oversized image (>10MB) is rejected even for an authorized role, the whole point of this test.
   await assertFails(putFile(contentEditor.storage().ref("media/too-big.jpg"), 11 * 1024 * 1024, "image/jpeg"));
   console.log("✓ an 11MB image is rejected by Storage rules, not just the UI");
 

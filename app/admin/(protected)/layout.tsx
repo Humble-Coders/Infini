@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 // Sidebar is visible from md (768px) up, matching the ticket's floor
-// ("usable at 768px and above" — an iPad in portrait). Below that, nav is
+// ("usable at 768px and above", an iPad in portrait). Below that, nav is
 // intentionally out of scope for this ticket rather than half-built.
 export default async function ProtectedAdminLayout({ children }: { children: ReactNode }) {
   const session = await requireSession();

@@ -10,7 +10,7 @@ import { updateMedia } from "@/lib/data/media";
 import type { WithId, MediaDoc } from "@/lib/types";
 
 // Caller must remount this with `key={item?.id}` when the target item
-// changes — that's what seeds fresh local state per item, rather than an
+// changes, that's what seeds fresh local state per item, rather than an
 // effect racing a user's in-progress edit.
 export function EditMediaDialog({
   item,

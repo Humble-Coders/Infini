@@ -4,27 +4,45 @@ import { Container } from "@/components/ui/container";
 import type { NewsDoc, TeaserCopy, WithId } from "@/lib/types";
 import { EmphasisHeading } from "./EmphasisHeading";
 import { MonoLabel } from "./MonoLabel";
+import { NewsCarousel, type NewsCardData } from "./NewsCarousel";
 
 const FALLBACK: TeaserCopy = {
-  eyebrow: "News & insights",
-  heading: "Latest research.\nReal impact.",
+  eyebrow: "News & press",
+  heading: "Notes from\nthe finishing lab.",
+  body: "Process data, validation thinking and industry analysis from INFINI's surface-finishing labs.",
   emptyState: "Our first posts on treatment process, validation and industry standards are coming soon.",
 };
 
-const MAX_ITEMS = 3;
+const MAX_ITEMS = 6;
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
 }
 
-/** Editorial index: date, title, excerpt, tag. Newest three; server-rendered so the dates format once. */
+/**
+ * Server wrapper: headline block plus the story rail. Firestore timestamps
+ * are formatted here so the client carousel receives plain serialisable
+ * card data. Imagery flows from each post's own cover image.
+ */
 export function NewsIndex({ copy, news }: { copy: TeaserCopy | null; news: WithId<NewsDoc>[] }) {
   const { eyebrow, heading, body, emptyState } = { ...FALLBACK, ...(copy ?? {}) };
-  const items = news.slice(0, MAX_ITEMS);
+  const items: NewsCardData[] = news.slice(0, MAX_ITEMS).map((post) => {
+    const date = post.publishedAt.toDate();
+    return {
+      id: post.id,
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt ?? "",
+      date: formatDate(date),
+      dateTime: date.toISOString(),
+      tag: post.tags[0] || "Insights",
+      coverImage: post.coverImage ?? "",
+    };
+  });
 
   return (
     <section data-surface="light" className="bg-background-elevated py-24 sm:py-32">
-      <Container className="flex flex-col gap-12 lg:gap-16">
+      <Container className="flex flex-col gap-8 lg:gap-10">
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
           <div className="flex flex-col gap-6 lg:col-span-6">
             <MonoLabel>{eyebrow}</MonoLabel>
@@ -49,34 +67,7 @@ export function NewsIndex({ copy, news }: { copy: TeaserCopy | null; news: WithI
             {emptyState}
           </p>
         ) : (
-          <ol className="border-t border-border">
-            {items.map((post) => {
-              const date = post.publishedAt.toDate();
-              return (
-                <li key={post.id} className="border-b border-border">
-                  <Link
-                    href={`/news/${post.slug}`}
-                    className="group grid gap-3 py-7 transition-colors duration-300 hover:bg-foreground/[0.03] focus-visible:bg-foreground/[0.03] focus-visible:outline-none sm:grid-cols-[8.5rem_minmax(0,1fr)_auto] sm:items-baseline sm:gap-8 sm:py-8"
-                  >
-                    <time dateTime={date.toISOString()} className="font-mono text-xs text-muted-foreground tabular-nums">
-                      {formatDate(date)}
-                    </time>
-                    <span className="flex flex-col gap-2">
-                      <span className="text-xl leading-snug font-semibold tracking-[-0.02em] text-foreground transition-colors group-hover:text-accent sm:text-2xl">
-                        {post.title}
-                      </span>
-                      {post.excerpt && (
-                        <span className="line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{post.excerpt}</span>
-                      )}
-                    </span>
-                    <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
-                      {post.tags[0] || "Insights"}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
+          <NewsCarousel items={items} />
         )}
       </Container>
     </section>

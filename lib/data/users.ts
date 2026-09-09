@@ -11,7 +11,7 @@ export async function getUserByUid(uid: string): Promise<WithId<UserDoc> | null>
   return { id: snap.id, ...(snap.data() as UserDoc) };
 }
 
-/** All admin users, by name — for the Super Admin user management screen (T7). */
+/** All admin users, by name, for the Super Admin user management screen (T7). */
 export async function listUsers(): Promise<WithId<UserDoc>[]> {
   const snap = await getDocs(query(collection(requireDb(), COLLECTION), orderBy("name")));
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as UserDoc) }));

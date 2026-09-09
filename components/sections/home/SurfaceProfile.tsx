@@ -6,7 +6,7 @@ import { useEffect, useId, useRef } from "react";
  * A live surface-roughness trace, the way a profilometer would draw it:
  * a rough, as-machined profile that a red scan line sweeps across, leaving
  * the surface finished behind it. The low-frequency FORM of the line is kept
- * on both sides — only the high-frequency roughness is removed — which is
+ * on both sides, only the high-frequency roughness is removed, which is
  * precisely what MMP does, so the animation is the pitch, not decoration.
  *
  * Deterministic (seeded) geometry so the server-rendered path and the client's
@@ -150,8 +150,7 @@ export function SurfaceProfile() {
       } else if (t < PAUSE_MS + SWEEP_MS + HOLD_MS) {
         apply(1);
       } else {
-        // Reset by fading the finished trace out and the rough one back in —
-        // never by "un-finishing" the surface, which would read as the process reversing.
+        // Reset by fading the finished trace out and the rough one back in, // never by "un-finishing" the surface, which would read as the process reversing.
         const r = (t - PAUSE_MS - SWEEP_MS - HOLD_MS) / RESET_MS;
         const fade = Math.abs(2 * r - 1);
         apply(r < 0.5 ? 1 : 0, fade);

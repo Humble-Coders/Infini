@@ -11,8 +11,7 @@ export interface MediaReference {
 
 /**
  * Scans every content collection for a document whose data contains this
- * media asset's URL anywhere (hero images, galleries, logos, PDF links —
- * whatever shape each content type uses). A field-by-field query per
+ * media asset's URL anywhere (hero images, galleries, logos, PDF links, * whatever shape each content type uses). A field-by-field query per
  * collection would need to track each one's specific image fields and go
  * stale the moment a new one is added; these collections are small, so a
  * full-document scan is simpler and can't drift out of sync. Used by the

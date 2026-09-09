@@ -11,7 +11,7 @@ import type { Role } from "@/lib/types";
  * Watches the signed-in admin's own users/{uid} doc. If a Super Admin
  * changes this user's role or active flag elsewhere, this picks it up,
  * forces a fresh ID token (which carries the new custom claim), re-mints
- * the session cookie, and refreshes the page — so the change takes effect
+ * the session cookie, and refreshes the page, so the change takes effect
  * without the user working out they need to sign out and back in.
  */
 export function ClaimsSync({ uid, role }: { uid: string; role: Role }) {

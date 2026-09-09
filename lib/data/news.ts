@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { requireDb } from "./firestore";
 import type { FirestoreTimestamp, NewsDoc, WithId } from "@/lib/types";
@@ -9,10 +10,9 @@ function demoTimestamp(iso: string): FirestoreTimestamp {
   return { toDate: () => date, seconds: Math.floor(date.getTime() / 1000), nanoseconds: 0 };
 }
 
-// TEMP DEMO — sample articles so the client can review the News section
+// TEMP DEMO, sample articles so the client can review the News section
 // with real-looking cards before actual posts are written. Delete this
-// array and its use below, plus the picsum remotePatterns in
-// next.config.ts, once real news content is seeded.
+// array and its use below, once real news content is seeded.
 const DEMO_NEWS: WithId<NewsDoc>[] = [
   {
     id: "demo-mmp-vs-traditional-polishing",
@@ -21,7 +21,7 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
     excerpt:
       "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for parts with tight internal geometry.",
     body: "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for parts with tight internal geometry, fine features, and complex cavities that manual polishing struggles to reach evenly.",
-    coverImage: "https://picsum.photos/seed/infini-news-mmp-polishing/1200/600",
+    coverImage: "/images/placeholders/process-01-bevel-pinion.jpg",
     tags: ["technology", "MMP"],
     status: "published",
     publishedAt: demoTimestamp("2026-06-02"),
@@ -43,7 +43,7 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
     excerpt:
       "Implant surfaces need finishes verified to a measurable standard, not judged by eye. A look at the traceability and process controls behind medical-grade treatment.",
     body: "Implant surfaces need finishes verified to a measurable standard, not judged by eye. A look at the traceability, batch documentation, and contamination control behind medical-grade surface treatment for orthopedic and spinal hardware.",
-    coverImage: "https://picsum.photos/seed/infini-news-medical-implants/1200/600",
+    coverImage: "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
     tags: ["medical", "quality"],
     status: "published",
     publishedAt: demoTimestamp("2026-05-18"),
@@ -65,7 +65,7 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
     excerpt:
       "As-built AM parts carry layer lines and loosely sintered particles that standard finishing can't reach. Here's how internal channels and lattices get treated.",
     body: "As-built AM parts carry layer lines and loosely sintered particles that standard finishing can't reach, especially on internal channels and lattice structures. Here's how that as-built roughness gets brought down to a verified target without losing the geometry that made additive worth using in the first place.",
-    coverImage: "https://picsum.photos/seed/infini-news-additive-mfg/1200/600",
+    coverImage: "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
     tags: ["additive manufacturing"],
     status: "published",
     publishedAt: demoTimestamp("2026-04-30"),
@@ -83,7 +83,7 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
 ];
 
 /** All published news posts, newest first. */
-export async function getPublishedNews(): Promise<WithId<NewsDoc>[]> {
+async function getPublishedNewsUncached(): Promise<WithId<NewsDoc>[]> {
   const snap = await getDocs(
     query(collection(requireDb(), COLLECTION), where("status", "==", "published"), orderBy("publishedAt", "desc"))
   );
@@ -94,7 +94,7 @@ export async function getPublishedNews(): Promise<WithId<NewsDoc>[]> {
 }
 
 /** A single published news post by slug, or null. */
-export async function getNewsBySlug(slug: string): Promise<WithId<NewsDoc> | null> {
+async function getNewsBySlugUncached(slug: string): Promise<WithId<NewsDoc> | null> {
   const snap = await getDocs(
     query(
       collection(requireDb(), COLLECTION),
@@ -108,8 +108,24 @@ export async function getNewsBySlug(slug: string): Promise<WithId<NewsDoc> | nul
   return DEMO_NEWS.find((post) => post.slug === slug) ?? null;
 }
 
-/** All published news slugs — for generateStaticParams. */
-export async function getPublishedNewsSlugs(): Promise<string[]> {
+/** All published news slugs, for generateStaticParams. */
+async function getPublishedNewsSlugsUncached(): Promise<string[]> {
   const posts = await getPublishedNews();
   return posts.map((post) => post.slug);
 }
+
+/*
+ * Reads are memoised per request with React's `cache()`.
+ *
+ * A page and its `generateMetadata` run in the same pass and routinely ask for
+ * the same document, so an uncached accessor cost two identical round trips on
+ * every request. `cache()` collapses those to one.
+ *
+ * It has to be `cache()` and not `unstable_cache`: the latter serialises what it
+ * stores, which strips `.toDate()` off every Firestore Timestamp and breaks
+ * every date on the site. This only dedupes within a single render, so
+ * documents arrive exactly as Firestore returned them.
+ */
+export const getPublishedNews = cache(getPublishedNewsUncached);
+export const getNewsBySlug = cache(getNewsBySlugUncached);
+export const getPublishedNewsSlugs = cache(getPublishedNewsSlugsUncached);

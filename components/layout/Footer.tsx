@@ -33,7 +33,14 @@ export function Footer({
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           <div className="flex flex-col gap-6 sm:col-span-2 lg:col-span-4">
             <Link href="/" className="w-fit" aria-label="INFINI home">
-              <Image src="/Infini-MMP-01.png" alt="INFINI, Finish Unlimited, MMP Technology" width={263} height={78} className="h-12 w-auto" />
+              <Image
+                src="/brand/infini-finish-unlimited.png"
+                data-mono="off"
+                alt="INFINI, Finish Unlimited"
+                width={1000}
+                height={491}
+                className="h-12 w-auto"
+              />
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
               A specialist surface-finishing partner to precision manufacturers. MMP treatment applied in-house, verified before it ships.
@@ -80,11 +87,25 @@ export function Footer({
           <p className="text-xs text-muted-foreground">
             &copy; {year} INFINI Precision Pvt. Ltd. ISO 9001-certified MMP surface-finishing.
           </p>
-          <p className="font-mono text-[11px] tracking-[0.24em] text-muted-foreground uppercase">Finish unlimited</p>
+          {/* The mark the process is licensed under. The old header lockup carried it,
+              but dark-on-dark it was invisible against the near-black chrome. */}
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[11px] tracking-[0.24em] text-muted-foreground uppercase">
+              Powered by
+            </span>
+            <Image
+              src="/brand/mmp-technology-light.png"
+              data-mono="off"
+              alt="MMP Technology"
+              width={700}
+              height={538}
+              className="h-9 w-auto opacity-80"
+            />
+          </div>
         </div>
       </Container>
 
-      {/* Oversized wordmark, cropped by the footer's bottom edge — a brand sign-off, not content. */}
+      {/* Oversized wordmark, cropped by the footer's bottom edge, a brand sign-off, not content. */}
       <div aria-hidden="true" className="pointer-events-none -mb-[3vw] select-none">
         <p className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06]">
           INFINI

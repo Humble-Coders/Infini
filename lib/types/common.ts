@@ -1,6 +1,5 @@
 /**
- * Structural interface so shared types don't have to import a concrete SDK —
- * both `firebase/firestore` and `firebase-admin/firestore` Timestamps satisfy it.
+ * Structural interface so shared types don't have to import a concrete SDK, * both `firebase/firestore` and `firebase-admin/firestore` Timestamps satisfy it.
  */
 export interface FirestoreTimestamp {
   toDate(): Date;

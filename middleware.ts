@@ -4,8 +4,7 @@ import { SESSION_COOKIE } from "@/lib/auth/constants";
 /**
  * Edge-runtime UX layer: redirects to sign-in when the session cookie is
  * simply absent, so an unauthenticated visit to any /admin/** URL never
- * renders anything. This does NOT cryptographically verify the cookie —
- * `firebase-admin` needs Node APIs the Edge runtime doesn't have. The real
+ * renders anything. This does NOT cryptographically verify the cookie, * `firebase-admin` needs Node APIs the Edge runtime doesn't have. The real
  * verification (and role check) happens in app/admin/layout.tsx via
  * verifySession(), and the final backstop is Firestore security rules,
  * which read the same signed custom claim independently of both.

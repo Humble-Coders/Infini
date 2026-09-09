@@ -1,4 +1,4 @@
-/** `testimonials` collection — social proof. */
+/** `testimonials` collection, social proof. */
 export interface TestimonialDoc {
   quote: string;
   personName: string;

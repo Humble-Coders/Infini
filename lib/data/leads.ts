@@ -5,7 +5,7 @@ import type { LeadDoc, WithId } from "@/lib/types";
 const COLLECTION = "leads";
 
 /**
- * Most recent leads, newest first — for the T7 dashboard widget. Gated by
+ * Most recent leads, newest first, for the T7 dashboard widget. Gated by
  * Firestore rules to Super Admin / Leads Manager only; callers should not
  * invoke this for any other role (avoids a permission-denied round trip).
  */

@@ -41,6 +41,16 @@ service cloud.firestore {
       allow write: if canWriteContent();
     }
 
+    match /benefits/{docId} {
+      allow read: if resource.data.published == true || canWriteContent();
+      allow write: if canWriteContent();
+    }
+
+    match /componentTypes/{docId} {
+      allow read: if resource.data.published == true || canWriteContent();
+      allow write: if canWriteContent();
+    }
+
     match /caseStudies/{docId} {
       allow read: if resource.data.published == true || canWriteContent();
       allow write: if canWriteContent();

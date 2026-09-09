@@ -9,7 +9,7 @@ export interface LeadNote {
 }
 
 /**
- * `leads` collection — server-only, never deleted by non-super-admins.
+ * `leads` collection, server-only, never deleted by non-super-admins.
  * No accessor exists for this in lib/data/: the RFQ Cloud Function (T17) is
  * the sole writer, and only Super Admin / Leads Manager read it via rules.
  * This type exists so the Cloud Function and the admin dashboard (T18) share

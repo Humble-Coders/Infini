@@ -3,7 +3,7 @@ import type { SeoMap } from "./seo";
 
 export type NewsStatus = "draft" | "published";
 
-/** `news` collection — blog / insights. */
+/** `news` collection, blog / insights. */
 export interface NewsDoc {
   slug: string;
   title: string;

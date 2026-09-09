@@ -1,6 +1,6 @@
 import { cn } from "./utils";
 
-/** Plain token-driven progress bar — no new dependency, matches the design system's colour tokens. */
+/** Plain token-driven progress bar, no new dependency, matches the design system's colour tokens. */
 export function Progress({ value, className }: { value: number; className?: string }) {
   return (
     <div

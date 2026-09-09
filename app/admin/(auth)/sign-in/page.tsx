@@ -71,7 +71,7 @@ export default function SignInPage() {
       await sendPasswordResetEmail(requireAuth(), email);
       setResetMessage("If that account exists, a password reset email is on its way.");
     } catch {
-      // Same message on failure — don't reveal whether the email exists.
+      // Same message on failure, don't reveal whether the email exists.
       setResetMessage("If that account exists, a password reset email is on its way.");
     }
   }

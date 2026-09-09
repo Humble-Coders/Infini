@@ -1,6 +1,6 @@
 import type { FirestoreTimestamp } from "./common";
 
-/** `certifications` collection — certificates as real, downloadable content. */
+/** `certifications` collection, certificates as real, downloadable content. */
 export interface CertificationDoc {
   name: string;
   logoUrl: string;

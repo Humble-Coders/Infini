@@ -1,7 +1,7 @@
 /**
  * Automated equivalent of the Rules Playground checks T6's acceptance
  * criteria calls for, extended in T7 to cover the admin draft-visibility
- * and leads-read rules that ticket added — run against the emulator so the
+ * and leads-read rules that ticket added, run against the emulator so the
  * role matrix is verified by CI/`npm run test:rules`, not just eyeballed
  * once by hand.
  *
@@ -20,7 +20,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 
 if (!process.env.FIRESTORE_EMULATOR_HOST) {
   throw new Error(
-    "FIRESTORE_EMULATOR_HOST is not set — run this via `npm run test:rules`, not directly."
+    "FIRESTORE_EMULATOR_HOST is not set, run this via `npm run test:rules`, not directly."
   );
 }
 
@@ -45,7 +45,7 @@ async function run() {
     await setDoc(doc(db, "users", "editor-uid"), { role: "contentEditor", active: true });
   });
 
-  // leads is never client-writable, from anyone, any role — the RFQ Cloud
+  // leads is never client-writable, from anyone, any role, the RFQ Cloud
   // Function (T17) is the sole writer, via the Admin SDK, which bypasses rules.
   await assertFails(setDoc(doc(unauthenticated.firestore(), "leads", "lead-1"), { name: "x" }));
   await assertFails(setDoc(doc(superAdmin.firestore(), "leads", "lead-1"), { name: "x" }));
@@ -59,7 +59,7 @@ async function run() {
   console.log("✓ only Super Admin and Leads Manager can read leads");
 
   // A draft (unpublished) industry is invisible to the public and to a Leads
-  // Manager, but visible to anyone who can write content — so a Content
+  // Manager, but visible to anyone who can write content, so a Content
   // Editor can list/count drafts for the T7 dashboard and future CRUD screens.
   await assertFails(getDoc(doc(unauthenticated.firestore(), "industries", "unpublished-draft")));
   await assertFails(getDoc(doc(leadsManager.firestore(), "industries", "unpublished-draft")));
@@ -73,7 +73,7 @@ async function run() {
   );
   console.log("✓ Content Editor can write industries content");
 
-  // Leads Manager cannot write content — the acceptance criterion.
+  // Leads Manager cannot write content, the acceptance criterion.
   await assertFails(
     setDoc(doc(leadsManager.firestore(), "industries", "cutting-tools"), { published: true, name: "Hacked" })
   );

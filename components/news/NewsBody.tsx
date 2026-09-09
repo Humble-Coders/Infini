@@ -3,13 +3,12 @@ import Link from "next/link";
 
 /**
  * Renders a news post's markdown body against the design system's own
- * tokens, not a generic prose plugin's defaults — every element maps to a
+ * tokens, not a generic prose plugin's defaults, every element maps to a
  * styled component here rather than a stylesheet, so there's exactly one
  * typography system on the site, not two competing ones.
  *
  * Safe by construction: react-markdown never renders raw HTML embedded in
- * the source unless the rehype-raw plugin is added, which it isn't here —
- * admin-authored markdown is parsed into React elements, not
+ * the source unless the rehype-raw plugin is added, which it isn't here, * admin-authored markdown is parsed into React elements, not
  * dangerouslySetInnerHTML'd.
  */
 export function NewsBody({ markdown }: { markdown: string }) {

@@ -4,7 +4,7 @@ import { MediaLibraryManager } from "@/components/admin/media/MediaLibraryManage
 
 export const metadata: Metadata = { title: "Media" };
 
-// Content Editor / Super Admin only — matches the Media column of the PRD
+// Content Editor / Super Admin only, matches the Media column of the PRD
 // role matrix. A Leads Manager hitting this URL directly is denied here
 // AND at the Storage rules layer (backend/storage.rules' canWrite()).
 export default async function AdminMediaPage() {

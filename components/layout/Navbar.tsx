@@ -15,7 +15,7 @@ const TRANSITION = "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-/** Text wrapped with the hover/active underline — center-out scale, not a static border, so it reads as a deliberate interaction rather than a plain link style. Relies on an ancestor with `.group` for the hover trigger. */
+/** Text wrapped with the hover/active underline: center-out scale, not a static border, so it reads as a deliberate interaction rather than a plain link style. Relies on an ancestor with `.group` for the hover trigger. */
 function NavLabel({ children, active }: { children: ReactNode; active?: boolean }) {
   return (
     <span className="relative inline-block">
@@ -38,7 +38,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
   const [scrolled, setScrolled] = useState(false);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
-  // undefined when smooth scroll is off (prefers-reduced-motion) — no Lenis instance to stop/start.
+  // undefined when smooth scroll is off (prefers-reduced-motion), so there is no Lenis instance to stop/start.
   const lenis = useLenis();
   const pathname = usePathname();
 
@@ -54,7 +54,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
     });
   }, []);
 
-  // Layout effect, not a plain effect — it runs before the browser paints,
+  // Layout effect, not a plain effect, because it runs before the browser paints,
   // so on reload (page loads already scrolled, per native scroll restoration)
   // the header commits its compact height before the first frame instead of
   // snapping to it a frame later. That snap shifts all sticky-flow content up
@@ -77,7 +77,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
 
   // Body scroll lock + focus trap + Escape-to-close while the mobile menu is open.
   // Lenis intercepts wheel/touch input directly, so `overflow: hidden` alone
-  // doesn't stop it — lenis.stop()/start() is the mechanism Lenis itself
+  // doesn't stop it; lenis.stop()/start() is the mechanism Lenis itself
   // provides for exactly this.
   useEffect(() => {
     if (!mobileOpen) return;
@@ -156,8 +156,34 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
           aria-label="Primary"
           className={cn("flex items-center justify-between", TRANSITION, scrolled ? "h-16" : "h-24")}
         >
-          <Link href="/" className={cn("flex shrink-0 items-center", TRANSITION)} aria-label="INFINI home">
-            <Image src="/Infini-MMP-01.png" alt="INFINI" width={263} height={78} className="h-12 w-auto sm:h-14" priority />
+          {/* INFINI + MMP lockup, as the old single-image lockup had it. MMP is the
+              licensed process mark, so it sits behind a divider rather than reading
+              as part of the INFINI wordmark, and drops away on narrow screens where
+              the mobile menu needs the room. */}
+          <Link
+            href="/"
+            className={cn("flex shrink-0 items-center gap-3 sm:gap-4", TRANSITION)}
+            aria-label="INFINI home"
+          >
+            <Image
+              src="/brand/infini-finish-unlimited.png"
+              data-mono="off"
+              alt="INFINI, Finish Unlimited"
+              width={1000}
+              height={491}
+              className="h-10 w-auto sm:h-12"
+              priority
+            />
+            <span aria-hidden="true" className={cn("hidden w-px bg-foreground/20 sm:block", scrolled ? "h-8" : "h-9")} />
+            <Image
+              src="/brand/mmp-technology-light.png"
+              data-mono="off"
+              alt="MMP Technology"
+              width={700}
+              height={538}
+              className="hidden h-12 w-auto sm:block"
+              priority
+            />
           </Link>
 
           <ul className="hidden items-center gap-7 lg:flex">
@@ -209,7 +235,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
                     </div>
                   </>
                 ) : (
-                  <Link href={item.href} className={linkClass}>
+                  <Link href={item.href} className={linkClass} prefetch={true}>
                     <NavLabel active={isItemActive(item)}>{item.label}</NavLabel>
                   </Link>
                 )}

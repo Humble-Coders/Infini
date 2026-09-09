@@ -33,8 +33,10 @@ function Word({
 
 /**
  * The "what INFINI actually is" paragraph, revealed one word at a time as the
- * reader scrolls it into the middle of the viewport — the one line the client
+ * reader scrolls it into the middle of the viewport, the one line the client
  * most needs a first-time visitor to absorb, paced so it can't be skimmed past.
+ * White band starting exactly at the ticker's bottom border; every colour
+ * inside is token-driven so the light surface flips text automatically.
  */
 export function Statement({ copy }: { copy: StatementCopy | null }) {
   const { label, heading, body } = { ...FALLBACK, ...(copy ?? {}) };
@@ -51,7 +53,7 @@ export function Statement({ copy }: { copy: StatementCopy | null }) {
   const total = words.length;
 
   return (
-    <section className="relative bg-background py-28 sm:py-36 lg:py-44">
+    <section data-surface="light" className="relative bg-background py-16 sm:py-24 lg:py-28">
       <Container>
         <div ref={ref} className="grid gap-10 lg:grid-cols-12 lg:gap-8">
           {label && <MonoLabel className="lg:col-span-3 lg:pt-3">{label}</MonoLabel>}

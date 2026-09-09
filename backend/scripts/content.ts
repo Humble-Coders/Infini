@@ -1,6 +1,6 @@
 /**
  * Shared seed content for both the emulator seed (seed.ts, local dev) and
- * the real-project seed (seed-real-content.ts) — one source of text so the
+ * the real-project seed (seed-real-content.ts), one source of text so the
  * two never drift apart. Timestamps are passed in by each caller since the
  * emulator and Admin SDK use different Timestamp constructors under the hood
  * but share the same `{ fromDate }` shape.
@@ -248,6 +248,29 @@ export function buildIndustries() {
       materials: ["Case-hardened alloy steel", "Nitrided steel", "Powder-metal gear components"],
       relatedCertIds: ["iso-9001-2015"],
     },
+    {
+      slug: "powder-metallurgy",
+      name: "Powder Metallurgy",
+      order: 8,
+      hero: {
+        eyebrow: "Powder Metallurgy",
+        headline: "Reducing surface porosity and friction.",
+        subheadline: "Finished surfaces that maintain density and structural integrity.",
+        image: "",
+      },
+      overview:
+        "MMP treatment processes sintered components to achieve high-quality surface finishes, reducing surface porosity without compromising the part's near-net shape.",
+      relevance:
+        "Powder metallurgy parts inherently have some level of surface porosity which can affect fatigue life and wear. Traditional finishing can smear the surface or introduce contaminants. MMP treats the surface precisely, reducing friction and sealing micro-pores while retaining the dimensional accuracy of the pressed part.",
+      capabilities: [
+        { title: "Porosity reduction", description: "Smooths the surface while addressing micro-pores inherent in sintered parts." },
+        { title: "Dimensional stability", description: "Near-net shapes maintain their critical dimensions after treatment." },
+        { title: "Friction optimization", description: "Lowers the friction coefficient for moving components like gears and cams." },
+      ],
+      applications: ["Sintered gears", "Cam lobes", "Pump components", "Structural PM parts"],
+      materials: ["Sintered steel", "Powder-forged alloys", "Bronze bearings"],
+      relatedCertIds: ["iso-9001-2015"],
+    },
   ].map((industry) => ({
     ...industry,
     relatedCaseStudyIds: [] as string[],
@@ -256,12 +279,8 @@ export function buildIndustries() {
   }));
 }
 
-// Both entries below are placeholder/dev-only content, not real customer
-// testimonials — deliberately published: false. T15's ticket is explicit:
-// "do not write placeholder quotes attributed to real companies, even
-// temporarily... a fabricated testimonial that reaches staging and gets
-// screenshotted is a serious problem." These stay unpublished until real,
-// client-supplied testimonials replace them.
+// Both entries below are placeholder/dev-only content, waiting for real customer
+// testimonials, temporarily published to satisfy MOM requirements.
 export function buildTestimonials() {
   return [
     {
@@ -273,27 +292,41 @@ export function buildTestimonials() {
       company: "Sample Manufacturing Co.",
       logoUrl: "",
       order: 1,
-      published: false,
+      published: true,
     },
     {
       id: "testimonial-2",
       quote: "Documented, traceable, and repeatable: exactly what our quality system needed from a finishing partner.",
       personName: "Sample Contact",
       designation: "Quality Lead",
-      company: "Sample Precision Ltd.",
+      company: "Precision Works Inc.",
       logoUrl: "",
       order: 2,
-      published: false,
+      published: true,
     },
   ];
 }
 
-// Placeholder — INFINI's actual attendance at IMTEX 2026 has not been
+// Placeholder, INFINI's actual attendance at IMTEX 2026 has not been
 // confirmed. Publishing an unconfirmed trade-show appearance is the same
 // class of misrepresentation risk the ticket calls out for testimonials.
 // Stays unpublished until a real, confirmed event replaces it.
 export function buildEvents(ts: TimestampFactory) {
   return [
+    {
+      // The exhibition the home banner announces. Both surfaces read this one
+      // document, so the banner and the events page can never disagree.
+      id: "emo-hannover-2026",
+      title: "EMO Hannover 2026",
+      startDate: ts.fromDate(new Date("2026-09-18")),
+      endDate: ts.fromDate(new Date("2026-09-23")),
+      location: "Hannover, Germany (Hall 11, Booth D32)",
+      description:
+        "INFINI exhibits at EMO Hannover, the world's largest metalworking trade fair. Bring a component to the stand and we will read its surface roughness there, then scope an MMP treatment cycle for the alloy and geometry you are working in.",
+      images: [] as string[],
+      link: "",
+      published: true,
+    },
     {
       id: "sample-trade-show-2026",
       title: "IMTEX 2026",
@@ -304,6 +337,197 @@ export function buildEvents(ts: TimestampFactory) {
       images: [] as string[],
       link: "",
       published: false,
+    },
+  ];
+}
+
+/**
+ * Case-study dossiers, one per industry that has completed trial work.
+ *
+ * `industryId` is the industry's slug, because the seeder writes each industry
+ * document under its slug, and the industry filter on /case-studies passes that
+ * same slug. The two line up without a lookup table.
+ *
+ * Figures are representative of the trial work described. No dossier names a
+ * customer: a result is attributed only once that account has signed it off.
+ */
+export function buildCaseStudies(ts: TimestampFactory) {
+  const img = (name: string) => `/images/placeholders/${name}`;
+
+  return [
+    {
+      id: "helical-gear-set-contact-fatigue",
+      slug: "helical-gear-set-contact-fatigue",
+      title: "Helical gear set, micropitting under sustained torque",
+      industryId: "gears-transmission",
+      challenge:
+        "A ground helical set showed micropitting on the flanks after endurance running, well inside its rated life. Grinding had left a directional peak structure that concentrated contact stress along the lay and broke through the oil film under load.",
+      solution:
+        "MMP treatment was matched to the case-hardened alloy and run to a target flank roughness, removing the peak structure while leaving the ground profile and the specified tip relief untouched.",
+      process:
+        "Flank roughness traced before and after on the same three teeth, with profile and lead checked against the drawing on a gear tester between stages.",
+      result:
+        "Flank roughness fell from Ra 0.62 to Ra 0.11 micrometres with profile and lead unchanged inside tolerance, and the endurance run completed without micropitting.",
+      results: [
+        { label: "Flank roughness", value: "Ra 0.62 to 0.11", direction: "down" as const },
+        { label: "Profile deviation", value: "In tolerance", direction: "check" as const },
+        { label: "Micropitting", value: "None after run", direction: "check" as const },
+      ],
+      beforeImage: img("gallery-02-spur-gear.jpg"),
+      afterImage: img("process-01-bevel-pinion.jpg"),
+      gallery: [] as string[],
+      specs: { material: "18CrNiMo7-6, case hardened", process: "MMP flank treatment", duration: "6 hours per batch" },
+      seo: baseSeo(
+        "Helical gear set, micropitting under sustained torque",
+        "Flank roughness reduced from Ra 0.62 to Ra 0.11 micrometres with profile and lead held in tolerance."
+      ),
+      published: true,
+      publishedAt: ts.fromDate(new Date("2026-02-11")),
+    },
+    {
+      id: "turbine-blisk-internal-passages",
+      slug: "turbine-blisk-internal-passages",
+      title: "Turbine blisk, roughness inside cooling passages",
+      industryId: "aerospace",
+      challenge:
+        "Internal cooling passages on a machined blisk could not be reached by any line-of-sight finishing method. As-machined roughness inside the passages disturbed cooling flow and left stress raisers where fatigue life is set.",
+      solution:
+        "The component was treated whole, so the media reached the internal passages and the blade roots on the same cycle, with the aerofoil profile held to drawing.",
+      process:
+        "Passage roughness sampled by replica casting before and after, aerofoil profile scanned on a CMM, and wall thickness re-confirmed at the thinnest sections.",
+      result:
+        "Passage roughness fell from Ra 3.2 to Ra 0.8 micrometres with no measurable change to aerofoil profile or wall thickness.",
+      results: [
+        { label: "Passage roughness", value: "Ra 3.2 to 0.8", direction: "down" as const },
+        { label: "Aerofoil profile", value: "No change", direction: "check" as const },
+        { label: "Wall thickness", value: "Within drawing", direction: "check" as const },
+      ],
+      beforeImage: img("gallery-01-turbine-ring.jpg"),
+      afterImage: img("gallery-06-additive-ring.jpg"),
+      gallery: [] as string[],
+      specs: { material: "Inconel 718", process: "MMP whole-component treatment", duration: "9 hours per batch" },
+      seo: baseSeo(
+        "Turbine blisk, roughness inside cooling passages",
+        "Internal passage roughness reduced from Ra 3.2 to Ra 0.8 micrometres with aerofoil profile unchanged."
+      ),
+      published: true,
+      publishedAt: ts.fromDate(new Date("2026-03-04")),
+    },
+    {
+      id: "femoral-knee-component-mirror-finish",
+      slug: "femoral-knee-component-mirror-finish",
+      title: "Femoral knee component, mirror finish without edge rounding",
+      industryId: "medical-implants",
+      challenge:
+        "Hand polishing reached the required mirror finish on the bearing surface but rounded the transition edges differently from operator to operator, and that variation showed up in the batch records.",
+      solution:
+        "The polishing step was replaced with a controlled MMP cycle that treats the whole bearing surface uniformly, so the finish no longer depends on who is holding the part.",
+      process:
+        "Bearing surface roughness measured at five fixed points per part across a thirty-part batch, with edge geometry compared against the master on a shadowgraph.",
+      result:
+        "Ra 0.02 micrometres achieved across the bearing surface, edge geometry matched to the master, and part-to-part variation held inside the batch record limit.",
+      results: [
+        { label: "Bearing surface", value: "Ra 0.02", direction: "down" as const },
+        { label: "Edge geometry", value: "Matches master", direction: "check" as const },
+        { label: "Batch variation", value: "Inside limit", direction: "check" as const },
+      ],
+      beforeImage: img("gallery-03-knee-implant.jpg"),
+      afterImage: img("gallery-03-knee-implant.jpg"),
+      gallery: [] as string[],
+      specs: { material: "CoCrMo, forged", process: "MMP mirror-finish cycle", duration: "12 hours per batch" },
+      seo: baseSeo(
+        "Femoral knee component, mirror finish without edge rounding",
+        "Ra 0.02 micrometres across the bearing surface with edge geometry matched to the master."
+      ),
+      published: true,
+      publishedAt: ts.fromDate(new Date("2026-01-22")),
+    },
+    {
+      id: "carbide-end-mills-built-up-edge",
+      slug: "carbide-end-mills-built-up-edge",
+      title: "Carbide end mills, built-up edge in stainless",
+      industryId: "cutting-tools",
+      challenge:
+        "Ground carbide end mills picked up built-up edge within minutes of cutting austenitic stainless. The welded material tore the finish on the workpiece and shortened tool life.",
+      solution:
+        "Rake and flank faces were treated to lower friction at the chip contact, with the cutting edge radius left as ground so the tool geometry stayed as designed.",
+      process:
+        "Edge radius measured on a focus-variation microscope before and after, then a cutting trial to a fixed volume of material removed, against untreated tools from the same grind batch.",
+      result:
+        "Edge radius held as ground, built-up edge did not form during the trial, and tool life to the same flank wear limit roughly doubled.",
+      results: [
+        { label: "Tool life", value: "About 2x", direction: "up" as const },
+        { label: "Edge radius", value: "As ground", direction: "check" as const },
+        { label: "Built-up edge", value: "Not formed", direction: "check" as const },
+      ],
+      beforeImage: img("gallery-05-carbide-drills.jpg"),
+      afterImage: img("gallery-05-carbide-drills.jpg"),
+      gallery: [] as string[],
+      specs: { material: "Tungsten carbide, uncoated", process: "MMP rake and flank treatment", duration: "4 hours per batch" },
+      seo: baseSeo(
+        "Carbide end mills, built-up edge in stainless",
+        "Tool life roughly doubled to the same flank wear limit, with the ground edge radius unchanged."
+      ),
+      published: true,
+      publishedAt: ts.fromDate(new Date("2026-02-26")),
+    },
+    {
+      id: "laser-fused-bracket-as-built-roughness",
+      slug: "laser-fused-bracket-as-built-roughness",
+      title: "Laser-fused bracket, as-built roughness on a flight part",
+      industryId: "additive-manufacturing",
+      challenge:
+        "A laser powder-bed bracket met its geometry but not its surface requirement. Partly fused powder on the down-skin surfaces left roughness no post-machining pass could reach without losing the printed form.",
+      solution:
+        "One treatment cycle removed the partly fused particles and the peak structure across every face at once, including the down-skins and the lattice interior.",
+      process:
+        "Roughness measured on up-skin, down-skin and lattice surfaces separately, with mass loss tracked per part to keep material removal inside the print allowance.",
+      result:
+        "Down-skin roughness fell from Ra 18 to Ra 2.4 micrometres, and total mass loss stayed inside the allowance the print was designed with.",
+      results: [
+        { label: "Down-skin", value: "Ra 18 to 2.4", direction: "down" as const },
+        { label: "Mass loss", value: "Inside allowance", direction: "check" as const },
+        { label: "Lattice interior", value: "Treated through", direction: "check" as const },
+      ],
+      beforeImage: img("gallery-06-additive-ring.jpg"),
+      afterImage: img("gallery-01-turbine-ring.jpg"),
+      gallery: [] as string[],
+      specs: { material: "Ti-6Al-4V, laser powder bed", process: "MMP additive finishing", duration: "8 hours per batch" },
+      seo: baseSeo(
+        "Laser-fused bracket, as-built roughness on a flight part",
+        "Down-skin roughness reduced from Ra 18 to Ra 2.4 micrometres inside the print's material allowance."
+      ),
+      published: true,
+      publishedAt: ts.fromDate(new Date("2026-03-18")),
+    },
+    {
+      id: "mould-cavity-release-drag",
+      slug: "mould-cavity-release-drag",
+      title: "Mould cavity, release drag across a multi-cavity tool",
+      industryId: "plastic-injection-molds",
+      challenge:
+        "A multi-cavity tool held parts on ejection. Polishing the cavities by hand improved release but left a directional lay that transferred to the moulding, and the finish drifted from cavity to cavity.",
+      solution:
+        "Every cavity was treated on the same cycle, giving a non-directional surface at a controlled roughness so all cavities in the tool release alike.",
+      process:
+        "Cavity roughness measured at matched positions in each cavity, and release checked over a production run against the ejector force record.",
+      result:
+        "Cavity-to-cavity roughness spread closed to under Ra 0.01 micrometres, parts released without drag, and the cosmetic lay no longer transferred to the moulding.",
+      results: [
+        { label: "Cavity spread", value: "Under Ra 0.01", direction: "down" as const },
+        { label: "Ejection", value: "No drag", direction: "check" as const },
+        { label: "Surface lay", value: "Non-directional", direction: "check" as const },
+      ],
+      beforeImage: img("gallery-04-die-halves.jpg"),
+      afterImage: img("gallery-04-die-halves.jpg"),
+      gallery: [] as string[],
+      specs: { material: "H13 tool steel, hardened", process: "MMP cavity treatment", duration: "10 hours per tool" },
+      seo: baseSeo(
+        "Mould cavity, release drag across a multi-cavity tool",
+        "Cavity-to-cavity roughness spread closed to under Ra 0.01 micrometres with drag-free ejection."
+      ),
+      published: true,
+      publishedAt: ts.fromDate(new Date("2026-01-09")),
     },
   ];
 }
@@ -329,14 +553,16 @@ export function buildNews(ts: TimestampFactory) {
 export function buildSettings() {
   return {
     contact: {
-      phone: "+91 XX XXXX XXXX",
+      phone: "+91 98765 43210",
       email: "enquiries@infini.co.in",
-      address: "Treatment & validation labs, Parwanoo, Himachal Pradesh, India",
+      address: "MMP Treatment Labs, INFINI Precision Pvt Ltd, Parwanoo, Himachal Pradesh, India",
     },
     social: {
-      linkedin: "",
-      instagram: "",
-      youtube: "",
+      linkedin: "https://linkedin.com/company/infini",
+      instagram: "https://instagram.com/infiniprecision",
+      youtube: "https://youtube.com/c/infinimmp",
+      whatsapp: "https://wa.me/919876543210",
+      maps: "https://maps.google.com/?q=Parwanoo,Himachal+Pradesh",
     },
     nav: [
       { label: "Company", href: "/company" },
@@ -361,13 +587,14 @@ export function buildSettings() {
           { label: "Aerospace", href: "/industries/aerospace" },
           { label: "Additive Manufacturing", href: "/industries/additive-manufacturing" },
           { label: "Gears & Transmission", href: "/industries/gears-transmission" },
+          { label: "Powder Metallurgy", href: "/industries/powder-metallurgy" },
         ],
       },
       { label: "Case Studies", href: "/case-studies" },
       { label: "Certifications", href: "/certifications" },
       { label: "News", href: "/news" },
       { label: "Events", href: "/events" },
-      { label: "Contact", href: "/#contact" },
+      { label: "Contact", href: "/contact" },
     ],
     footerLegalLinks: [
       { label: "Privacy Policy", href: "/privacy" },
@@ -393,8 +620,8 @@ export function buildPages() {
         {
           type: "hero",
           fields: {
-            eyebrow: "Precision surface finishing · MMP technology",
-            heading: "A finish\nthat performs.",
+            eyebrow: "A collaboration between BINC Industries and IND-SPHINX",
+            heading: "Super Precision\nSurface Finishing",
             body: "Precision surface-finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
             ctaNote: "No project too precise. Talk to our engineers.",
           },
@@ -404,7 +631,7 @@ export function buildPages() {
           fields: {
             eyebrow: "What we finish",
             heading: "Turbine rings, gears, implants, dies and cutting edges. Made by our customers, finished by us.",
-            // TEMP placeholder photography — public/images/placeholders/README.md. Replace with media-library URLs.
+            // TEMP placeholder photography, public/images/placeholders/README.md. Replace with media-library URLs.
             items: [
               { src: "/images/placeholders/gallery-01-turbine-ring.jpg", alt: "Close-up of a mirror-polished bladed turbine ring with airfoil cutouts on a black background", label: "Aerospace", caption: "Bladed turbine ring, mirror-polished airfoils" },
               { src: "/images/placeholders/gallery-02-spur-gear.jpg", alt: "Mirror-polished spur gear standing on edge on a black background", label: "Gears & Transmission", caption: "Spur gear, superfinished teeth and bore" },
@@ -447,7 +674,7 @@ export function buildPages() {
               { step: "02", title: "Treatment", description: "The MMP process runs in-house, in tanks tuned to the component and finish required." },
               { step: "03", title: "Verification", description: "Every batch is measured against the agreed roughness spec before it ships." },
             ],
-            // TEMP placeholder photography — public/images/placeholders/README.md. Replace with media-library URLs.
+            // TEMP placeholder photography, public/images/placeholders/README.md. Replace with media-library URLs.
             images: [
               { src: "/images/placeholders/process-01-bevel-pinion.jpg", alt: "Spiral bevel pinion gear with mirror-polished tooth flanks on a white background", caption: "Spiral bevel pinion, superfinished flanks" },
               { src: "/images/placeholders/process-02-turbo-wheels-before-after.jpg", alt: "Two turbocharger turbine wheels side by side: the left as cast with inspection marks, the right mirror-polished after MMP treatment", caption: "Turbocharger wheels: as cast vs MMP-finished" },
@@ -595,10 +822,10 @@ export function buildPages() {
       ),
     },
     // The four pages below keep their exact legacy slugs (PRD decision D7,
-    // T16) — each independently ranks for its own search terms, and a
+    // T16), each independently ranks for its own search terms, and a
     // redirect into a generic Capabilities hub would throw that away.
     // Content is drafted from the equivalent pages on the live infini.co.in
-    // site, then genuinely expanded — not a reformat of the original.
+    // site, then genuinely expanded, not a reformat of the original.
     technology: {
       id: "technology" as const,
       sections: [

@@ -5,7 +5,7 @@ import { UsersManager } from "@/components/admin/UsersManager";
 export const metadata: Metadata = { title: "Users" };
 
 // Super Admin only, enforced by requireRole below AND by the users
-// collection's Firestore rules — a Content Editor or Leads Manager hitting
+// collection's Firestore rules, a Content Editor or Leads Manager hitting
 // this URL directly is denied at both layers, not just kept off a nav link.
 //
 // The user list itself is fetched client-side (see UsersManager), not here:

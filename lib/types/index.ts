@@ -2,6 +2,8 @@ export * from "./common";
 export * from "./seo";
 export * from "./user";
 export * from "./industry";
+export * from "./componentType";
+export * from "./benefit";
 export * from "./page";
 export * from "./caseStudy";
 export * from "./certification";

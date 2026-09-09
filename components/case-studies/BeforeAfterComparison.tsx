@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 /**
- * Side-by-side on tablet/desktop, stacked on mobile — deliberately not a
+ * Side-by-side on tablet/desktop, stacked on mobile, deliberately not a
  * drag-slider. A slider needs client JS and enough width for both images
  * to register as "different" under a thumb drag; at 375px that's exactly
  * the layout the ticket warns falls apart. Two clearly labeled, always-

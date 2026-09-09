@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { Aurora } from "@/components/ui/aurora";
+import { BlurText } from "@/components/ui/blur-text";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { Spotlight } from "@/components/ui/spotlight";
 import type { HeroCopy } from "@/lib/types";
-import { EmphasisHeading } from "./EmphasisHeading";
 import { InfinityMark } from "./InfinityMark";
 import { SurfaceProfile } from "./SurfaceProfile";
 
 const FALLBACK: Required<HeroCopy> = {
-  eyebrow: "Precision surface finishing · MMP technology",
-  heading: "A finish\nthat performs.",
+  eyebrow: "A collaboration between BINC Industries and IND-SPHINX",
+  heading: "Super Precision\nSurface Finishing",
   body: "Precision surface-finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
   ctaNote: "No project too precise. Talk to our engineers.",
 };
@@ -27,6 +29,8 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
   return (
     <section className="relative overflow-hidden bg-background">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <Aurora className="opacity-90 [mask-image:radial-gradient(ellipse_75%_65%_at_30%_20%,black_20%,transparent_75%)]" />
+        <Spotlight x="70%" />
         <div className="hero-grid absolute inset-0" />
         <div className="absolute -bottom-48 -left-48 size-[42rem] rounded-full bg-[radial-gradient(closest-side,rgba(var(--color-primary-rgb),0.32),transparent)] blur-2xl" />
         <InfinityMark className="absolute -top-[6%] -right-[18%] w-[92%] text-foreground sm:w-[70%] lg:-right-[8%] lg:-top-[2%] lg:w-[46%] lg:max-w-[660px]" />
@@ -41,11 +45,8 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
             {eyebrow}
           </p>
 
-          <h1
-            className="hero-reveal text-[clamp(3.25rem,10vw,8rem)] leading-[0.9] font-semibold tracking-[-0.045em] text-balance text-foreground"
-            style={reveal(1)}
-          >
-            <EmphasisHeading text={heading} />
+          <h1 className="text-[clamp(3.25rem,10vw,8rem)] leading-[0.9] font-semibold tracking-[-0.045em] text-balance text-foreground">
+            <BlurText text={heading} accentLast delay={0.45} stagger={0.07} />
           </h1>
 
           <p
@@ -57,7 +58,7 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
 
           <div className="hero-reveal flex flex-wrap items-center gap-3 pt-2" style={reveal(3)}>
             <Button asChild size="lg" className="h-12 rounded-full px-7 text-[15px]">
-              <Link href="#contact">
+              <Link href="/contact">
                 Send us a part
                 <ArrowUpRight className="size-4" aria-hidden="true" />
               </Link>

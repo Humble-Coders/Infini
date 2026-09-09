@@ -13,9 +13,14 @@ export async function SiteShell({ children }: { children: ReactNode }) {
 
   return (
     <SmoothScroll>
-      <Navbar navItems={navItems} />
-      {children}
-      <Footer navItems={navItems} legalLinks={settings?.footerLegalLinks ?? []} contact={settings?.contact ?? null} />
+      {/* data-site marks the public tree, so the monochrome photography rule in
+          globals.css applies here and never inside the admin panel, where
+          media thumbnails and certificate previews have to show true colour. */}
+      <div data-site="public" className="contents">
+        <Navbar navItems={navItems} />
+        {children}
+        <Footer navItems={navItems} legalLinks={settings?.footerLegalLinks ?? []} contact={settings?.contact ?? null} />
+      </div>
     </SmoothScroll>
   );
 }

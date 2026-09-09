@@ -20,7 +20,7 @@ export function CertificationsManager() {
   const [items, setItems] = useState<WithId<CertificationDoc>[]>([]);
   const [state, setState] = useState<LoadState>("loading");
   const [editing, setEditing] = useState<WithId<CertificationDoc> | "new" | null>(null);
-  // Captured once per fetch, not read fresh during render — Date.now() itself is impure and
+  // Captured once per fetch, not read fresh during render, Date.now() itself is impure and
   // the React Compiler flags calling it directly in a component body.
   const [loadedAt, setLoadedAt] = useState(() => Date.now());
 

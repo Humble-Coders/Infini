@@ -4,10 +4,19 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
 import { getCaseStudyBySlug, getPublishedCaseStudySlugs } from "@/lib/data/caseStudies";
 import { getIndustryById } from "@/lib/data/industries";
 import { BeforeAfterComparison } from "@/components/case-studies/BeforeAfterComparison";
+import { ogTitle, pageTitle } from "@/lib/seo";
+
+
+/*
+ * ISR window. Without this the route re-renders and re-reads Firestore on
+ * every request, so returning to a page costs the same round trips as
+ * arriving the first time. Publishing should still revalidate the path for
+ * an immediate update; this is the floor, not the mechanism.
+ */
+export const revalidate = 600;
 
 export async function generateStaticParams() {
   const slugs = await getPublishedCaseStudySlugs();
@@ -20,10 +29,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!caseStudy) return {};
 
   return {
-    title: caseStudy.seo.title,
+    title: pageTitle(caseStudy.seo.title),
     description: caseStudy.seo.description,
     openGraph: {
-      title: `${caseStudy.seo.title} | INFINI`,
+      title: ogTitle(caseStudy.seo.title),
       description: caseStudy.seo.description,
       type: "article",
     },
@@ -129,15 +138,6 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
           </Container>
         </section>
       )}
-
-      <section className="py-16 sm:py-20">
-        <Container className="flex flex-col items-center gap-6 text-center">
-          <h2 className="max-w-xl text-2xl font-light text-foreground sm:text-3xl">Have a similar component?</h2>
-          <Button asChild size="lg" className="px-8">
-            <Link href={industry ? `/request-a-quote?industry=${industry.slug}` : "/request-a-quote"}>Request a Quote</Link>
-          </Button>
-        </Container>
-      </section>
     </main>
   );
 }

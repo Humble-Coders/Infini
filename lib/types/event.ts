@@ -1,6 +1,6 @@
 import type { FirestoreTimestamp } from "./common";
 
-/** `events` collection — trade shows, announcements. */
+/** `events` collection, trade shows, announcements. */
 export interface EventDoc {
   title: string;
   startDate: FirestoreTimestamp;

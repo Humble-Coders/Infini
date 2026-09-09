@@ -33,6 +33,14 @@ next-env.d.ts
 .env.local
 .env.*.local
 
+# Local env dumps that don't match the patterns above — a bare `env` file in the
+# repo root is otherwise not ignored and gets picked up by `git add .`.
+/env
+
+# Stray Claude Code settings written into the project root; these carry an
+# ANTHROPIC_AUTH_TOKEN and must never be committed.
+*.claudesettings.json
+
 # Firebase service account keys — never committed (see docs/INFRA.md)
 *firebase-adminsdk*.json
 serviceAccountKey.json

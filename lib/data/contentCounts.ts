@@ -15,7 +15,7 @@ export type ContentCollection = (typeof CONTENT_COLLECTIONS)[number];
 export type ContentCounts = Record<ContentCollection, number>;
 
 /**
- * Document counts (published + draft — rules let Content Editor/Super Admin
+ * Document counts (published + draft, rules let Content Editor/Super Admin
  * see both) across every admin-managed content collection, for the T7
  * dashboard's content-counts widget. Uses a server-side count aggregation,
  * not a full document fetch, so it stays cheap regardless of collection size.

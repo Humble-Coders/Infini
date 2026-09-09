@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 
 /**
  * Shared save/cancel row for every admin form. Disables both buttons and
- * shows progress during the async save, and always resolves to a toast —
- * per the ticket, no async action here fails silently.
+ * shows progress during the async save, and always resolves to a toast, * per the ticket, no async action here fails silently.
  */
 export function FormActions({
   onSave,

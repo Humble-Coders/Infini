@@ -38,7 +38,7 @@ export function MediaCard({ item, onEdit, onDeleted, onSelect }: MediaCardProps)
           : null
       );
     } catch {
-      // Reference check failing shouldn't block delete entirely — just skip the warning.
+      // Reference check failing shouldn't block delete entirely, just skip the warning.
       setReferenceWarning(null);
     } finally {
       setCheckingReferences(false);

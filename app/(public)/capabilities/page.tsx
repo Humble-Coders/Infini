@@ -1,12 +1,26 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Wrench } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { PhotoHero } from "@/components/sections/shared/PhotoHero";
+import { ProcessStrip } from "@/components/sections/shared/ProcessStrip";
+import { DetailRows } from "@/components/sections/shared/DetailRows";
+import { MarqueeBand } from "@/components/sections/shared/MarqueeBand";
+import { TreatmentSchematic } from "@/components/sections/capability/TreatmentSchematic";
+import { TrustSection } from "@/components/sections/home/TrustSection";
+import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getSettings } from "@/lib/data/settings";
-import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
+import { ogTitle, pageTitle } from "@/lib/seo";
+
+
+/*
+ * ISR window. Without this the route re-renders and re-reads Firestore on
+ * every request, so returning to a page costs the same round trips as
+ * arriving the first time. Publishing should still revalidate the path for
+ * an immediate update; this is the floor, not the mechanism.
+ */
+export const revalidate = 600;
 
 interface HeroCopy {
   eyebrow: string;
@@ -31,11 +45,80 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("capabilities");
   if (!page) return FALLBACK;
   return {
-    title: page.seo.title,
+    title: pageTitle(page.seo.title),
     description: page.seo.description,
-    openGraph: { title: `${page.seo.title} | INFINI`, description: page.seo.description, type: "website" },
+    openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }
+
+/*
+ * TEMP topical photography, reusing the verified Unsplash IDs already in the
+ * repo for the industry heroes (DEMO_HERO_IMAGES in lib/data/industries.ts).
+ * IDs are reused rather than invented so every URL is one that has been
+ * checked; real INFINI photography drops in without touching the layout.
+ */
+const HERO_IMAGE = "https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?q=80&w=1920&auto=format&fit=crop";
+const ROWS_IMAGE = "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=640&auto=format&fit=crop";
+
+/** How an engagement runs, with the timings that let a reader plan around it. */
+const STAGES = [
+  {
+    timing: "Day 1",
+    step: "01",
+    title: "Assessment",
+    points: ["Drawing, alloy and target roughness", "Geometry reviewed for access", "Incoming surface measured"],
+  },
+  {
+    timing: "Within 5 days",
+    step: "02",
+    title: "Technical validation",
+    points: ["Sample parts treated", "Parameters calibrated to your target", "Measured before and after returned"],
+  },
+  {
+    timing: "2 to 3 weeks",
+    step: "03",
+    title: "Industrial validation",
+    points: ["Full production batch", "Variation across the batch checked", "Process window frozen"],
+  },
+  {
+    timing: "Ongoing",
+    step: "04",
+    title: "Serial production",
+    points: ["Every batch measured", "Certificate of conformity issued", "Lot traceability retained"],
+  },
+];
+
+const CAPABILITY_ROWS = [
+  {
+    label: "Roughness control",
+    detail: "From as-machined down to 0.02 µm Ra, targeted to your specification rather than to a fixed recipe.",
+    href: "/mirror-like-finish",
+  },
+  {
+    label: "Dimensional integrity",
+    detail: "No measurable stock removal. Form, profile and edge condition survive the treatment intact.",
+    href: "/technology",
+  },
+  {
+    label: "Geometry access",
+    detail: "Bores, cooling channels, undercuts, lattices and blind pockets, wherever a tool cannot reach.",
+    href: "/technology",
+  },
+  {
+    label: "Substrate range",
+    detail: "Any alloy at any hardness: steels, stainless, titanium, nickel superalloys, carbide and aluminium.",
+  },
+  {
+    label: "Incoming condition",
+    detail: "Machined, ground, cast, forged, EDM or additive, including recast-layer removal.",
+    href: "/deburring-polishing",
+  },
+  {
+    label: "Verification",
+    detail: "Ra and Rz measured per batch, Rpk on request, against the spec agreed at validation.",
+    href: "/validation",
+  },
+];
 
 export default async function CapabilitiesPage() {
   const [page, certifications, settings] = await Promise.all([
@@ -45,110 +128,101 @@ export default async function CapabilitiesPage() {
   ]);
 
   const hero = getSection<HeroCopy>(page, "hero");
-  const processCapabilities = getSection<ItemsCopy>(page, "processCapabilities");
   const capacity = getSection<TextBlockCopy>(page, "capacity");
-  const legacyCapabilityLinks = settings?.nav.find((item) => item.href === "/capabilities")?.children ?? [];
+  const processCapabilities = getSection<ItemsCopy>(page, "processCapabilities");
+  const legacyLinks = settings?.nav.find((item) => item.href === "/capabilities")?.children ?? [];
 
   return (
     <main className="min-h-screen bg-background">
-      {hero && (
-        <section className="relative overflow-hidden border-b border-border/60 py-20 sm:py-28">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background: "radial-gradient(70% 60% at 50% 0%, rgba(var(--color-accent-rgb),0.14), transparent 70%)",
-            }}
-          />
-          <Wrench
-            strokeWidth={0.6}
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-10 -bottom-20 size-72 text-foreground/[0.05] sm:size-96"
-          />
-          <Container className="relative flex flex-col gap-5">
-            <span className="text-xs font-medium tracking-[0.2em] text-accent uppercase">{hero.eyebrow}</span>
-            <h1 className="max-w-3xl text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.05] font-light tracking-[-0.02em] text-foreground">
-              {hero.heading}
-            </h1>
-            <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">{hero.body}</p>
-          </Container>
-        </section>
-      )}
+      <PhotoHero
+        eyebrow={hero?.eyebrow ?? "Capabilities"}
+        heading={hero?.heading ?? "From controlled roughness to mirror-like brilliance."}
+        body={hero?.body}
+        image={HERO_IMAGE}
+        imageAlt="Carbide cutting tools on a precision machining centre"
+        badges={[{ label: "ISO 9001:2015" }, { label: "Measured per batch" }, { label: "No dimensional change" }]}
+        spec={{
+          title: "Achievable finish",
+          body: "0.1 down to 0.02 µm Ra, confirmed on your own components during validation before anything runs in series.",
+        }}
+      />
 
-      {processCapabilities && (
-        <section className="border-b border-border/60 py-16 sm:py-24">
-          <Container className="flex flex-col gap-2">
-            <h2 className="mb-8 text-2xl font-light text-foreground sm:text-3xl">The MMP process</h2>
-            {processCapabilities.items.map((capability, index) => (
-              <div
-                key={capability.title}
-                className="group flex flex-col gap-3 border-t border-border py-7 transition-colors duration-300 last:border-b hover:bg-foreground/[0.02] sm:flex-row sm:items-baseline sm:gap-8 sm:py-8"
-              >
-                <span className="font-mono text-sm text-accent/70 tabular-nums sm:w-16 sm:shrink-0">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="text-lg font-normal text-foreground sm:w-64 sm:shrink-0">{capability.title}</h3>
-                <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">{capability.description}</p>
-              </div>
-            ))}
-          </Container>
-        </section>
-      )}
+      <ProcessStrip
+        eyebrow="Process"
+        heading="How your part gets treated"
+        body="Four stages from first drawing to a released process, each with a measured exit condition."
+        stages={STAGES}
+        surface="light"
+      />
 
-      {capacity && (
-        <section className="border-b border-border/60 py-16 sm:py-24">
-          <Container className="flex flex-col gap-8 sm:flex-row sm:items-start">
-            <div className="flex shrink-0 items-start sm:w-56">
-              <h2 className="text-2xl leading-[1.1] font-light text-foreground sm:text-3xl">{capacity.heading}</h2>
+      <TreatmentSchematic surface="light" />
+
+      <DetailRows
+        eyebrow="Capabilities"
+        heading="Every surface, every tolerance"
+        body="Confirmed against your drawing before it is quoted, and checked again before it ships."
+        rows={CAPABILITY_ROWS}
+        image={ROWS_IMAGE}
+        imageAlt="Superfinished spur gear"
+        imageLabel="Gears"
+        action={{ label: "See the process", href: "/technology" }}
+        surface="dark"
+      />
+
+      {(capacity || processCapabilities) && (
+        <section data-surface="light" className="bg-background py-20 sm:py-28">
+          <Container className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+            <div className="flex flex-col gap-5 lg:col-span-5">
+              <Eyebrow>Capacity</Eyebrow>
+              <h2 className="text-[clamp(1.6rem,3.2vw,2.5rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-foreground">
+                {capacity?.heading ?? "Capacity and lead times"}
+              </h2>
             </div>
-            <p className="max-w-2xl border-l border-accent/40 pl-6 text-lg leading-relaxed font-light text-foreground/85 sm:pl-8 sm:text-xl">
-              {capacity.body}
-            </p>
-          </Container>
-        </section>
-      )}
-
-      {legacyCapabilityLinks.length > 0 && (
-        <section className="border-b border-border/60 py-16 sm:py-20">
-          <Container className="flex flex-col gap-6">
-            <h2 className="text-2xl font-light text-foreground sm:text-3xl">Go deeper on a specific finish</h2>
-            <div className="flex flex-col divide-y divide-border border-t border-border">
-              {legacyCapabilityLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="group flex items-center justify-between py-4 transition-colors hover:bg-foreground/[0.02]"
-                >
-                  <span className="text-sm text-foreground sm:text-base">{link.label}</span>
-                  <ArrowRight
-                    className="size-4 text-accent opacity-0 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:opacity-100"
-                    aria-hidden="true"
-                  />
-                </Link>
-              ))}
+            <div className="flex flex-col gap-8 lg:col-span-6 lg:col-start-7">
+              {capacity?.body && (
+                <p className="text-base leading-relaxed text-pretty text-muted-foreground sm:text-lg">
+                  {capacity.body}
+                </p>
+              )}
+              {processCapabilities && (
+                <ul className="grid gap-px border border-border bg-border sm:grid-cols-2">
+                  {processCapabilities.items.map((item) => (
+                    <li key={item.title} className="flex flex-col gap-2 bg-background p-5">
+                      <h3 className="text-sm font-semibold tracking-[-0.01em] text-foreground">{item.title}</h3>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </Container>
         </section>
       )}
+
+      {legacyLinks.length > 0 && (
+        <DetailRows
+          eyebrow="Go deeper"
+          heading="The finishes in detail"
+          rows={legacyLinks.map((link) => ({
+            label: link.label,
+            detail: "How this finish is reached, what it changes, and where it applies.",
+            href: link.href,
+          }))}
+          surface="dark"
+        />
+      )}
+
+      <MarqueeBand text={["Send us a part", "We read the surface", "We treat the peaks", "We prove the number"]} />
 
       {certifications.length > 0 && (
-        <section className="border-b border-border/60 py-16 sm:py-20">
+        <section data-surface="light" className="bg-background py-20 sm:py-24">
           <Container>
-            <CertificationsBlock certifications={certifications} />
+            <CertificationsBlock certifications={certifications} heading="Standards behind the work" />
           </Container>
         </section>
       )}
 
-      <section className="py-16 sm:py-20">
-        <Container className="flex flex-col items-center gap-6 text-center">
-          <h2 className="max-w-xl text-2xl font-light text-foreground sm:text-3xl">
-            Have a component that needs finishing?
-          </h2>
-          <Button asChild size="lg" className="px-8">
-            <Link href="/request-a-quote">Request a Quote</Link>
-          </Button>
-        </Container>
-      </section>
+      <TrustSection />
     </main>
   );
 }

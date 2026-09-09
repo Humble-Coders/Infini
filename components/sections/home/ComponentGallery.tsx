@@ -1,5 +1,7 @@
 import Image from "next/image";
+import { BlurText } from "@/components/ui/blur-text";
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 import { cn } from "@/components/ui/utils";
 import type { GalleryCopy } from "@/lib/types";
 import { MonoLabel } from "./MonoLabel";
@@ -31,7 +33,7 @@ const TILE_SIZES = [
 ] as const;
 
 /**
- * "What we finish" — the components INFINI treats, photographed, directly
+ * "What we finish", the components INFINI treats, photographed, directly
  * under the hero so a first-time visitor sees real parts within one scroll.
  * Content comes from `pages/home`'s `gallery` section; until that is
  * authored, the fallback set of placeholder photographs renders instead.
@@ -42,21 +44,21 @@ export function ComponentGallery({ copy }: { copy: GalleryCopy | null }) {
 
   return (
     <section aria-labelledby="gallery-heading" className="bg-background py-14 sm:py-20 lg:py-24">
-      <Container className="flex flex-col gap-8 sm:gap-10">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-10">
+      <Container className="flex flex-col gap-8 sm:gap-10 max-w-6xl">
+        <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-10">
           <div className="flex flex-col gap-4">
             <MonoLabel>{eyebrow}</MonoLabel>
             <h2
               id="gallery-heading"
               className="max-w-2xl text-[clamp(1.5rem,2.8vw,2.375rem)] leading-[1.12] font-medium tracking-[-0.03em] text-balance text-foreground"
             >
-              {heading}
+              <BlurText text={heading} />
             </h2>
           </div>
           <p className="shrink-0 font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
             {items.length} components<span className="sm:hidden"> · swipe</span>
           </p>
-        </div>
+        </Reveal>
 
         <ul className="-mx-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-2 scroll-pl-6 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-12 [&::-webkit-scrollbar]:hidden">
           {items.map((item, index) => (

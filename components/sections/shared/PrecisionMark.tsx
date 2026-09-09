@@ -1,6 +1,6 @@
 /**
- * Flat line-art motif — concentric rings, crosshair ticks and viewfinder
- * corner brackets — standing in for the measurement/inspection imagery core
+ * Flat line-art motif, concentric rings, crosshair ticks and viewfinder
+ * corner brackets, standing in for the measurement/inspection imagery core
  * to INFINI's surface-finishing story. Pure stroked SVG (`currentColor`), no
  * gradients or raster assets, so it tracks whatever theme is active.
  */

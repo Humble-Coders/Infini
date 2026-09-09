@@ -13,7 +13,7 @@
   --color-card-foreground: #f5f3f2;
   --color-popover: #0c0b0b;
   --color-popover-foreground: #f5f3f2;
-  /* Fill color for buttons/backgrounds — paired with light text/foreground; darkened from the
+  /* Fill color for buttons/backgrounds, paired with light text/foreground; darkened from the
      brand red so bg-primary + text-primary-foreground clears WCAG AA (4.5:1). */
   --color-primary: #c81820;
   --color-primary-foreground: #f5f3f2;
@@ -22,7 +22,7 @@
   --color-secondary-foreground: #f5f3f2;
   --color-muted: #1d1b1b;
   --color-muted-foreground: #a3a0a0;
-  /* Text/icon/link color on dark backgrounds — brighter than --color-primary so red text on
+  /* Text/icon/link color on dark backgrounds, brighter than --color-primary so red text on
      black clears WCAG AA (4.5:1); the two can't share one value, see docs/UI-STANDARDS.md. */
   --color-accent: #f23540;
   --color-accent-foreground: #f5f3f2;
@@ -57,8 +57,12 @@
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-marquee: marquee 38s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 56s linear infinite;
+  --animate-aurora-a: aurora-a 13s ease-in-out infinite alternate;
+  --animate-aurora-b: aurora-b 17s ease-in-out infinite alternate;
+  --animate-aurora-c: aurora-c 21s ease-in-out infinite alternate;
 
-  /* Metallic greys for caption scrims over photography — decorative only, never used for body text. */
+  /* Metallic greys for caption scrims over photography, decorative only, never used for body text. */
   --color-metal-900: #262626;
   --color-metal-500: #8c8c8c;
   --color-metal-100: #ededed;
@@ -72,8 +76,11 @@
  * flip automatically, so no section ever hardcodes a colour.
  */
 [data-surface="light"] {
-  --color-background: #ffffff;
-  --color-background-elevated: #f4f2f1;
+  /* Warm off-white, not pure white. Pure #fff against the near-black band
+     reads as a harsh stripe; a cream ground holds the same contrast while the
+     page reads as one material. */
+  --color-background: #f4f2ed;
+  --color-background-elevated: #ffffff;
   --color-foreground: #0b0a0a;
   --color-card: #ffffff;
   --color-card-foreground: #0b0a0a;
@@ -114,7 +121,10 @@
   --color-secondary: #b3151c;
   --color-secondary-foreground: #ffffff;
   --color-muted: #b3151c;
-  --color-muted-foreground: #fbd5d7;
+  /* Lifted from #fbd5d7, which measured 4.32:1 on the brand red and so missed
+     WCAG AA for body text. #fde8e9 clears it at 4.96:1 and still reads as
+     secondary against the pure-white foreground (5.82:1). */
+  --color-muted-foreground: #fde8e9;
   --color-accent: #ffffff;
   --color-accent-foreground: #c81820;
   --color-border: rgba(255, 255, 255, 0.28);
@@ -191,7 +201,7 @@
   }
 }
 
-/* Staggered entrance for hero copy — pair with an inline animation-delay. */
+/* Staggered entrance for hero copy, pair with an inline animation-delay. */
 .hero-reveal {
   animation: fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -199,6 +209,46 @@
 @keyframes marquee {
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* Reverse twin: starts mid-loop and drifts back to origin for a seamless
+   counter-moving marquee when paired with a duplicated track. */
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Aurora drift: transform-only loops so mobile GPUs stay in their comfort
+   zone. Each blob runs a different duration for a non-repeating feel. */
+@keyframes aurora-a {
+  from {
+    transform: translate3d(-10%, 6%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(16%, 20%, 0) scale(1.2);
+  }
+}
+
+@keyframes aurora-b {
+  from {
+    transform: translate3d(12%, -8%, 0) scale(1.12);
+  }
+  to {
+    transform: translate3d(-16%, 14%, 0) scale(0.92);
+  }
+}
+
+@keyframes aurora-c {
+  from {
+    transform: translate3d(0%, 8%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-18%, -12%, 0) scale(1.25);
   }
 }
 
@@ -231,6 +281,34 @@
   }
   to {
     height: 0;
+  }
+}
+
+/* Marquee horizontal scroll, used by components/ui/marquee */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Meteor / shooting-star diagonal rain */
+@keyframes meteor-fall {
+  0% {
+    transform: rotate(215deg) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(215deg) translateX(600px);
+    opacity: 0;
   }
 }
 
@@ -343,5 +421,77 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Photography runs monochrome across the public site.
+ *
+ * The palette is black, white and one red, and red is reserved for type. Stock
+ * and component photography arriving in full colour put a second and third
+ * colour on the page and pulled attention off the accent, so every photograph
+ * is desaturated at the surface rather than in the asset. A touch of extra
+ * contrast keeps mid-grey component shots from going flat once the colour is
+ * gone.
+ *
+ * Scoped to the public tree so admin media thumbnails keep their true colour,
+ * and opt out per image with data-mono="off" where colour carries meaning.
+ */
+[data-site="public"] img:not([data-mono="off"]) {
+  filter: grayscale(1) contrast(1.06);
+}
+
+/*
+ * Route curtain: the supplied infinity clip, full bleed on black.
+ *
+ * The black is this element's own background, not the video's, and it is in the
+ * server-rendered HTML. That is what makes the curtain instant: the browser
+ * paints black on its first frame and the site is never visible underneath,
+ * whether the video has arrived, is still buffering, or failed outright.
+ *
+ * `object-fit: cover` because the clip is 16:9 and the viewport is not; the
+ * mark sits centre frame, so cropping the sides costs nothing. The clip's own
+ * corners are already near-black, so it composites onto the ground seamlessly.
+ *
+ * The lift is a plain opacity transition driven by `data-state`, which the
+ * component flips when the animation reaches its cut point. `visibility` goes
+ * with it so the finished curtain is out of the accessibility tree, and
+ * `pointer-events: none` means it could never intercept a click even mid-fade.
+ */
+.route-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--color-background);
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 0s;
+}
+
+.route-curtain[data-state="done"] {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
+}
+
+.route-curtain-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-curtain {
+    display: none;
   }
 }

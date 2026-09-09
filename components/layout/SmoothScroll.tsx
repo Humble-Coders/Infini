@@ -13,20 +13,20 @@ function getSnapshot() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-/** SSR has no matchMedia — default to "not reduced" server-side; the client snapshot corrects it on hydration, same as any other browser-only preference. */
+/** SSR has no matchMedia, default to "not reduced" server-side; the client snapshot corrects it on hydration, same as any other browser-only preference. */
 function getServerSnapshot() {
   return false;
 }
 
 /**
  * Wraps the public site in Lenis smooth scroll. Explicitly disabled under
- * prefers-reduced-motion — Lenis intercepts wheel/touch input and animates
+ * prefers-reduced-motion, Lenis intercepts wheel/touch input and animates
  * scroll position itself, so the CSS `scroll-behavior: auto !important`
  * fallback in globals.css doesn't reach it; this is the JS-level opt-out
  * the same rule expects everywhere else on the site.
  *
  * Uses useSyncExternalStore rather than useEffect+setState to read the
- * media query — subscribing to an external source with a consistent
+ * media query, subscribing to an external source with a consistent
  * snapshot is exactly what it's for, and it avoids the extra render pass
  * of setting state from inside an effect.
  */

@@ -11,8 +11,7 @@ function createAdminApp(): App {
   }
 
   // `||`, not `??`: .env.example documents these keys with empty values, so
-  // an unfilled FIREBASE_ADMIN_PROJECT_ID is "" (defined), not undefined —
-  // `??` would never fall through to NEXT_PUBLIC_FIREBASE_PROJECT_ID.
+  // an unfilled FIREBASE_ADMIN_PROJECT_ID is "" (defined), not undefined, // `??` would never fall through to NEXT_PUBLIC_FIREBASE_PROJECT_ID.
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || undefined;
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
