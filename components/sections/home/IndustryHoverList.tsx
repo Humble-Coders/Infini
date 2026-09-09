@@ -65,20 +65,7 @@ function IndustryHoverRow({ industry, index }: { industry: HoverIndustry; index:
           <span className="max-w-xl text-sm leading-snug text-pretty text-muted-foreground sm:text-base">
             {industry.headline}
           </span>
-          {industry.image && (
-            <span className="mt-2 block h-24 w-40 overflow-hidden rounded-lg border border-border lg:hidden">
-              <Image
-                src={industry.image}
-                alt=""
-                aria-hidden="true"
-                width={320}
-                height={192}
-                loading="lazy"
-                sizes="160px"
-                className="h-full w-full object-cover"
-              />
-            </span>
-          )}
+          {/* Mobile images disabled as per user request */}
         </span>
 
         <span
@@ -98,7 +85,7 @@ function IndustryHoverRow({ industry, index }: { industry: HoverIndustry; index:
               initial={false}
               animate={{ scale: active ? 1 : 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 22 }}
-              className="block h-40 w-56 overflow-hidden rounded-xl border border-border xl:h-48 xl:w-64"
+              className="relative block h-40 w-56 overflow-hidden rounded-xl border border-white/10 bg-black xl:h-48 xl:w-64"
             >
               <Image
                 src={industry.image}
@@ -107,10 +94,7 @@ function IndustryHoverRow({ industry, index }: { industry: HoverIndustry; index:
                 height={384}
                 loading="lazy"
                 sizes="256px"
-                /* `block`: an <img> is inline by default, so it sits on the text
-                   baseline and leaves a few pixels of the container showing
-                   under it, which read as a white line along the bottom edge. */
-                className="block h-full w-full object-cover"
+                className="absolute inset-0 block h-full w-full object-cover"
               />
             </motion.span>
           </motion.span>

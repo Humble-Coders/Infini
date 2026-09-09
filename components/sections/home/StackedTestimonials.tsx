@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 
@@ -44,14 +44,19 @@ export function StackedTestimonials({ items }: { items: StackedTestimonial[] }) 
 
   const total = items.length;
 
-  const nextCard = () => {
+  const nextCard = useCallback(() => {
     setDeck((current) => {
       if (current.length < 2) return current;
       const [first, ...rest] = current;
       return [...rest, first!];
     });
     setPosition((current) => (total === 0 ? 0 : (current + 1) % total));
-  };
+  }, [total]);
+
+  useEffect(() => {
+    const timer = setInterval(nextCard, 6000);
+    return () => clearInterval(timer);
+  }, [nextCard]);
 
   const prevCard = () => {
     setDeck((current) => {

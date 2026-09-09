@@ -43,7 +43,7 @@ export function Footer({
               />
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-              A specialist surface-finishing partner to precision manufacturers. MMP treatment applied in-house, verified before it ships.
+              A specialist surface finishing partner to precision manufacturers. MMP treatment applied in-house, verified before it ships.
             </p>
           </div>
 
@@ -85,7 +85,7 @@ export function Footer({
 
         <div className="flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            &copy; {year} INFINI Precision Pvt. Ltd. ISO 9001-certified MMP surface-finishing.
+            &copy; {year} INFINI Precision Pvt. Ltd. ISO 9001-certified MMP surface finishing.
           </p>
           {/* The mark the process is licensed under. The old header lockup carried it,
               but dark-on-dark it was invisible against the near-black chrome. */}

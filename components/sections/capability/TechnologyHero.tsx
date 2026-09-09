@@ -51,9 +51,7 @@ export function TechnologyHero({ hero }: { hero: PageHeroCopy }) {
 </div>
 
         <Reveal delay={0.2} className="lg:col-span-6">
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_28px_90px_-40px_rgba(var(--color-primary-rgb),0.6)] sm:p-7">
-            <SurfaceProfile />
-          </div>
+          <SurfaceProfile />
         </Reveal>
       </Container>
     </section>

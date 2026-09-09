@@ -27,7 +27,7 @@ export function ExhibitionBanner({
               Meet Us
             </strong>
             <span className="font-medium">{title}</span>
-            <div className="flex items-center gap-4 text-primary-foreground/80 text-xs sm:text-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-primary-foreground/80 text-xs sm:text-sm text-center">
               <span className="flex items-center gap-1.5">
                 <Calendar className="size-3.5" />
                 {date}

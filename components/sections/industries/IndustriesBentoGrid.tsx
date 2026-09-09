@@ -23,8 +23,7 @@ export function IndustriesBentoGrid({
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
       {industries.map((industry, index) => {
-        const span =
-          index === 0 ? "lg:col-span-2 lg:row-span-1" : index === 3 ? "lg:col-span-2" : "";
+        const span = index % 4 === 0 || index % 4 === 3 ? "lg:col-span-2" : "";
         return (
           <div key={industry.slug} className={span}>
             <TiltCard className="h-full">

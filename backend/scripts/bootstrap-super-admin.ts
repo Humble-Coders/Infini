@@ -3,7 +3,7 @@
  * Firebase project, unlike seed.ts, this intentionally targets a real
  * project, not the emulator.
  *
- * Run once via `npm run bootstrap-super-admin -- <email>`. Never sets or
+ * Run once via `npm run bootstrap-super-admin - <email>`. Never sets or
  * prints a password, it generates a password-reset link so the account
  * owner sets their own.
  */
@@ -24,7 +24,7 @@ const EXPECTED_PROJECT_ID = "infini-f4388";
 
 const email = process.argv[2];
 if (!email) {
-  throw new Error("Usage: npm run bootstrap-super-admin -- <email>");
+  throw new Error("Usage: npm run bootstrap-super-admin - <email>");
 }
 
 // `||`, not `??`: .env.example documents these keys with empty values, so an

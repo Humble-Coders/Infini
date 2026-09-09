@@ -22,7 +22,7 @@ export function PartnershipSection() {
         <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-8 sm:flex-row sm:gap-12">
           {/* IND-SPHINX */}
           <div className="relative flex w-full flex-1 flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl bg-neutral-950 p-[1px] text-center sm:w-auto">
-            <div className="absolute inset-0 z-0 h-full w-full animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0%,#c81820_50%,transparent_100%)]" />
+            <div className="absolute inset-0 z-0 h-full w-full animate-[spin_4s_linear_infinite] will-change-transform bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0%,#c81820_50%,transparent_100%)]" />
             <div className="relative z-10 flex h-full w-full flex-col items-center gap-4 rounded-[23px] bg-neutral-950 p-8 shadow-[inset_0_0_20px_rgba(200,24,32,0.1)]">
               <div className="flex h-16 items-center justify-center">
                 <Image
@@ -45,7 +45,7 @@ export function PartnershipSection() {
 
           {/* BINC Industries */}
           <div className="relative flex w-full flex-1 flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl bg-neutral-950 p-[1px] text-center sm:w-auto">
-            <div className="absolute inset-0 z-0 h-full w-full animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_180deg_at_50%_50%,transparent_0%,#c81820_50%,transparent_100%)]" />
+            <div className="absolute inset-0 z-0 h-full w-full animate-[spin_4s_linear_infinite] will-change-transform bg-[conic-gradient(from_180deg_at_50%_50%,transparent_0%,#c81820_50%,transparent_100%)]" />
             <div className="relative z-10 flex h-full w-full flex-col items-center gap-4 rounded-[23px] bg-neutral-950 p-8 shadow-[inset_0_0_20px_rgba(200,24,32,0.1)]">
               {/* BINC is the company; MMP Technology is the mark it is known by and
                   the one the PDF supplies, so the card shows both. */}

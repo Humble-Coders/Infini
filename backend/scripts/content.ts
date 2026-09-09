@@ -28,7 +28,7 @@ export function buildCertifications(ts: TimestampFactory) {
       certificateNumber: "Q-000001",
       issuedDate: ts.fromDate(new Date("2024-01-15")),
       validUntil: ts.fromDate(new Date("2027-01-14")),
-      description: "Quality management system certification covering INFINI's surface-finishing process controls.",
+      description: "Quality management system certification covering INFINI's surface finishing process controls.",
       fileUrl: "",
       order: 1,
       published: true,
@@ -333,7 +333,7 @@ export function buildEvents(ts: TimestampFactory) {
       startDate: ts.fromDate(new Date("2026-01-20")),
       endDate: ts.fromDate(new Date("2026-01-25")),
       location: "Bengaluru, India",
-      description: "INFINI at IMTEX, showcasing MMP surface-finishing capability for precision manufacturers.",
+      description: "INFINI at IMTEX, showcasing MMP surface finishing capability for precision manufacturers.",
       images: [] as string[],
       link: "",
       published: false,
@@ -602,7 +602,7 @@ export function buildSettings() {
     ],
     defaultSeo: baseSeo(
       "INFINI | Precision Surface-Finishing",
-      "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment."
+      "INFINI is a precision surface finishing partner to manufacturers, applying ISO 9001-certified MMP treatment."
     ),
     cookieBanner: {
       enabled: false,
@@ -622,7 +622,7 @@ export function buildPages() {
           fields: {
             eyebrow: "A collaboration between BINC Industries and IND-SPHINX",
             heading: "Super Precision\nSurface Finishing",
-            body: "Precision surface-finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
+            body: "Precision surface finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
             ctaNote: "No project too precise. Talk to our engineers.",
           },
         },
@@ -727,7 +727,7 @@ export function buildPages() {
       ],
       seo: baseSeo(
         "INFINI | Precision Surface-Finishing",
-        "INFINI applies ISO 9001-certified MMP surface-finishing to components precision manufacturers already make, validated in-house, verified before it ships."
+        "INFINI applies ISO 9001-certified MMP surface finishing to components precision manufacturers already make, validated in-house, verified before it ships."
       ),
     },
     company: {
@@ -737,8 +737,8 @@ export function buildPages() {
           type: "hero",
           fields: {
             eyebrow: "Company",
-            heading: "A specialist surface-finishing partner, not a manufacturer.",
-            body: "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology to components its customers manufacture, it does not manufacture the parts itself. The company operates from a treatment facility in Parwanoo, Himachal Pradesh, and serves precision manufacturers across seven industries.",
+            heading: "A specialist surface finishing partner, not a manufacturer.",
+            body: "INFINI Precision Pvt. Ltd. applies MMP surface finishing technology to components its customers manufacture, it does not manufacture the parts itself. The company operates from a treatment facility in Parwanoo, Himachal Pradesh, and serves precision manufacturers across seven industries.",
           },
         },
         {
@@ -772,7 +772,7 @@ export function buildPages() {
       ],
       seo: baseSeo(
         "About INFINI: Precision Surface Finishing",
-        "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology from its treatment facility in Parwanoo, Himachal Pradesh, serving precision manufacturers across seven industries."
+        "INFINI Precision Pvt. Ltd. applies MMP surface finishing technology from its treatment facility in Parwanoo, Himachal Pradesh, serving precision manufacturers across seven industries."
       ),
     },
     capabilities: {

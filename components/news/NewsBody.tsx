@@ -34,7 +34,7 @@ export function NewsBody({ markdown }: { markdown: string }) {
           strong: ({ children }) => <strong className="font-medium text-foreground">{children}</strong>,
           img: ({ src, alt }) =>
             typeof src === "string" ? (
-              // eslint-disable-next-line @next/next/no-img-element -- markdown image URLs are arbitrary and not known at build time; next/image requires a configured/static source.
+              // eslint-disable-next-line @next/next/no-img-element - markdown image URLs are arbitrary and not known at build time; next/image requires a configured/static source.
               <img src={src} alt={alt ?? ""} className="w-full rounded-xl border border-border" />
             ) : null,
         }}

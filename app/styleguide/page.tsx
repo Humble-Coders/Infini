@@ -116,9 +116,9 @@ export default function StyleguidePage() {
             <h2>Heading two, the quick brown fox</h2>
             <h3>Heading three, the quick brown fox</h3>
             <h4>Heading four, the quick brown fox</h4>
-            <p className="text-lg text-foreground">Body large, precision surface-finishing for components you manufacture.</p>
-            <p className="text-base text-foreground">Body base, precision surface-finishing for components you manufacture.</p>
-            <p className="text-sm text-muted-foreground">Body small / muted, precision surface-finishing for components you manufacture.</p>
+            <p className="text-lg text-foreground">Body large, precision surface finishing for components you manufacture.</p>
+            <p className="text-base text-foreground">Body base, precision surface finishing for components you manufacture.</p>
+            <p className="text-sm text-muted-foreground">Body small / muted, precision surface finishing for components you manufacture.</p>
             <p className="text-xs font-medium tracking-[0.2em] text-accent uppercase">Eyebrow label</p>
           </div>
         </Section>
@@ -219,14 +219,14 @@ export default function StyleguidePage() {
             <AccordionItem value="item-1">
               <AccordionTrigger>What is the MMP process?</AccordionTrigger>
               <AccordionContent>
-                Micro Machining Process, a precision surface-finishing treatment applied to
+                Micro Machining Process, a precision surface finishing treatment applied to
                 components manufactured by our customers.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
               <AccordionTrigger>Does Infini manufacture parts?</AccordionTrigger>
               <AccordionContent>
-                No. Infini is a specialist surface-finishing partner to precision manufacturers.
+                No. Infini is a specialist surface finishing partner to precision manufacturers.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

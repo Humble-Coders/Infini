@@ -52,17 +52,17 @@ const COLLECTIONS = ["pages", "industries", "certifications", "testimonials", "e
  */
 const OVERRIDES: Array<[RegExp, string]> = [
   // Brand and tagline: every other title on the site uses the pipe separator.
-  [/^INFINI\s*—\s*/, "INFINI | "],
-  // "our process controls — a, b, and c — are run to ..." reads as a list without the brackets.
-  [/\s*—\s*(process documentation, batch traceability, and contamination control)\s*—\s*/, " ($1) "],
+  [/^INFINI\s*-\s*/, "INFINI | "],
+  // "our process controls - a, b, and c - are run to ..." reads as a list without the brackets.
+  [/\s*-\s*(process documentation, batch traceability, and contamination control)\s*-\s*/, " ($1) "],
 ];
 
 function fixString(value: string): string {
-  if (!value.includes("—")) return value;
+  if (!value.includes("-")) return value;
   let out = value;
   for (const [pattern, replacement] of OVERRIDES) out = out.replace(pattern, replacement);
   // General rule: an em dash used as a sentence break becomes a comma.
-  out = out.replace(/\s*—\s*/g, ", ");
+  out = out.replace(/\s*-\s*/g, ", ");
   // Tidy the seams a comma can create next to existing punctuation.
   return out
     .replace(/,\s*,/g, ",")

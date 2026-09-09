@@ -74,7 +74,7 @@ export default async function CompanyPage() {
     <main className="min-h-screen bg-background">
       <PhotoHero
         eyebrow={hero?.eyebrow ?? "Company"}
-        heading={hero?.heading ?? "A specialist surface-finishing partner, not a manufacturer."}
+        heading={hero?.heading ?? "A specialist surface finishing partner, not a manufacturer."}
         body={hero?.body}
         stats={[
           { label: "Facility", value: "Parwanoo" },
@@ -89,9 +89,9 @@ export default async function CompanyPage() {
       {facts && (
         <section data-surface="light" className="bg-background border-b border-border/60 py-16 sm:py-20">
           <Container>
-            <dl className="flex flex-wrap divide-x divide-border border-y border-border">
+            <dl className="flex flex-col divide-y divide-border border-y border-border sm:flex-row sm:divide-x sm:divide-y-0">
               {facts.items.map((fact) => (
-                <div key={fact.label} className="flex min-w-[10rem] flex-1 flex-col gap-2 px-6 py-8 sm:px-8">
+                <div key={fact.label} className="flex flex-1 flex-col gap-2 px-6 py-8 sm:px-8">
                   <dt className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">{fact.label}</dt>
                   <dd className="text-2xl font-light tracking-[-0.01em] text-foreground sm:text-3xl">{fact.value}</dd>
                 </div>

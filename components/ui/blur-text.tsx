@@ -49,8 +49,8 @@ export function BlurText({ text, className, delay = 0, stagger = 0.04, accentLas
             transition={{ duration: 0.55, delay: delay + index * stagger, ease: EASE }}
           >
             {item.word}
-            {index < total - 1 ? " " : null}
           </motion.span>
+          {index < total - 1 ? " " : null}
         </Fragment>
       ))}
     </span>
