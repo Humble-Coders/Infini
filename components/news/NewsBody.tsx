@@ -32,11 +32,12 @@ export function NewsBody({ markdown }: { markdown: string }) {
             </Link>
           ),
           strong: ({ children }) => <strong className="font-medium text-foreground">{children}</strong>,
-          img: ({ src, alt }) =>
-            typeof src === "string" ? (
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+          img: ({ src, alt }) => {
+            // eslint-disable-next-line @next/next/no-img-element
+            return typeof src === "string" ? (
               <img src={src} alt={alt ?? ""} className="w-full rounded-xl border border-border" />
-            ) : null,
+            ) : null;
+          },
         }}
       >
         {markdown}

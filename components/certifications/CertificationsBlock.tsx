@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { BadgeCheck, Download } from "lucide-react";
 import type { CertificationDoc, WithId } from "@/lib/types";

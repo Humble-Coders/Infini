@@ -4,7 +4,7 @@ import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { BlurText } from "@/components/ui/blur-text";
 import { MonoLabel } from "@/components/sections/home/MonoLabel";
-import { Ticker } from "@/components/sections/home/Ticker";
+
 import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
 import { CaseStudyCard } from "@/components/case-studies/CaseStudyCard";
 import { PageTail } from "@/components/sections/capability/PageTail";

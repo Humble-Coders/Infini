@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ArrowLeftRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
