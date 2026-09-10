@@ -197,7 +197,7 @@ export function IndustryPageContent({
               <div className="relative z-10 flex flex-col gap-3">
                 <MonoLabel>Compatible Materials & Alloys</MonoLabel>
                 <p className="text-sm text-muted-foreground max-w-lg">
-                  MMP Technology® adapts dynamically to the metallurgical properties of each alloy, achieving optimal roughness reduction without altering the base material's integrity.
+                  MMP Technology® adapts dynamically to the metallurgical properties of each alloy, achieving optimal roughness reduction without altering the base material&apos;s integrity.
                 </p>
               </div>
               <ul className="relative z-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

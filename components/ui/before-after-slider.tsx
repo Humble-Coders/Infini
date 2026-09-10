@@ -27,6 +27,18 @@ export function BeforeAfterSlider({
   
   // Starting at 50%
   const [position, setPosition] = useState(50);
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
+  
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerWidth(containerRef.current.clientWidth);
+      const observer = new ResizeObserver((entries) => {
+        setContainerWidth(entries[0].contentRect.width);
+      });
+      observer.observe(containerRef.current);
+      return () => observer.disconnect();
+    }
+  }, []);
   
   const handleMove = (clientX: number) => {
     if (!containerRef.current) return;
@@ -98,7 +110,7 @@ export function BeforeAfterSlider({
         style={{ width: `${position}%` }}
       >
         {/* The image itself must be fixed to the container width so it crops instead of squishing */}
-        <div className="absolute inset-y-0 left-0 w-full h-full" style={{ width: containerRef.current ? containerRef.current.clientWidth + "px" : "100vw" }}>
+        <div className="absolute inset-y-0 left-0 w-full h-full" style={{ width: containerWidth !== null ? containerWidth + "px" : "100vw" }}>
           <Image 
             src={beforeImage} 
             alt={`${alt} (Before)`} 
