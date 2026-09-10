@@ -146,7 +146,7 @@ export function RoughnessDecomposition({
   return (
     <section
       {...(surface === "light" ? { "data-surface": "light" } : {})}
-      className="bg-background py-20 sm:py-28"
+      className="bg-background pt-12 pb-20 sm:pt-16 sm:pb-28"
     >
       <Container className="flex flex-col gap-12">
         <div className="flex max-w-2xl flex-col gap-5">

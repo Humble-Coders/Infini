@@ -110,17 +110,14 @@ export function ContactPanel({
           )}
         </div>
 
-        <div className="lg:col-span-7">
-          {/* Meteor rain sits in its own band immediately above the form. Run
-              across the whole section it landed level with the section's
-              midpoint, which on a tall page reads as a stray streak low down
-              rather than as texture belonging to the form. */}
-          {!compact && (
-            <div aria-hidden="true" className="relative hidden h-28 lg:block">
-              <Meteors numberOfMeteors={14} />
-            </div>
-          )}
-          <ContactForm industries={industries} />
+        <div className="lg:col-span-7 relative z-10">
+          {/* Meteor rain sits above the form. */}
+          <div aria-hidden="true" className="absolute -top-32 left-0 right-0 h-48 hidden lg:block -z-10">
+            <Meteors numberOfMeteors={30} className="opacity-60" />
+          </div>
+          <div className={cn("transition-all", compact ? "" : "mt-8 lg:mt-24")}>
+            <ContactForm industries={industries} />
+          </div>
         </div>
       </Container>
     </section>

@@ -19,42 +19,52 @@ export function CertificationsBlock({
   if (certifications.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-6">
-      <h2 className="text-2xl font-light text-foreground sm:text-3xl">{heading}</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-3">
+        <h2 className="text-[clamp(1.75rem,3vw,2.5rem)] leading-tight font-semibold tracking-[-0.03em] text-foreground">
+          {heading}
+        </h2>
+        <p className="text-base text-muted-foreground max-w-xl">
+          Our processes are rigorously verified and certified to meet the highest global standards for quality and precision.
+        </p>
+      </div>
+      
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {certifications.map((cert) => (
-          <div key={cert.id} className="flex items-center gap-4 rounded-xl border border-border p-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border">
-              {cert.logoUrl ? (
-                <Image src={cert.logoUrl} alt={`${cert.name} logo`} width={32} height={32} className="object-contain" />
-              ) : (
-                <BadgeCheck className="size-6 text-accent" aria-hidden="true" />
+          <div key={cert.id} className="group relative flex flex-col gap-6 overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-background-elevated to-background p-6 transition-all duration-500 hover:border-accent/50 hover:shadow-[0_0_2rem_-0.5rem_rgba(var(--color-accent-rgb),0.1)]">
+            <div className="flex items-start justify-between gap-4">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-accent/10 shadow-inner">
+                {cert.logoUrl ? (
+                  <Image src={cert.logoUrl} alt={`${cert.name} logo`} width={36} height={36} className="object-contain" />
+                ) : (
+                  <BadgeCheck className="size-7 text-accent" aria-hidden="true" />
+                )}
+              </span>
+              
+              {cert.fileUrl && (
+                <a
+                  href={cert.fileUrl}
+                  download
+                  aria-label={`Download ${cert.name} certificate (PDF)`}
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background border border-border text-foreground transition-all duration-300 hover:scale-110 hover:border-accent hover:text-accent hover:shadow-lg"
+                >
+                  <Download className="size-4" aria-hidden="true" />
+                </a>
               )}
-            </span>
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <p className="truncate text-sm font-medium text-foreground">{cert.name}</p>
-              {cert.certificateNumber && <p className="truncate text-xs text-muted-foreground">{cert.certificateNumber}</p>}
             </div>
-            {cert.fileUrl && (
-              <a
-                href={cert.fileUrl}
-                download
-                aria-label={`Download ${cert.name} certificate (PDF)`}
-                className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-              >
-                <Download className="size-4" aria-hidden="true" />
-              </a>
-            )}
+            
+            <div className="flex flex-col gap-1.5 mt-auto pt-4 border-t border-border/50">
+              <p className="text-lg font-medium text-foreground tracking-[-0.01em] group-hover:text-accent transition-colors">{cert.name}</p>
+              {cert.certificateNumber && (
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent/50"></span>
+                  <p className="text-sm font-mono text-muted-foreground uppercase tracking-widest">{cert.certificateNumber}</p>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
-      <Link
-        href="/certifications"
-        className="flex w-fit items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors duration-300 ease-out hover:border-primary hover:text-primary"
-      >
-        <BadgeCheck className="size-4 text-accent" aria-hidden="true" />
-        View certificate details
-      </Link>
     </div>
   );
 }

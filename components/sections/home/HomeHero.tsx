@@ -10,10 +10,10 @@ import { InfinityMark } from "./InfinityMark";
 import { SurfaceProfile } from "./SurfaceProfile";
 
 const FALLBACK: Required<HeroCopy> = {
-  eyebrow: "A collaboration between BINC Industries and IND-SPHINX",
+  eyebrow: "MMP Technology licensed plant \u00b7 Since 2002 \u00b7 ISO 9001 certified",
   heading: "Super Precision\nSurface Finishing",
-  body: "Precision surface-finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
-  ctaNote: "No project too precise. Talk to our engineers.",
+  body: "INFINI applies MMP Technology to components its customers manufacture. A controlled, catalytic process that selectively removes roughness frequencies, verified per batch, traceable to your quality file.",
+  ctaNote: "Seven plants. Four continents. One controlled process.",
 };
 
 /** Delay (ms) per hero element so the copy stacks in, top to bottom. */

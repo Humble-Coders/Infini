@@ -113,9 +113,46 @@ export function NetworkMap({
   sites: NetworkSite[];
 }) {
   return (
-    <section className="bg-background py-20 sm:py-24">
-      <Container className="flex flex-col gap-12">
-        <div className="flex flex-col gap-6 border-b border-border pb-10">
+    <section className="bg-background relative overflow-hidden py-20 sm:py-24">
+      {/* Background Map */}
+      <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-20 mt-40 sm:mt-56">
+        <svg
+          viewBox={`0 0 ${MAP_W} ${MAP_H}`}
+          className="w-[200%] sm:w-[150%] lg:w-full h-auto max-w-[1400px] object-contain"
+          role="img"
+          aria-label="Map of the MMP network across France, Switzerland, Germany, the United States, India, Japan and China"
+        >
+          <g className="text-white/40" fill="currentColor">
+            {DOTS.map((d, i) => (
+              <circle key={i} cx={d.x.toFixed(1)} cy={d.y.toFixed(1)} r={DOT_R} />
+            ))}
+          </g>
+          {sites.map((site) => {
+            const { x, y } = project(site.lon, site.lat);
+            return (
+              <g key={site.name}>
+                <circle
+                  cx={x.toFixed(1)}
+                  cy={y.toFixed(1)}
+                  r={site.primary ? 10 : 6}
+                  className={site.primary ? "text-accent/30" : "text-white/15"}
+                  fill="currentColor"
+                />
+                <circle
+                  cx={x.toFixed(1)}
+                  cy={y.toFixed(1)}
+                  r={site.primary ? 4.5 : 2.8}
+                  className={site.primary ? "text-accent" : "text-white"}
+                  fill="currentColor"
+                />
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <Container className="relative z-10 flex flex-col gap-12 lg:gap-24">
+        <div className="flex flex-col gap-6">
           <Eyebrow index={index}>
             {eyebrow}
           </Eyebrow>
@@ -125,12 +162,12 @@ export function NetworkMap({
           {body && <p className="max-w-2xl text-base leading-relaxed text-pretty text-muted-foreground">{body}</p>}
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+        <div className="flex flex-col lg:flex-row justify-between gap-10 lg:gap-8">
           {stats.length > 0 && (
-            <div className="flex flex-col gap-10 lg:col-span-3">
+            <div className="flex flex-col gap-10 lg:w-1/3">
               {stats.map((stat) => (
                 <div key={stat.label} className="flex flex-col gap-2">
-                  <span className="text-[clamp(2.5rem,5vw,3.5rem)] leading-[0.9] font-semibold tracking-[-0.05em] tabular-nums text-foreground">
+                  <span className="text-[clamp(2.5rem,5vw,3.5rem)] leading-[0.9] font-mono font-semibold tracking-[-0.05em] tabular-nums text-foreground">
                     {stat.value}
                   </span>
                   <span className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
@@ -146,45 +183,9 @@ export function NetworkMap({
             </div>
           )}
 
-          <div className={cn("relative", stats.length > 0 ? "lg:col-span-5" : "lg:col-span-8")}>
-            <svg
-              viewBox={`0 0 ${MAP_W} ${MAP_H}`}
-              className="h-auto w-full"
-              role="img"
-              aria-label="Map of the MMP network across France, Switzerland, Germany, the United States, India, Japan and China"
-            >
-              <g className="text-foreground/35" fill="currentColor">
-                {DOTS.map((d, i) => (
-                  <circle key={i} cx={d.x.toFixed(1)} cy={d.y.toFixed(1)} r={DOT_R} />
-                ))}
-              </g>
-              {sites.map((site) => {
-                const { x, y } = project(site.lon, site.lat);
-                return (
-                  <g key={site.name}>
-                    <circle
-                      cx={x.toFixed(1)}
-                      cy={y.toFixed(1)}
-                      r={site.primary ? 10 : 6}
-                      className={site.primary ? "text-foreground/30" : "text-foreground/15"}
-                      fill="currentColor"
-                    />
-                    <circle
-                      cx={x.toFixed(1)}
-                      cy={y.toFixed(1)}
-                      r={site.primary ? 4.5 : 2.8}
-                      className="text-foreground"
-                      fill="currentColor"
-                    />
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-
-          <ul className="flex flex-col border-t border-border lg:col-span-4">
+          <ul className="flex flex-col lg:w-1/3 mt-10 lg:mt-0">
             {sites.map((site) => (
-              <li key={site.name} className="border-b border-border py-4">
+              <li key={site.name} className="border-b border-border py-4 first:border-t-0 border-t border-border">
                 <div className="flex flex-col gap-0.5">
                   <span className="font-mono text-[10px] tracking-[0.12em] tabular-nums text-muted-foreground">
                     {formatCoord(site.lat, site.lon)}
@@ -192,7 +193,7 @@ export function NetworkMap({
                   <span
                     className={cn(
                       "text-base leading-snug tracking-[-0.01em] text-foreground",
-                      site.primary ? "font-semibold underline decoration-2 underline-offset-4" : "font-medium"
+                      site.primary ? "font-semibold text-accent underline decoration-2 underline-offset-4" : "font-medium"
                     )}
                   >
                     {site.name}

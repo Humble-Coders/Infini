@@ -14,6 +14,7 @@ import { ProvenWork } from "@/components/sections/home/ProvenWork";
 import { Statement } from "@/components/sections/home/Statement";
 import { Testimonials } from "@/components/sections/home/Testimonials";
 import { Ticker } from "@/components/sections/home/Ticker";
+import { SolutionFinder } from "@/components/sections/home/SolutionFinder";
 import { ContactPanel } from "@/components/sections/home/ContactPanel";
 import { BackToTop } from "@/components/layout/BackToTop";
 import { ogTitle, pageTitle } from "@/lib/seo";
@@ -80,6 +81,7 @@ export async function HomePage() {
       <main className="min-h-screen bg-background">
         <ExhibitionBanner />
         <HomeHero copy={hero} />
+        <SolutionFinder industries={industries} />
         <ComponentGallery copy={gallery} />
         <PartnershipSection />
         <Ticker items={industries.map((industry) => industry.name)} />

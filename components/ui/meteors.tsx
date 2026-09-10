@@ -66,8 +66,7 @@ export function Meteors({
           style={{
             left: `${meteor.left}%`,
             top: `${meteor.top}%`,
-            animationDelay: `${meteor.animationDelay}s`,
-            animation: `meteor-fall ${meteor.animationDuration}s linear infinite`,
+            animation: `meteor-fall ${meteor.animationDuration}s linear ${meteor.animationDelay}s infinite`,
             opacity: meteor.opacity,
           }}
         />

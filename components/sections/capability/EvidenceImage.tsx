@@ -1,7 +1,9 @@
 import Image from "next/image";
+import { ArrowLeftRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { MonoLabel } from "@/components/sections/home/MonoLabel";
+import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
 
 export interface EvidenceReading {
   label: string;
@@ -72,10 +74,15 @@ export function EvidenceImage({
         <Reveal>
           <figure className="flex flex-col gap-4">
             <div className="relative aspect-[16/9] w-full overflow-hidden border border-border bg-background-elevated">
-              <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 1200px, 100vw" className="object-cover" />
+              <BeforeAfterSlider 
+                beforeImage={src}
+                afterImage={src}
+                alt={alt}
+              />
             </div>
-            <figcaption className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-              {alt}
+            <figcaption className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase flex items-center justify-between">
+              <span>{alt}</span>
+              <span className="text-accent flex items-center gap-2"><ArrowLeftRight className="size-3" /> Drag to compare</span>
             </figcaption>
           </figure>
         </Reveal>

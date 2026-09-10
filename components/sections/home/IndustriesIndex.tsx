@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Spotlight } from "@/components/ui/spotlight";
 import { MarketInfographicLogo } from "@/components/ui/market-infographic-logo";
@@ -70,13 +71,15 @@ export function IndustriesIndex({
           />
         )}
 
-        <Link
-          href="/industries"
-          className="group inline-flex w-fit items-center gap-3 font-mono text-[11px] tracking-[0.22em] text-foreground uppercase transition-colors hover:text-accent"
-        >
-          All industries
-          <span aria-hidden="true" className="h-px w-8 bg-current transition-all duration-300 group-hover:w-12" />
-        </Link>
+        <div className="mt-8 flex justify-center w-full">
+          <Link
+            href="/industries"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 font-mono text-[11px] tracking-[0.2em] text-white uppercase transition-colors hover:bg-white/10"
+          >
+            Explore all industries
+            <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          </Link>
+        </div>
       </Container>
     </section>
   );

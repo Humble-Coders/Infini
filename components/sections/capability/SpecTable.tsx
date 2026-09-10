@@ -58,8 +58,8 @@ export function SpecTable({ copy, surface = "light" }: { copy: SpecTableCopy; su
               </tr>
             </thead>
             <tbody>
-              {copy.rows.map((row) => (
-                <tr key={row.parameter} className="border-b border-border last:border-b-0">
+              {copy.rows.map((row, index) => (
+                <tr key={`${row.parameter}-${index}`} className="border-b border-border last:border-b-0">
                   <th scope="row" className="px-5 py-4 text-sm font-medium text-foreground">
                     {row.parameter}
                     {row.note && (

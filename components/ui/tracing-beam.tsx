@@ -76,8 +76,11 @@ export function TracingBeamItem({
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className={cn("py-10 sm:py-14", className)}
+      className={cn("py-10 sm:py-14 relative group", className)}
     >
+      {/* Pointer dot on the line */}
+      <div className="absolute top-10 sm:top-14 -left-[2rem] sm:-left-[3.5rem] mt-1.5 size-3 -translate-x-1/2 rounded-full border-2 border-accent bg-background transition-colors duration-300 group-hover:bg-accent" aria-hidden="true" />
+      
       {children}
     </motion.div>
   );
