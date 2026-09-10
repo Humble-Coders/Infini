@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const HERO_FALLBACK: PageHeroCopy = {
   eyebrow: "The MMP process",
   heading: "A treatment, not a coating.",
-  body: "MMP removes surface roughness frequency by frequency, in our own tanks, without adding material or moving a dimension.",
+  body: "MMP removes surface roughness frequency by frequency, in our own tanks, without adding material or losing the part's form.",
 };
 
 export default async function TechnologyPage() {

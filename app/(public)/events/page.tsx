@@ -35,7 +35,7 @@ const STAND_STAGES = [
     points: [
       "One component, as machined or as printed",
       "No drawing or NDA needed to talk geometry",
-      "Internal passages and blind pockets welcome",
+      "Awkward shapes welcome, and we will say straight away if MMP suits them",
     ],
   },
   {
@@ -74,7 +74,7 @@ const STAND_STAGES = [
 const CIRCUIT = [
   {
     label: "Aerospace and defence",
-    detail: "Airframe, engine and MRO shows where internal passage finishing is the discussion.",
+    detail: "Airframe, engine and MRO shows, where blades, blisks and gearboxes are the discussion.",
   },
   {
     label: "Medical technology",

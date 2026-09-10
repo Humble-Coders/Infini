@@ -1,6 +1,7 @@
 import { CapabilityHero } from "./CapabilityHero";
 import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
 import { ContentBlocks } from "./ContentBlocks";
+import { EdgeHoning } from "./EdgeHoning";
 import { EvidenceImage } from "./EvidenceImage";
 import { PageTail } from "./PageTail";
 import { SplitComparison } from "./SplitComparison";
@@ -9,6 +10,7 @@ import { ComponentGallery } from "@/components/sections/home/ComponentGallery";
 import type {
   ComparisonCopy,
   ContentBlock,
+  EdgeHoningCopy,
   GalleryCopy,
   IndustryDoc,
   PageHeroCopy,
@@ -32,22 +34,22 @@ import type {
 const FALLBACK_COMPARISON: ComparisonCopy = {
   eyebrow: "Where the two differ",
   heading: "One abrades the surface. The other filters it.",
-  body: "That single difference decides which one your component needs, and it is why MMP can reach a finish conventional polishing cannot without moving a dimension.",
+  body: "That single difference decides which one your component needs, and it is why MMP can reach a finish conventional polishing cannot while the part keeps its form.",
   alternativeLabel: "Conventional deburr and polish",
   rows: [
     {
       criterion: "How material comes off",
-      mmp: "A catalytic film forms on the peaks and is wiped away, so only the high points are touched.",
+      mmp: "Microtool aggregates flow over the surface and shear off only the irregularities they are sized for.",
       alternative: "Abrasive contact across the whole surface, wherever the tool can reach.",
     },
     {
       criterion: "Edges and radii",
-      mmp: "Edge condition is controlled. Sharp edges stay sharp unless you ask for a radius.",
+      mmp: "Edges take a controlled micro-radius, small or medium, set by the aggregate. It can be specified as edge honing.",
       alternative: "Edges round progressively, which is often the reason parts are rejected.",
     },
     {
       criterion: "Internal features",
-      mmp: "Treats bores, cooling channels, undercuts and blind pockets.",
+      mmp: "Straight or gently curved passages from 2 mm. Complex internal paths are not treatable.",
       alternative: "Reaches only line-of-sight surfaces.",
     },
     {
@@ -97,6 +99,7 @@ export function DeburringPageContent({
   gallery,
   comparison = FALLBACK_COMPARISON,
   stats = FALLBACK_STATS,
+  edgeHoning,
 }: {
   hero: PageHeroCopy;
   blocks: ContentBlock[];
@@ -104,14 +107,15 @@ export function DeburringPageContent({
   gallery: GalleryCopy | null;
   comparison?: ComparisonCopy;
   stats?: StatTripletCopy;
+  edgeHoning?: EdgeHoningCopy;
 }) {
   return (
     <main className="min-h-screen bg-background">
       <CapabilityHero
         hero={hero}
         image={HERO_IMAGERY.deburring}
-        badges={[{ label: "Edges preserved" }, { label: "Reaches internal features" }, { label: "Parameter-driven" }]}
-        spec={{ title: "Where MMP differs", body: "Conventional finishing abrades the whole surface. MMP forms a film on the peaks and wipes only those away." }}
+        badges={[{ label: "Controlled edge radius" }, { label: "Form preserved" }, { label: "Parameter-driven" }]}
+        spec={{ title: "Where MMP differs", body: "Conventional finishing abrades the whole surface. MMP filters it: aggregates sized to the roughness shear off only what they are sized for." }}
       />
 
       {/* The photograph does the arguing before the words do. */}
@@ -125,12 +129,13 @@ export function DeburringPageContent({
           { label: "Component", value: "Turbocharger wheel" },
           { label: "Incoming", value: "As cast" },
           { label: "Treatment", value: "MMP finish" },
-          { label: "Geometry", value: "Unchanged" },
+          { label: "Form", value: "Preserved" },
         ]}
       />
 
-      {/* Light: the choice, laid out as a choice. */}
+      {/* Light run: the choice, laid out as a choice, then the edge at the two sizes the aggregates produce. */}
       <SplitComparison copy={comparison} surface="light" />
+      <EdgeHoning copy={edgeHoning} surface="light" />
 
       {/* Dark run: outcomes, then the range of parts this applies to. */}
       <StatTriplet copy={stats} />

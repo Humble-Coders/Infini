@@ -5,13 +5,15 @@ import { PhotoHero } from "@/components/sections/shared/PhotoHero";
 import { ProcessStrip } from "@/components/sections/shared/ProcessStrip";
 import { DetailRows } from "@/components/sections/shared/DetailRows";
 import { MarqueeBand } from "@/components/sections/shared/MarqueeBand";
-import { TreatmentSchematic } from "@/components/sections/capability/TreatmentSchematic";
+import { PartSuitability } from "@/components/sections/capability/PartSuitability";
+import { PassageGuidelines } from "@/components/sections/capability/PassageGuidelines";
 import { TrustSection } from "@/components/sections/home/TrustSection";
 import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getSettings } from "@/lib/data/settings";
 import { ogTitle, pageTitle } from "@/lib/seo";
+import type { PassageGuidelinesCopy, SuitabilityCopy } from "@/lib/types";
 
 
 /*
@@ -66,19 +68,19 @@ const STAGES = [
     timing: "Day 1",
     step: "01",
     title: "Assessment",
-    points: ["Drawing, alloy and target roughness", "Geometry reviewed for access", "Incoming surface measured"],
+    points: ["Drawing, alloy and target roughness", "Geometry checked against the passage guidelines", "Incoming surface measured"],
   },
   {
     timing: "Within 5 days",
     step: "02",
     title: "Technical validation",
-    points: ["Sample parts treated", "Parameters calibrated to your target", "Measured before and after returned"],
+    points: ["A few test pieces, several conditions", "Parameters calibrated to your target", "Measured before and after returned"],
   },
   {
     timing: "2 to 3 weeks",
     step: "03",
     title: "Industrial validation",
-    points: ["Full production batch", "Variation across the batch checked", "Process window frozen"],
+    points: ["Production fixture designed for your part", "Full production batch", "Process window frozen"],
   },
   {
     timing: "Ongoing",
@@ -95,18 +97,18 @@ const CAPABILITY_ROWS = [
     href: "/mirror-like-finish",
   },
   {
-    label: "Dimensional integrity",
-    detail: "No measurable stock removal. Form, profile and edge condition survive the treatment intact.",
+    label: "Form integrity",
+    detail: "Minimal, controlled material removal. Form and profile are preserved, and edges take a controlled micro-radius.",
     href: "/technology",
   },
   {
     label: "Geometry access",
-    detail: "Bores, cooling channels, undercuts, lattices and blind pockets, wherever a tool cannot reach.",
-    href: "/technology",
+    detail: "Complex external shapes, plus straight or gently curved internal passages from 2 mm. See the passage guidelines.",
+    href: "#passage-guidelines",
   },
   {
     label: "Substrate range",
-    detail: "Any alloy at any hardness: steels, stainless, titanium, nickel superalloys, carbide and aluminium.",
+    detail: "Any material: steels, stainless, titanium, nickel superalloys, carbide, aluminium and coated parts.",
   },
   {
     label: "Incoming condition",
@@ -130,6 +132,8 @@ export default async function CapabilitiesPage() {
   const hero = getSection<HeroCopy>(page, "hero");
   const capacity = getSection<TextBlockCopy>(page, "capacity");
   const processCapabilities = getSection<ItemsCopy>(page, "processCapabilities");
+  const suitability = getSection<SuitabilityCopy>(page, "suitability");
+  const passageGuidelines = getSection<PassageGuidelinesCopy>(page, "passageGuidelines");
   const legacyLinks = settings?.nav.find((item) => item.href === "/capabilities")?.children ?? [];
 
   return (
@@ -140,7 +144,7 @@ export default async function CapabilitiesPage() {
         body={hero?.body}
         image={HERO_IMAGE}
         imageAlt="Carbide cutting tools on a precision machining centre"
-        badges={[{ label: "ISO 9001:2015" }, { label: "Measured per batch" }, { label: "No dimensional change" }]}
+        badges={[{ label: "ISO 9001:2015" }, { label: "Measured per batch" }, { label: "Form preserved" }]}
         spec={{
           title: "Achievable finish",
           body: "0.1 down to 0.02 µm Ra, confirmed on your own components during validation before anything runs in series.",
@@ -155,8 +159,6 @@ export default async function CapabilitiesPage() {
         surface="light"
       />
 
-      <TreatmentSchematic surface="light" />
-
       <DetailRows
         eyebrow="Capabilities"
         heading="Every surface, every tolerance"
@@ -168,6 +170,10 @@ export default async function CapabilitiesPage() {
         action={{ label: "See the process", href: "/technology" }}
         surface="dark"
       />
+
+      {/* Where the process stops, then the passage rules the capability rows link to. */}
+      <PartSuitability copy={suitability ?? undefined} surface="dark" />
+      <PassageGuidelines copy={passageGuidelines ?? undefined} surface="light" />
 
       {(capacity || processCapabilities) && (
         <section data-surface="light" className="bg-background py-20 sm:py-28">

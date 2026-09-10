@@ -23,6 +23,12 @@ export interface IndustryDoc {
   relevance: string;
   capabilities: IndustryCapability[];
   applications: string[];
+  /**
+   * What the treatment delivers in this industry, the "Benefits" column of the
+   * MMP brochure's market table. Optional because documents seeded before the
+   * field existed don't carry it.
+   */
+  benefits?: string[];
   materials: string[];
   relatedCertIds: string[];
   relatedCaseStudyIds: string[];

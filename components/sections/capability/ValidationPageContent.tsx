@@ -26,6 +26,10 @@ import type {
  * and the parent site leaves it buried in a paragraph, so here it gets the beam,
  * a full band, and a statement of what INFINI needs from the customer at each
  * stage, which no competitor publishes at all.
+ *
+ * Stage detail follows the "steps to mass production" in INFINI's MMP brochure:
+ * a few test pieces under several conditions, then more pieces (scrap is fine)
+ * with a production fixture, then full tank loads under fixed conditions.
  */
 
 const STANDARDS = [
@@ -48,21 +52,21 @@ const FALLBACK_STAGES: StageSequenceCopy = {
       step: "01",
       title: "Technical validation",
       description:
-        "A small batch is treated to show what MMP can reach on your component. Geometry, alloy and target roughness are assessed first, then parameters are calibrated to your objective rather than to a standard recipe.",
-      requires: "One or two sample parts, the drawing, and the roughness target you need to hit.",
+        "A few test pieces are treated under several sets of MMP conditions, to show whether MMP is effective on your component and which conditions reach your objective. Geometry, material and target roughness are assessed first.",
+      requires: "A few sample parts, the drawing, and the roughness target you need to hit.",
     },
     {
       step: "02",
       title: "Industrial validation",
       description:
-        "A full-scale run proves the treatment holds across the variation real production carries: batch-to-batch differences in the incoming surface, fixture effects and handling.",
-      requires: "A representative production batch, and your incoming inspection data if you have it.",
+        "More parts, all of them if possible, so the result holds across the variation real production carries. A production fixture is designed for your part, and the conditions are tuned until the result is right.",
+      requires: "A representative batch (rejected or scrap parts are fine at this stage), and your incoming inspection data if you have it.",
     },
     {
       step: "03",
       title: "Serial production",
       description:
-        "Parameters are frozen and the process is released to series. Every batch is measured against the agreed specification, and the record ships with the parts.",
+        "Full tank loads, run under the conditions fixed in industrial validation, which is what makes the result repeat batch after batch. Every batch is measured against the agreed specification, and the record ships with the parts.",
       requires: "Your release specification and the reporting format your quality system expects.",
     },
   ],
@@ -151,7 +155,7 @@ export function ValidationPageContent({
         readings={[
           { label: "Component", value: "Spiral bevel pinion" },
           { label: "Treatment", value: "MMP superfinish" },
-          { label: "Form change", value: "None measurable" },
+          { label: "Form", value: "Preserved" },
           { label: "Record", value: "Issued per batch" },
         ]}
       />

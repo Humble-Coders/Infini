@@ -31,15 +31,16 @@ import type {
 const FALLBACK_SPEC: SpecTableCopy = {
   heading: "What a mirror finish costs you in tolerance",
   intro:
-    "Nothing, which is the point. Conventional routes to this finish remove stock; MMP reaches it by filtering the surface, so the part comes back the size it went in.",
+    "Very little, which is the point. Conventional routes to this finish keep removing stock until the roughness is gone; MMP filters the surface with a small, controlled removal, so form and tolerance hold.",
   caption: "Treatment envelope for mirror work",
   rows: [
     { parameter: "Achievable roughness", unit: "µm Ra", value: "0.05 to 0.02" },
     { parameter: "Achievable roughness", unit: "µin Ra", value: "2 to 0.8" },
-    { parameter: "Dimensional change", unit: "µm", value: "None measurable" },
-    { parameter: "Edge condition", unit: "", value: "Preserved", note: "Sharp edges stay sharp unless specified" },
+    { parameter: "Material removal", unit: "", value: "Minimal, controlled", note: "Form and tolerance held" },
+    { parameter: "Edge condition", unit: "", value: "Controlled micro-radius", note: "Set by the aggregate size" },
     { parameter: "Texture", unit: "", value: "Non-directional", note: "No lay to channel lubricant away" },
-    { parameter: "Substrate", unit: "", value: "Any alloy, any hardness" },
+    { parameter: "Substrate", unit: "", value: "Any material" },
+    { parameter: "Not removed", unit: "", value: "Deep scratches, form defects", note: "Correct these before treatment" },
   ],
 };
 
@@ -68,7 +69,7 @@ const RELATED = [
   {
     label: "The MMP process",
     href: "/technology",
-    description: "How the finish is reached without moving a dimension.",
+    description: "How the finish is reached while the part keeps its form.",
   },
   {
     label: "Validation",
@@ -103,8 +104,8 @@ export function MirrorFinishPageContent({
       <CapabilityHero
         hero={hero}
         image={HERO_IMAGERY.mirror}
-        badges={[{ label: "0.02 µm Ra" }, { label: "Non-directional" }, { label: "No stock removal" }]}
-        spec={{ title: "Mirror band", body: "0.05 down to 0.02 µm Ra, reached by filtering the surface rather than by removing stock, so the part keeps its size." }}
+        badges={[{ label: "0.02 µm Ra" }, { label: "Non-directional" }, { label: "Form preserved" }]}
+        spec={{ title: "Mirror band", body: "0.05 down to 0.02 µm Ra, reached by filtering the surface with a minimal, controlled removal, so the part keeps its form." }}
       />
       <ComponentGallery copy={gallery} />
 

@@ -102,7 +102,7 @@ export const DEMO_CASE_STUDIES: WithId<CaseStudyDoc>[] = [
     title: "Carbide cutting tool edge preparation",
     industryId: "cutting-tools",
     challenge: "Ground carbide end mills were chipping early under load because of directional micro-roughness at the edge.",
-    solution: "Applied MMP treatment calibrated to refine the edge surface without rounding the geometry.",
+    solution: "Applied an MMP cycle sized for fine roughness, leaving a small, controlled edge radius in place of the chipped one.",
     process: "Controlled MMP cycle with in-process surface verification.",
     result: "Improved surface quality, consistent finishing, improved tool performance.",
     results: [

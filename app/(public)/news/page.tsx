@@ -48,7 +48,7 @@ const SUBJECTS = [
   },
   {
     label: "Geometry",
-    detail: "Internal passages, blind pockets and tooth flanks that no line-of-sight process can reach.",
+    detail: "Complex shapes, gently curved passages and tooth flanks, and where the limits of a flow-based process sit.",
   },
 ];
 

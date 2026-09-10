@@ -84,6 +84,14 @@ export function buildCertifications(ts: TimestampFactory) {
   ];
 }
 
+/*
+ * The MMP brochure (INF_V2-09/2025) and the PRD both name seven markets.
+ * Powder metallurgy was added beyond them; it stays in the seed so nothing is
+ * lost, but unpublished until the client confirms it belongs.
+ */
+const UNPUBLISHED_INDUSTRIES = new Set(["powder-metallurgy"]);
+
+// Applications and benefits below follow the market table in the MMP brochure.
 export function buildIndustries() {
   return [
     {
@@ -100,13 +108,14 @@ export function buildIndustries() {
       overview:
         "INFINI treats ground cutting-tool surfaces to reduce the friction and micro-roughness that drive edge chipping, built-up edge, and premature wear.",
       relevance:
-        "Grinding leaves directional roughness and micro-burrs along the cutting edge, exactly where friction and heat concentrate first. MMP treatment removes those peaks selectively, without touching the ground geometry or edge radius your tool designers specified, so the edge stays true while the surface that actually contacts the chip gets smoother.",
+        "Grinding leaves directional roughness and micro-burrs along the cutting edge, exactly where friction and heat concentrate first. MMP treatment removes those peaks selectively and leaves a small, controlled edge radius in place of the serrated edge, so the ground geometry holds while the surface that actually contacts the chip gets smoother.",
       capabilities: [
-        { title: "Edge-safe treatment", description: "Controlled material removal that improves surface finish without rounding or softening the cutting edge." },
+        { title: "Controlled edge honing", description: "Edges take a small, repeatable radius set by the aggregate size, the edge preparation that holds off early chipping, identical on every tool in the batch." },
         { title: "Rake and flank face finishing", description: "Reduced friction on rake and flank faces improves chip evacuation and lowers cutting temperatures." },
         { title: "Batch consistency", description: "Every batch measured against an agreed roughness (Ra) target before it ships, so tool performance doesn't vary lot to lot." },
       ],
-      applications: ["Drills", "End mills", "Reamers", "Carbide inserts", "Taps and dies", "Hobs"],
+      applications: ["Deep-hole drills", "Forming taps", "High-performance inserts", "Milling cutters for nickel and titanium alloys"],
+      benefits: ["Longer tool life", "Higher cutting speeds", "Higher feed rates", "Consistent performance, tool to tool"],
       materials: ["Tungsten carbide", "HSS (high-speed steel)", "PCD-tipped tooling", "Coated substrates (pre-coat treatment)"],
       relatedCertIds: ["iso-9001-2015"],
     },
@@ -129,7 +138,8 @@ export function buildIndustries() {
         { title: "Anti-galling surface prep", description: "Reduced surface roughness lowers the friction coefficient against formed stock, cutting adhesive wear." },
         { title: "Coating-ready surfaces", description: "Treated surfaces provide a consistent base for PVD/CVD coatings applied afterward, improving coating adhesion." },
       ],
-      applications: ["Forging dies", "Progressive stamping dies", "Deep-draw tooling", "Extrusion dies", "Trim and pierce punches"],
+      applications: ["Screw-head punches", "Carbide punches", "Cutting and stamping dies", "Cold-forging dies"],
+      benefits: ["Better reproducibility, part to part", "Longer tool life", "More uniform surfaces across the die"],
       materials: ["Tool steel (H13, D2)", "Hardened alloy steels", "Carbide die inserts"],
       relatedCertIds: ["iso-9001-2015"],
     },
@@ -152,7 +162,8 @@ export function buildIndustries() {
         { title: "Ejection-surface treatment", description: "Lower surface friction on core and ejector surfaces reduces sticking and part drag during ejection." },
         { title: "Vent and gate area access", description: "Treatment reaches tight geometry around gates, ribs and vents that manual polishing struggles to finish evenly." },
       ],
-      applications: ["Cavity and core inserts", "Hot-runner components", "Ejector pins and sleeves", "Multi-cavity family molds"],
+      applications: ["Molds for threaded caps", "Preform molds", "Packaging molds (bottles, applicators)", "Automotive lighting molds", "Medical component molds"],
+      benefits: ["Suited to complex cavity geometry", "Shorter lead times for mold finishing", "Scales to high-cavitation molds"],
       materials: ["P20 and P20+Ni tool steel", "H13 tool steel", "Stainless mold steels (420, S136)", "Beryllium-copper inserts"],
       relatedCertIds: ["iso-9001-2015"],
     },
@@ -175,7 +186,8 @@ export function buildIndustries() {
         { title: "Contamination-controlled process", description: "Treatment runs under process controls aligned to ISO 13485 requirements for medical device manufacturing." },
         { title: "Traceable batch documentation", description: "Every treated batch is documented and traceable, a requirement our medical customers' quality systems depend on." },
       ],
-      applications: ["Orthopedic implants (hip, knee)", "Spinal fixation hardware", "Surgical instruments", "Dental implant components"],
+      applications: ["Implants (knee, hip, spine)", "Surgical instrumentation", "Prosthetic components", "Pump components"],
+      benefits: ["Controlled costs and predictable lead times", "Consistent results across batches", "No contamination of treated surfaces", "Minimal material removal"],
       materials: ["Titanium and titanium alloys (Ti-6Al-4V)", "Cobalt-chrome alloys", "Medical-grade stainless steel (316L)"],
       relatedCertIds: ["iso-9001-2015", "iso-13485-2016"],
     },
@@ -195,10 +207,11 @@ export function buildIndustries() {
         "Aerospace components are specified against tight roughness tolerances precisely because surface irregularities initiate fatigue failure. MMP treatment refines machined surfaces to reduce those stress-concentration points, and every treated batch is measured against the agreed spec before it ships, verification a component's engineering file can reference.",
       capabilities: [
         { title: "Fatigue-life-focused finishing", description: "Targets the surface roughness that acts as a crack-initiation site under cyclic loading." },
-        { title: "Complex-geometry access", description: "Reaches internal passages, blends and fillets on structural and rotating parts that abrasive-only methods can't finish evenly." },
+        { title: "Whole-component treatment", description: "Aerofoils, roots, blends and fillets finish in the same cycle with the profile held, on shapes abrasive-only methods can't finish evenly." },
         { title: "Measured, documented finish", description: "Roughness verified against the agreed target and recorded per batch, traceable for an aerospace quality file." },
       ],
-      applications: ["Structural airframe components", "Turbine and compressor blades", "Landing gear components", "Fastener and fitting hardware"],
+      applications: ["Blades", "Blisks and IBRs", "Stators", "Guide vanes", "Bearings and gearboxes"],
+      benefits: ["A traceable industrial process", "Uniform, reproducible results", "Short lead times and cost control", "Better technical performance"],
       materials: ["Titanium alloys", "Nickel superalloys (Inconel)", "Aerospace-grade aluminum alloys", "High-strength steel"],
       relatedCertIds: ["iso-9001-2015"],
     },
@@ -213,15 +226,16 @@ export function buildIndustries() {
         image: "",
       },
       overview:
-        "MMP treatment reduces as-built roughness and removes loosely sintered particles on internal geometry other methods can't access.",
+        "MMP treatment reduces as-built roughness and removes loosely sintered particles across complex printed shapes, and inside channels wide and straight enough for the flow.",
       relevance:
-        "Additive parts come off the build plate with roughness an order of magnitude higher than machined surfaces, concentrated on internal channels and overhangs that are difficult to reach any other way. MMP treatment reduces that as-built roughness and removes loosely sintered particles, improving both fatigue performance and flow characteristics on internal geometry standard finishing can't access.",
+        "Additive parts come off the build plate with roughness an order of magnitude higher than machined surfaces, and the complex geometry that made additive the right choice is exactly what line-of-sight finishing can't follow. MMP treatment reduces that as-built roughness and removes loosely sintered particles, improving fatigue performance, wear and flow. Internal channels can be treated when they are straight or gently curved and wide enough for the roughness: 5 mm for fine AM, 10 mm for typical AM, 20 mm for rough builds. We check your design against those limits before quoting.",
       capabilities: [
-        { title: "Internal-channel finishing", description: "Reaches internal lattices, cooling channels and overhangs that line-of-sight polishing methods physically cannot access." },
+        { title: "Channels, within limits", description: "Straight or gently curved channels treat well when the diameter suits the roughness. Complex internal paths, where aggregates could be left behind, do not." },
         { title: "Loose-particle removal", description: "Clears partially sintered powder particles from the surface, a contamination risk in downstream assembly or service." },
         { title: "As-built roughness reduction", description: "Brings layer-line roughness down toward a verified, application-appropriate target." },
       ],
-      applications: ["Conformal-cooled tooling inserts", "Lightweight lattice structures", "Complex ducting and manifolds", "Functional prototypes and low-volume production parts"],
+      applications: ["Aerospace components", "Medical components", "Functional prototypes and low-volume production parts"],
+      benefits: ["Better corrosion resistance", "Lower friction", "Better wear resistance", "Improved aerodynamics"],
       materials: ["Titanium (Ti-6Al-4V)", "Stainless steel (316L, 17-4PH)", "Nickel superalloys", "Aluminum alloys (AlSi10Mg)"],
       relatedCertIds: ["iso-9001-2015"],
     },
@@ -244,7 +258,8 @@ export function buildIndustries() {
         { title: "Scuffing resistance", description: "A smoother, more consistent surface reduces the asperity contact that leads to scuffing under high load." },
         { title: "Post-hardening treatment", description: "Applied after case hardening or grinding, refining the final working surface without affecting case depth." },
       ],
-      applications: ["Automotive transmission gears", "Industrial gearbox components", "Differential gears", "Bearing races and shafts"],
+      applications: ["Gearboxes for Formula 1 and helicopters", "High-performance bearings", "Automotive transmission gears", "Industrial gearbox components"],
+      benefits: ["Extremely low material removal", "Tolerances respected", "Uniform treatment across the whole surface", "Access to critical surfaces"],
       materials: ["Case-hardened alloy steel", "Nitrided steel", "Powder-metal gear components"],
       relatedCertIds: ["iso-9001-2015"],
     },
@@ -268,6 +283,7 @@ export function buildIndustries() {
         { title: "Friction optimization", description: "Lowers the friction coefficient for moving components like gears and cams." },
       ],
       applications: ["Sintered gears", "Cam lobes", "Pump components", "Structural PM parts"],
+      benefits: [] as string[],
       materials: ["Sintered steel", "Powder-forged alloys", "Bronze bearings"],
       relatedCertIds: ["iso-9001-2015"],
     },
@@ -275,7 +291,7 @@ export function buildIndustries() {
     ...industry,
     relatedCaseStudyIds: [] as string[],
     seo: baseSeo(`Surface Finishing for ${industry.name}`, industry.overview),
-    published: true,
+    published: !UNPUBLISHED_INDUSTRIES.has(industry.slug),
   }));
 }
 
@@ -554,7 +570,8 @@ export function buildSettings() {
   return {
     contact: {
       phone: "+91 98765 43210",
-      email: "enquiries@infini.co.in",
+      // As printed on the MMP brochure (INF_V2-09/2025). The phone number above is still a placeholder.
+      email: "superfinish@infini.co.in",
       address: "MMP Treatment Labs, INFINI Precision Pvt Ltd, Parwanoo, Himachal Pradesh, India",
     },
     social: {
@@ -587,7 +604,6 @@ export function buildSettings() {
           { label: "Aerospace", href: "/industries/aerospace" },
           { label: "Additive Manufacturing", href: "/industries/additive-manufacturing" },
           { label: "Gears & Transmission", href: "/industries/gears-transmission" },
-          { label: "Powder Metallurgy", href: "/industries/powder-metallurgy" },
         ],
       },
       { label: "Case Studies", href: "/case-studies" },
@@ -668,7 +684,7 @@ export function buildPages() {
           fields: {
             eyebrow: "The MMP Process",
             heading: "A treatment, not a coating.",
-            body: "MMP (Micro Machining Process) is a mechanical-physical-chemical treatment performed in dedicated tanks. It selectively removes frequencies of surface roughness from components our customers manufacture, no material added, no dimensional drift, just a controlled finish verified against measurable roughness targets.",
+            body: "MMP (Micro Machining Process) is a mechanical-physical-catalytic treatment performed in dedicated tanks. It selectively removes frequencies of surface roughness from components our customers manufacture, nothing added and the form kept, just a controlled finish verified against measurable roughness targets.",
             steps: [
               { step: "01", title: "Validation", description: "Component geometry, material and target roughness are assessed before treatment begins." },
               { step: "02", title: "Treatment", description: "The MMP process runs in-house, in tanks tuned to the component and finish required." },
@@ -841,14 +857,14 @@ export function buildPages() {
           type: "textBlock",
           fields: {
             heading: "What MMP actually is",
-            body: "MMP Technology is a mechanical-physical-catalyst surface treatment applied to components placed inside a processing tank. It's a licensed technology, not something INFINI invented in-house | INFINI holds the intellectual property license to apply it. That distinction matters for how it works: unlike chemical or acid-based finishing methods, which can alter a material's surface chemistry or mechanical properties, MMP removes material through a genuinely mechanical cutting action at a microscopic scale, leaving the underlying material unchanged.",
+            body: "MMP Technology was developed by BinC Industries in Switzerland, around media and equipment it designs in-house and a controlled method for using them. INFINI applies it in India, as a treatment service in its own tanks. The part is fixtured in a processing tank charged with microtools, tiny engineered particles, and a catalyst that bonds them into aggregates. Unlike chemical or acid-based finishing, which can alter a material's surface chemistry or mechanical properties, the aggregates remove material by a genuinely mechanical cutting action at a microscopic scale, so the part's composition and physical properties are unchanged.",
           },
         },
         {
           type: "textBlock",
           fields: {
             heading: "How frequency-based removal works",
-            body: "A surface isn't uniformly rough. It's a mix of roughness at different frequencies, from broad waviness down to fine microscopic texture. MMP maps a surface as exactly that: a collection of roughness frequencies, and treats them in order, removing the highest frequencies first and then working progressively lower. Because the process targets specific frequency ranges rather than abrading the whole surface indiscriminately, it can stop at any point along the way, treating only the roughness range that's actually a problem, and leaving the rest of the surface's character intact.",
+            body: "A surface isn't uniformly rough. It's a mix of roughness at different frequencies, from broad waviness down to fine microscopic texture. MMP maps a surface as exactly that: a collection of roughness frequencies, and treats them in order, removing the highest frequencies first and then working progressively lower. Each band is removed by aggregates matched to it: the aggregate's surface fits irregularities of that size the way Velcro fits, and the flow shears them off. Because the process targets specific frequency ranges rather than abrading the whole surface indiscriminately, it can stop at any point along the way, treating only the roughness range that's actually a problem, and leaving the rest of the surface's character intact.",
           },
         },
         {
@@ -982,7 +998,7 @@ export function buildPages() {
           type: "textBlock",
           fields: {
             heading: "Strengths, and where it doesn't apply",
-            body: "Because material removal stays targeted to roughness rather than blanket abrasion, MMP reaches a mirror finish with far less material removed than traditional cutting-action polishing, which also means fine details and sharp edges survive treatment, and complex geometries finish uniformly rather than unevenly. The constraint is the flip side of how the process works: because MMP treats a surface uniformly, it can't fix form errors that need non-uniform material removal or reshaping. A part that's out of tolerance in a specific area needs localized correction first. That's a different problem than surface roughness, and outside what this process solves.",
+            body: "Because material removal stays targeted to roughness rather than blanket abrasion, MMP reaches a mirror finish with far less material removed than traditional cutting-action polishing, which also means fine details and sharp edges survive treatment, and complex geometries finish uniformly rather than unevenly. The constraint is the flip side of how the process works: because MMP treats a surface uniformly, it can't fix form errors that need non-uniform material removal or reshaping. A part that's out of tolerance in a specific area needs localized correction first. That's a different problem than surface roughness, and outside what this process solves. Deep scratches are the same case: they run deeper than the roughness being filtered, so they need removing before treatment.",
           },
         },
         {

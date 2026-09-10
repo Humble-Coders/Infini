@@ -34,7 +34,7 @@ export function buildBenefits() {
       evidence: [
         { label: "Contact area", value: "Increased", note: "Higher bearing ratio after treatment" },
         { label: "Lambda ratio", value: "Improved", note: "Same oil, thicker effective film" },
-        { label: "Form change", value: "None measurable" },
+        { label: "Form", value: "Preserved" },
       ],
       relatedIndustrySlugs: ["gears-transmission", "aerospace"],
       relatedComponentSlugs: ["gears-and-shafts", "bearings"],
@@ -88,7 +88,7 @@ export function buildBenefits() {
       evidence: [
         { label: "Recast layer", value: "Removed" },
         { label: "Cavity geometry", value: "Preserved" },
-        { label: "Access", value: "Ribs, slots, blind pockets" },
+        { label: "Access", value: "Open cavities, ribs and slots" },
       ],
       relatedIndustrySlugs: ["forge-stamping-die", "plastic-injection-molds", "aerospace"],
       relatedComponentSlugs: ["dies-and-moulds", "turbine-and-impeller"],
@@ -167,7 +167,7 @@ export function buildComponentTypes() {
       challenge:
         "On a flow surface, roughness disrupts the boundary layer and some of the energy that should have become work becomes turbulence and heat instead. The surfaces that matter most are also the hardest to reach: blade roots, fillets, the concave side of an aerofoil.",
       treatment:
-        "The treatment works in a tank rather than with a tool, so it reaches the whole aerofoil including roots and fillets, and it removes roughness without rounding the leading edge or moving the profile.",
+        "The treatment works in a tank rather than with a tool, so it reaches the whole aerofoil including roots and fillets, and it removes roughness while holding the profile, leaving the leading edge with a controlled micro-radius rather than an uneven one.",
       envelope: [
         { label: "Typical incoming", value: "Cast, machined or additive" },
         { label: "Achievable", value: "0.05 to 0.02 µm Ra" },
@@ -187,7 +187,7 @@ export function buildComponentTypes() {
       challenge:
         "A cavity surface transfers itself into every part it makes. EDM leaves a recast skin, polishing by hand is slow and inconsistent between operators, and both leave texture that resists release and shortens the interval between reworks.",
       treatment:
-        "MMP removes the recast layer and the roughness beneath it in one operation, reaching into ribs, slots and blind pockets, and it does so without opening the cavity or softening a detail.",
+        "MMP removes the recast layer and the roughness beneath it in one operation, across ribs, slots and open cavities, and it does so without opening the cavity or softening a detail.",
       envelope: [
         { label: "Typical incoming", value: "EDM, milled or ground" },
         { label: "Achievable", value: "0.05 to 0.02 µm Ra" },
@@ -247,11 +247,11 @@ export function buildComponentTypes() {
       challenge:
         "Powder-bed parts come off the plate with partially sintered particles on every face and a stepped, directional texture that follows the build layers. Internal channels, lattices and conformal cooling are exactly the geometries additive is chosen for, and exactly the ones no abrasive process can reach.",
       treatment:
-        "Because the treatment works in a tank, it reaches internal passages and lattice struts as readily as external faces, removing loose particles and layer texture without eroding the printed geometry.",
+        "Because the treatment works in a tank, it follows complex printed shapes and treats straight or gently curved channels wide enough for the roughness, removing loose particles and layer texture without eroding the printed geometry.",
       envelope: [
         { label: "Typical incoming", value: "As printed, DMLS or SLM" },
         { label: "Achievable", value: "0.1 to 0.02 µm Ra" },
-        { label: "Internal channels", value: "Reachable" },
+        { label: "Internal channels", value: "Straight or gently curved, from 5 mm" },
         { label: "Printed geometry", value: "Retained" },
       ],
       materials: ["Inconel 718", "Titanium Ti-6Al-4V", "AlSi10Mg", "316L stainless"],

@@ -97,3 +97,47 @@ export interface ComparisonCopy {
   alternativeLabel: string;
   rows: ComparisonRow[];
 }
+
+/** What the process does well and where it stops, as published in INFINI's MMP brochure. */
+export interface SuitabilityCopy {
+  eyebrow?: string;
+  heading: string;
+  body?: string;
+  advantagesTitle: string;
+  advantages: string[];
+  limitationsTitle: string;
+  limitations: string[];
+}
+
+/** One row of the internal-passage diameter guide: how wide a channel a given size of irregularity needs. */
+export interface PassageDiameterRow {
+  irregularity: string;
+  /** The manufacturing method that typically leaves this size of irregularity. */
+  source: string;
+  diameter: string;
+}
+
+/** One point on the passage length guide. Numbers rather than strings, because the bars are drawn from them. */
+export interface PassageLengthRow {
+  diameterMm: number;
+  lengthMm: number;
+}
+
+export interface PassageGuidelinesCopy {
+  eyebrow?: string;
+  heading: string;
+  body?: string;
+  shape: { title: string; ok: string; notOk: string };
+  diameters: { title: string; body?: string; rows: PassageDiameterRow[] };
+  lengths: { title: string; body?: string; rows: PassageLengthRow[] };
+}
+
+/** Micro edge honing. The two radii are drawn in code; only the words are copy. */
+export interface EdgeHoningCopy {
+  eyebrow?: string;
+  heading: string;
+  body?: string;
+  small: { title: string; caption: string };
+  medium: { title: string; caption: string };
+  note?: string;
+}

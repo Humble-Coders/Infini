@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPage, getSection, getContentBlocks } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { DeburringPageContent } from "@/components/sections/capability/DeburringPageContent";
-import type { ComparisonCopy, GalleryCopy, PageHeroCopy, StatTripletCopy } from "@/lib/types";
+import type { ComparisonCopy, EdgeHoningCopy, GalleryCopy, PageHeroCopy, StatTripletCopy } from "@/lib/types";
 import { ogTitle, pageTitle } from "@/lib/seo";
 
 
@@ -54,6 +54,7 @@ export default async function DeburringPolishingPage() {
       gallery={getSection<GalleryCopy>(homePage, "gallery")}
       comparison={getSection<ComparisonCopy>(page, "comparison") ?? undefined}
       stats={getSection<StatTripletCopy>(page, "stats") ?? undefined}
+      edgeHoning={getSection<EdgeHoningCopy>(page, "edgeHoning") ?? undefined}
     />
   );
 }

@@ -9,7 +9,7 @@ import { PROCESS_IMAGES_FALLBACK } from "./galleryPlaceholders";
 const FALLBACK: TechnologyCopy = {
   eyebrow: "The MMP process",
   heading: "A treatment,\nnot a coating.",
-  body: "MMP (Micro Machining Process) is a mechanical-physical-chemical treatment performed in dedicated tanks. It selectively removes frequencies of surface roughness from components our customers manufacture, no material added, no dimensional drift, just a controlled finish verified against measurable roughness targets.",
+  body: "MMP (Micro Machining Process) is a mechanical-physical-catalytic treatment performed in dedicated tanks. It selectively removes frequencies of surface roughness from components our customers manufacture, nothing added and the form kept, just a controlled finish verified against measurable roughness targets.",
   steps: [
     { step: "01", title: "Validation", description: "Component geometry, material and target roughness are assessed before treatment begins." },
     { step: "02", title: "Treatment", description: "The MMP process runs in-house, in tanks tuned to the component and finish required." },

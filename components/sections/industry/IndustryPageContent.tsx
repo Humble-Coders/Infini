@@ -191,6 +191,23 @@ export function IndustryPageContent({
             ))}
           </div>
 
+          {/* The brochure pairs each market's applications with what the treatment delivers there. */}
+          {industry.benefits && industry.benefits.length > 0 && (
+            <div className="flex flex-col gap-6 border-t border-border pt-10">
+              <MonoLabel as="h3">What it delivers</MonoLabel>
+              <ul className="grid gap-x-10 gap-y-4 sm:grid-cols-2">
+                {industry.benefits.map((benefit, index) => (
+                  <li key={benefit}>
+                    <Reveal delay={index * 0.05} className="flex items-start gap-3">
+                      <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-accent" />
+                      <span className="text-base leading-snug text-foreground/90 sm:text-lg">{benefit}</span>
+                    </Reveal>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {industry.materials.length > 0 && (
             <div className="mt-16 flex flex-col gap-8 rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-8 shadow-2xl backdrop-blur-sm sm:p-12 relative overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(var(--color-primary-rgb),0.15),transparent_50%)]" />
