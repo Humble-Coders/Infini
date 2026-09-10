@@ -19,8 +19,8 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
     slug: "demo-mmp-vs-traditional-polishing",
     title: "Why MMP treatment outperforms traditional polishing on complex geometry",
     excerpt:
-      "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for parts with tight internal geometry.",
-    body: "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for parts with tight internal geometry, fine features, and complex cavities that manual polishing struggles to reach evenly.",
+      "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for complex shapes, fine features and edges.",
+    body: "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for complex shapes, fine features and edges that manual polishing struggles to finish evenly, and where a flow-based process has limits of its own.",
     coverImage: "/images/placeholders/process-01-bevel-pinion.jpg",
     tags: ["technology", "MMP"],
     status: "published",
@@ -63,8 +63,8 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
     slug: "demo-additive-manufacturing-post-processing",
     title: "The finishing step 3D-printed metal parts still need",
     excerpt:
-      "As-built AM parts carry layer lines and loosely sintered particles that standard finishing can't reach. Here's how internal channels and lattices get treated.",
-    body: "As-built AM parts carry layer lines and loosely sintered particles that standard finishing can't reach, especially on internal channels and lattice structures. Here's how that as-built roughness gets brought down to a verified target without losing the geometry that made additive worth using in the first place.",
+      "As-built AM parts carry layer lines and loosely sintered particles. Here's how that roughness comes down, and which internal channels a flow-based process can and can't treat.",
+    body: "As-built AM parts carry layer lines and loosely sintered particles. Here's how that as-built roughness gets brought down to a verified target without losing the geometry that made additive worth using in the first place, and why internal channels need to be straight or gently curved, and wide enough for their roughness, before they can be treated.",
     coverImage: "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
     tags: ["additive manufacturing"],
     status: "published",
@@ -72,9 +72,9 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
     authorId: "demo-content",
     seo: {
       title: "The finishing step 3D-printed metal parts still need",
-      description: "How MMP treatment reduces as-built roughness on internal AM geometry standard finishing can't access.",
+      description: "How MMP treatment reduces as-built roughness on printed parts, and the channel sizes it needs to reach inside.",
       ogTitle: "The finishing step 3D-printed metal parts still need",
-      ogDescription: "How MMP treatment reduces as-built roughness on internal AM geometry standard finishing can't access.",
+      ogDescription: "How MMP treatment reduces as-built roughness on printed parts, and the channel sizes it needs to reach inside.",
       ogImage: "",
       canonical: "",
       noindex: false,

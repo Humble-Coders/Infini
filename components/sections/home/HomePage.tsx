@@ -6,12 +6,10 @@ import { HomeHero } from "@/components/sections/home/HomeHero";
 import { TrustSection } from "@/components/sections/home/TrustSection";
 import { IndustriesIndex } from "@/components/sections/home/IndustriesIndex";
 import { MotionProvider } from "@/components/sections/home/MotionProvider";
-import { NewsIndex } from "@/components/sections/home/NewsIndex";
 import { ProcessSection } from "@/components/sections/home/ProcessSection";
 import { BenefitsSection } from "@/components/sections/home/BenefitsSection";
 import { ProofSection } from "@/components/sections/home/ProofSection";
 import { ProvenWork } from "@/components/sections/home/ProvenWork";
-import { Statement } from "@/components/sections/home/Statement";
 import { Testimonials } from "@/components/sections/home/Testimonials";
 import { Ticker } from "@/components/sections/home/Ticker";
 import { SolutionFinder } from "@/components/sections/home/SolutionFinder";
@@ -23,11 +21,10 @@ import { getPublishedIndustries } from "@/lib/data/industries";
 import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getPublishedTestimonials } from "@/lib/data/testimonials";
-import { getPublishedNews } from "@/lib/data/news";
 import { getSettings } from "@/lib/data/settings";
 import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
-import type { GalleryCopy, HeroCopy, StatementCopy, StatsCopy, TeaserCopy, TechnologyCopy } from "@/lib/types";
+import type { GalleryCopy, HeroCopy, StatsCopy, TeaserCopy, TechnologyCopy } from "@/lib/types";
 
 const FALLBACK_TITLE = "INFINI | Precision Surface-Finishing";
 const FALLBACK_DESCRIPTION =
@@ -49,28 +46,28 @@ export async function homeMetadata(): Promise<Metadata> {
  * Home. Every section reads its copy from `pages/home` (with an in-code
  * fallback so the page never renders a hole) and its content from the
  * published collections. Section order is the argument the page makes:
- * what the finish does → what we finish → what INFINI is → how MMP works → who it's for →
- * why to believe it → proof → voices → trusted-by logo band → news → the ask.
+ * what the finish does → find your application → who INFINI is → who trusts
+ * the work → what we finish → how MMP works → who it's for → proof → voices →
+ * the ask.
+ *
+ * Certifications and news are not repeated here; each has its own page.
  */
 export async function HomePage() {
-  const [page, industries, caseStudies, certifications, testimonials, news, settings] = await Promise.all([
+  const [page, industries, caseStudies, certifications, testimonials, settings] = await Promise.all([
     getPage("home"),
     getPublishedIndustries(),
     getPublishedCaseStudies(),
     getActiveCertifications(),
     getPublishedTestimonials(),
-    getPublishedNews(),
     getSettings(),
   ]);
 
   const hero = getSection<HeroCopy>(page, "hero");
   const gallery = getSection<GalleryCopy>(page, "gallery");
-  const statement = getSection<StatementCopy>(page, "statement");
   const technology = getSection<TechnologyCopy>(page, "technology");
   const stats = getSection<StatsCopy>(page, "stats");
   const industriesTeaser = getSection<TeaserCopy>(page, "industriesTeaser");
   const caseStudiesTeaser = getSection<TeaserCopy>(page, "caseStudiesTeaser");
-  const newsTeaser = getSection<TeaserCopy>(page, "newsTeaser");
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
 
   // Demo quotes while the testimonials collection is empty; real documents win.
@@ -81,15 +78,24 @@ export async function HomePage() {
       <main className="min-h-screen bg-background">
         <ExhibitionBanner />
         <HomeHero copy={hero} />
-        <SolutionFinder industries={industries} />
-        <ComponentGallery copy={gallery} />
+
+        {/* White run straight after the hero: find your industry and the counters,
+            the joint venture, then the customers who trust the work. */}
+        <SolutionFinder industries={industries} certificationsCount={certifications.length} />
         <PartnershipSection />
+        <TrustSection className="pb-28 sm:pb-36" />
+
+        <ComponentGallery copy={gallery} />
         <Ticker items={industries.map((industry) => industry.name)} />
-        <Statement copy={statement} />
         <ProcessSection copy={technology} />
         <BenefitsSection />
         <IndustriesIndex industries={industries} copy={industriesTeaser} />
-        <ProofSection stats={stats} certifications={certifications} industriesCount={industries.length} />
+        <ProofSection
+          stats={stats}
+          certifications={certifications}
+          industriesCount={industries.length}
+          showCertifications={false}
+        />
         {/* Demo studies stand in until the collection is seeded. Their slugs have no
             Firestore document, so the cards must not link to a detail page. */}
         <ProvenWork
@@ -98,8 +104,6 @@ export async function HomePage() {
           industries={industries}
           linkToDetail={caseStudies.length > 0}
         />
-        <TrustSection />
-        <NewsIndex copy={newsTeaser} news={news} />
         <Testimonials copy={null} testimonials={voices} />
         <ContactPanel
           copy={contactTeaser}

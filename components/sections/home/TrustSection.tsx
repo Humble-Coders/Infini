@@ -130,7 +130,14 @@ function LogoRow({ logos, reverse = false }: { logos: TrustLogo[]; reverse?: boo
  * to take the token cream instead, or two nearly-identical whites meet and the
  * join reads as an unintended seam rather than as one continuous movement.
  */
-export function TrustSection({ tone = "white" }: { tone?: "white" | "surface" }) {
+export function TrustSection({
+  tone = "white",
+  className,
+}: {
+  tone?: "white" | "surface";
+  /** Spacing overrides for the band, e.g. the home page's deeper run-out below the logos. */
+  className?: string;
+}) {
   const all = [...ROW_A, ...ROW_B];
 
   // neutral-500 clears AA on the pure white of the home band (4.74:1) but not on
@@ -166,7 +173,7 @@ export function TrustSection({ tone = "white" }: { tone?: "white" | "surface" })
       <section
         data-surface="light"
         aria-label="Trusted by industry leaders"
-        className="relative overflow-hidden bg-background text-foreground pt-10 pb-20 sm:pt-12 sm:pb-24"
+        className={cn("relative overflow-hidden bg-background text-foreground pt-10 pb-20 sm:pt-12 sm:pb-24", className)}
       >
         <div className="mx-auto w-full max-w-7xl px-4 md:px-8">{body}</div>
       </section>
@@ -174,7 +181,11 @@ export function TrustSection({ tone = "white" }: { tone?: "white" | "surface" })
   }
 
   return (
-    <ThemeSection theme="light" ariaLabel="Trusted by industry leaders" className="relative overflow-hidden pt-10 sm:pt-12">
+    <ThemeSection
+      theme="light"
+      ariaLabel="Trusted by industry leaders"
+      className={cn("relative overflow-hidden pt-10 sm:pt-12", className)}
+    >
       {body}
     </ThemeSection>
   );

@@ -51,8 +51,9 @@ const INDUSTRY_FIELDS: Record<string, string[]> = {
   "powder-metallurgy": ["published"],
 };
 
-/** Page sections whose body text changed, matched by type and, for text blocks, by heading. */
-const PAGE_SECTIONS: { page: string; type: string; heading?: string }[] = [
+/** Page section fields that changed (body unless named), matched by type and, for text blocks, by heading. */
+const PAGE_SECTIONS: { page: string; type: string; heading?: string; field?: string }[] = [
+  { page: "home", type: "hero", field: "ctaNote" },
   { page: "home", type: "technology" },
   { page: "technology", type: "textBlock", heading: "What MMP actually is" },
   { page: "technology", type: "textBlock", heading: "How frequency-based removal works" },
@@ -164,13 +165,23 @@ async function run() {
         console.warn(`skip pages/${pageId} ${label}: not found in ${live ? "content.ts" : "Firestore"}`);
         continue;
       }
-      if (same(live.fields.body, seed.fields.body)) continue;
-      note(`pages/${pageId}`, `${label} body`, live.fields.body, seed.fields.body);
-      live.fields.body = seed.fields.body;
+      const field = target.field ?? "body";
+      if (same(live.fields[field], seed.fields[field])) continue;
+      note(`pages/${pageId}`, `${label} ${field}`, live.fields[field], seed.fields[field]);
+      live.fields[field] = seed.fields[field];
       changed = true;
     }
 
     if (changed) batch.update(ref, { sections });
+  }
+
+  // News: take the development placeholder post off the public archive.
+  const placeholders = await db.collection("news").where("slug", "==", "sample-first-post").get();
+  for (const doc of placeholders.docs) {
+    const status = doc.get("status");
+    if (status === "draft") continue;
+    note(`news/${doc.id}`, "status", status, "draft");
+    batch.update(doc.ref, { status: "draft" });
   }
 
   if (changes === 0) {

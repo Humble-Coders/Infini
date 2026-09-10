@@ -37,10 +37,13 @@ export function ProofSection({
   stats,
   certifications,
   industriesCount,
+  showCertifications = true,
 }: {
   stats: StatsCopy | null;
   certifications: WithId<CertificationDoc>[];
   industriesCount: number;
+  /** The home page leaves the certificate cards to /certifications. */
+  showCertifications?: boolean;
 }) {
   const intro =
     stats?.intro ??
@@ -84,7 +87,7 @@ export function ProofSection({
           </dl>
         </div>
 
-        {certifications.length > 0 && (
+        {showCertifications && certifications.length > 0 && (
           <div className="flex flex-col gap-6">
             <div className="flex items-end justify-between gap-4 border-b border-border pb-4">
               <h3 className="text-lg font-semibold tracking-[-0.01em] text-foreground">Certifications</h3>

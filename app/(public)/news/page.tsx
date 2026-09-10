@@ -36,7 +36,7 @@ const COPY = {
 const SUBJECTS = [
   {
     label: "Process",
-    detail: "How the MMP media, chemistry and cycle are selected for a given alloy and geometry.",
+    detail: "How microtools, catalyst and cycle are matched to a given alloy, roughness and geometry.",
   },
   {
     label: "Metrology",

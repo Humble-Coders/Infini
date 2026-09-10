@@ -558,7 +558,8 @@ export function buildNews(ts: TimestampFactory) {
       body: "Placeholder body content for local development.",
       coverImage: "",
       tags: ["announcement"],
-      status: "published" as const,
+      // Development placeholder: kept for the emulator, never on the public archive.
+      status: "draft" as const,
       publishedAt: ts.fromDate(new Date("2026-01-01")),
       authorId: "seed-script",
       seo: baseSeo("Sample news post", "Placeholder excerpt for local development."),
@@ -639,7 +640,7 @@ export function buildPages() {
             eyebrow: "A collaboration between BINC Industries and IND-SPHINX",
             heading: "Super Precision\nSurface Finishing",
             body: "Precision surface finishing for components precision manufacturers already trust, applied in-house, verified before it ships.",
-            ctaNote: "No project too precise. Talk to our engineers.",
+            ctaNote: "From controlled roughness to mirror-like brilliance.",
           },
         },
         {

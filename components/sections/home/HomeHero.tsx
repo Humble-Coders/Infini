@@ -13,7 +13,8 @@ const FALLBACK: Required<HeroCopy> = {
   eyebrow: "MMP Technology licensed plant \u00b7 Since 2002 \u00b7 ISO 9001 certified",
   heading: "Super Precision\nSurface Finishing",
   body: "INFINI applies MMP Technology to components its customers manufacture. A controlled, catalytic process that selectively removes roughness frequencies, verified per batch, traceable to your quality file.",
-  ctaNote: "Seven plants. Four continents. One controlled process.",
+  // The tagline from INFINI's MMP brochure (INF_V2-09/2025).
+  ctaNote: "From controlled roughness to mirror-like brilliance.",
 };
 
 /** Delay (ms) per hero element so the copy stacks in, top to bottom. */
