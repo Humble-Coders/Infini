@@ -1,12 +1,14 @@
 import { ComparisonTable } from "./ComparisonTable";
 import { ContentBlocks } from "./ContentBlocks";
 import { MechanismStatement } from "./MechanismStatement";
+import { MmpProcessSteps } from "./MmpProcessSteps";
 import { PageTail } from "./PageTail";
 import { RoughnessDecomposition } from "./RoughnessDecomposition";
 import { SpecTable } from "./SpecTable";
 import { StatTriplet } from "./StatTriplet";
 import { TechnologyHero } from "./TechnologyHero";
 import { TreatmentSchematic } from "./TreatmentSchematic";
+import { WaveAnalysisSection } from "./WaveAnalysisSection";
 import { ComponentGallery } from "@/components/sections/home/ComponentGallery";
 import { ProcessSection } from "@/components/sections/home/ProcessSection";
 import { Ticker } from "@/components/sections/home/Ticker";
@@ -184,9 +186,13 @@ export function TechnologyPageContent({
       <Ticker items={PARAMETERS} />
       <ComponentGallery copy={gallery} />
 
-      {/* The claim, then the mechanism drawn on a dark band, then the spectral view and the process in photographs. */}
+      {/* The claim, then the 4-step sequence inside the tank from the brochure */}
       <MechanismStatement label={mechanism.label} heading={mechanism.heading} body={mechanism.body} />
+      <MmpProcessSteps surface="dark" />
+
+      {/* The treatment schematic, followed by the complete wave filtering analysis from the brochure */}
       <TreatmentSchematic surface="dark" />
+      <WaveAnalysisSection surface="light" />
       <RoughnessDecomposition heading="One trace, taken apart." body={FIGURE_BODY} surface="light" />
       <ProcessSection copy={process} />
 

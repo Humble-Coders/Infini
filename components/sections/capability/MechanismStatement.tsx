@@ -14,8 +14,8 @@ import { MonoLabel } from "@/components/sections/home/MonoLabel";
  */
 export function MechanismStatement({ label, heading, body }: { label: string; heading: string; body: string }) {
   return (
-    <section data-surface="light" className="bg-background pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-20">
-      <Container className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+    <section data-surface="light" className="bg-background py-12 sm:py-16">
+      <Container className="grid gap-8 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-3 lg:pt-4">
           <MonoLabel>{label}</MonoLabel>
         </div>

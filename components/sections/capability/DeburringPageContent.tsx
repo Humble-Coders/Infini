@@ -3,6 +3,7 @@ import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
 import { ContentBlocks } from "./ContentBlocks";
 import { EdgeHoning } from "./EdgeHoning";
 import { EvidenceImage } from "./EvidenceImage";
+import { MicroEdgeHoningSection } from "./MicroEdgeHoningSection";
 import { PageTail } from "./PageTail";
 import { SplitComparison } from "./SplitComparison";
 import { StatTriplet } from "./StatTriplet";
@@ -136,6 +137,7 @@ export function DeburringPageContent({
       {/* Light run: the choice, laid out as a choice, then the edge at the two sizes the aggregates produce. */}
       <SplitComparison copy={comparison} surface="light" />
       <EdgeHoning copy={edgeHoning} surface="light" />
+      <MicroEdgeHoningSection surface="light" />
 
       {/* Dark run: outcomes, then the range of parts this applies to. */}
       <StatTriplet copy={stats} />

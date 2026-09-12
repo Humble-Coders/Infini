@@ -2,6 +2,7 @@ import { CapabilityHero } from "./CapabilityHero";
 import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
 import { ContentBlocks } from "./ContentBlocks";
 import { GradeLadder } from "./GradeLadder";
+import { MirrorBrillianceSection } from "./MirrorBrillianceSection";
 import { PageTail } from "./PageTail";
 import { SpecTable } from "./SpecTable";
 import { StatTriplet } from "./StatTriplet";
@@ -116,7 +117,10 @@ export function MirrorFinishPageContent({
       />
       <SpecTable copy={spec} surface="light" />
 
-      {/* Dark close: outcomes, the detail, the logo wall, then the ask. */}
+      {/* Dark run: brochure form integrity & internal flow rules */}
+      <MirrorBrillianceSection surface="dark" />
+
+      {/* Outcomes, the detail, the logo wall, then the ask. */}
       <StatTriplet copy={stats} />
       <ContentBlocks blocks={blocks} surface="dark" />
       <TrustSection />

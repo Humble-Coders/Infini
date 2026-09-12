@@ -252,7 +252,7 @@ export function TreatmentSchematic({
   return (
     <section
       {...(surface === "light" ? { "data-surface": "light" } : {})}
-      className="bg-background py-24 sm:py-28"
+      className="bg-background py-12 sm:py-16"
     >
       <Container className="flex flex-col gap-12">
         <div className="flex max-w-2xl flex-col gap-5">

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 // Staging must never be indexable. Resolved once at build time (not per
 // request like the middleware this replaces) since NEXT_PUBLIC_SITE_ENV is
@@ -6,6 +7,7 @@ import type { NextConfig } from "next";
 const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: path.resolve(__dirname),
   images: {
     // Modern formats first (smaller files), week-long optimizer cache so
     // repeat visits never re-pay the resize cost.

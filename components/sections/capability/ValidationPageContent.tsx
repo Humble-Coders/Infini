@@ -6,6 +6,7 @@ import { PageTail } from "./PageTail";
 import { SpecTable } from "./SpecTable";
 import { StageBeam } from "./StageBeam";
 import { StatTriplet } from "./StatTriplet";
+import { ValidationProcessVisual } from "./ValidationProcessVisual";
 import { Ticker } from "@/components/sections/home/Ticker";
 import type {
   ContentBlock,
@@ -140,6 +141,7 @@ export function ValidationPageContent({
       />
       <Ticker items={STANDARDS} />
       <StatTriplet copy={stats} />
+      <ValidationProcessVisual surface="dark" />
 
       {/* Light run: the protocol on the beam, then the measurement record. */}
       <StageBeam copy={stages} surface="light" />
