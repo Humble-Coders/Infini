@@ -46,10 +46,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Trim the client bundle: barrel imports from the motion engine resolve to
+  poweredByHeader: false,
+  compiler: {
+    removeConsole: isProduction ? { exclude: ["error", "warn"] } : false,
+  },
+  // Trim the client bundle: barrel imports from icons and motion engines resolve to
   // just the modules actually used.
   experimental: {
-    optimizePackageImports: ["framer-motion"],
+    optimizePackageImports: [
+      "framer-motion",
+      "lucide-react",
+      "lenis",
+      "lenis/react",
+      "sonner",
+    ],
   },
 };
 
