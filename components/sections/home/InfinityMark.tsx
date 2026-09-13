@@ -53,27 +53,27 @@ export function InfinityMark({ className }: { className?: string }) {
       style={{ "--infinity-length": LENGTH.toFixed(1) } as CSSProperties}
     >
       <defs>
-        <filter id="infinity-glow" x="-25%" y="-25%" width="150%" height="150%">
-          <feGaussianBlur stdDeviation="2.6" />
+        <filter id="infinity-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4.5" />
         </filter>
       </defs>
 
-      {/* The figure itself: always visible, deliberately quiet. */}
-      <path d={PATH} stroke="currentColor" strokeWidth="1.25" strokeOpacity="0.11" />
+      {/* The figure itself: always visible, bold and refined. */}
+      <path d={PATH} stroke="currentColor" strokeWidth="3.5" strokeOpacity="0.2" />
 
       {/* Flares as the tracer closes a lap. */}
-      <path className="infinity-shine" d={PATH} stroke="var(--color-accent)" strokeWidth="1.5" />
+      <path className="infinity-shine" d={PATH} stroke="var(--color-accent)" strokeWidth="3.5" />
 
       {/* Blurred halo behind the travelling dot, then the dot itself. */}
       <path
         className="infinity-halo"
         d={PATH}
         stroke="var(--color-accent)"
-        strokeWidth="8"
+        strokeWidth="14"
         strokeLinecap="round"
         filter="url(#infinity-glow)"
       />
-      <path className="infinity-dot" d={PATH} stroke="var(--color-accent)" strokeWidth="3.5" strokeLinecap="round" />
+      <path className="infinity-dot" d={PATH} stroke="var(--color-accent)" strokeWidth="7" strokeLinecap="round" />
     </svg>
   );
 }
