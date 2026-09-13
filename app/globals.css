@@ -495,3 +495,27 @@
     display: none;
   }
 }
+
+/* Testimonial carousel autoplay segment. Duration comes from the component
+   (AUTOPLAY_MS) via inline animation-duration; the keyframes only describe
+   the fill. Pausing toggles animation-play-state, so bar and timer stay
+   visually glued without JS frame bookkeeping. */
+@keyframes testimonial-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.testimonial-progress {
+  transform-origin: left center;
+  animation-name: testimonial-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.testimonial-progress-paused {
+  animation-play-state: paused;
+}

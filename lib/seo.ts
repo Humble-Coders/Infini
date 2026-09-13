@@ -34,3 +34,24 @@ export function ogTitle(title: string): string {
   const trimmed = title.trim();
   return BRAND_AT_EDGE.test(trimmed) ? trimmed : `${trimmed} | ${SITE_NAME}`;
 }
+
+/**
+ * Canonical site origin. Overridable per deploy via NEXT_PUBLIC_SITE_URL;
+ * defaults to the production domain so builds without the var still emit
+ * absolute OG/canonical URLs instead of silently dropping them.
+ */
+export function siteUrl(): string {
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://infini.co.in").replace(/\/$/, "");
+}
+
+/**
+ * Canonical URL for a page. Prefers the CMS `seo.canonical` override when an
+ * editor set one (absolute or path), otherwise the site path passed in.
+ */
+export function canonicalUrl(fallbackPath: string, override?: string): string {
+  const base = siteUrl();
+  const clean = (override ?? "").trim();
+  if (!clean) return `${base}${fallbackPath}`;
+  if (/^https?:\/\//i.test(clean)) return clean;
+  return `${base}${clean.startsWith("/") ? clean : `/${clean}`}`;
+}

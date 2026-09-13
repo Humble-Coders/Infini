@@ -10,7 +10,7 @@ import { AxisCrossLinks } from "@/components/sections/axes/AxisCrossLinks";
 import { getBenefitBySlug, getPublishedBenefitSlugs } from "@/lib/data/benefits";
 import { getComponentTypesBySlugs } from "@/lib/data/componentTypes";
 import { getPublishedIndustries } from "@/lib/data/industries";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle, canonicalUrl } from "@/lib/seo";
 
 
 /*
@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: pageTitle(benefit.seo.title),
     description: benefit.seo.description || benefit.summary,
+    alternates: { canonical: canonicalUrl(`/benefits/${slug}`, benefit.seo.canonical) },
     openGraph: {
       title: ogTitle(benefit.seo.title),
       description: benefit.seo.description || benefit.summary,

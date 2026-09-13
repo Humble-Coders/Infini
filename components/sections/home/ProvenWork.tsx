@@ -53,7 +53,7 @@ export function ProvenWork({
   }));
 
   return (
-    <section data-surface="light" className="overflow-hidden bg-background py-24 sm:py-32">
+    <section data-surface="light" className="overflow-hidden bg-background pt-24 sm:pt-32 pb-10 sm:pb-14">
       <Container className="flex flex-col gap-12 lg:gap-16">
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
           <div className="flex flex-col gap-6 lg:col-span-6">
@@ -66,7 +66,7 @@ export function ProvenWork({
             {body && <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">{body}</p>}
             <Link
               href="/case-studies"
-              className="group inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.22em] text-foreground uppercase transition-colors hover:text-accent"
+              className="group inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 font-mono text-[11px] tracking-[0.2em] text-foreground uppercase transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
             >
               All case studies
               <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />

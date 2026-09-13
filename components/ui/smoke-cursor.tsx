@@ -10,6 +10,17 @@ function subscribeFinePointer(callback: () => void) {
 }
 
 /**
+ * Post-mount flag as an external store: server snapshot false, client
+ * snapshot true. The subscription fires once on mount, flipping the value
+ * after hydration commits, so the server HTML (null) and the first client
+ * render (null) always agree.
+ */
+function subscribeMounted(callback: () => void) {
+  callback();
+  return () => {};
+}
+
+/**
  * Ambient red-smoke cursor: a small glowing core that tracks the pointer
  * tightly plus a larger smoke wisp that lags behind on a looser spring.
  * Performance notes: cursor position flows through motion values (no React
@@ -29,6 +40,11 @@ export function SmokeCursor() {
     () => window.matchMedia("(pointer: fine)").matches,
     () => false,
   );
+  // Mounted gate: the server renders null, and the client's first render must
+  // be null too. Without this, a fine-pointer device renders the cursor divs
+  // on the first client pass where the server had nothing, shifting every
+  // useId below this component and tripping a hydration mismatch.
+  const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false);
   const x = useMotionValue(-200);
   const y = useMotionValue(-200);
 
@@ -47,7 +63,7 @@ export function SmokeCursor() {
     return () => window.removeEventListener("mousemove", move);
   }, [finePointer, x, y]);
 
-  if (reduce || !finePointer) return null;
+  if (!mounted || reduce || !finePointer) return null;
 
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[80] motion-reduce:hidden">

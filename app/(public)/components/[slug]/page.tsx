@@ -11,7 +11,7 @@ import { Ticker } from "@/components/sections/home/Ticker";
 import { getComponentTypeBySlug, getPublishedComponentTypeSlugs } from "@/lib/data/componentTypes";
 import { getBenefitsBySlugs } from "@/lib/data/benefits";
 import { getPublishedIndustries } from "@/lib/data/industries";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle, canonicalUrl } from "@/lib/seo";
 
 
 /*
@@ -34,6 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: pageTitle(type.seo.title),
     description: type.seo.description || type.summary,
+    alternates: { canonical: canonicalUrl(`/components/${slug}`, type.seo.canonical) },
     openGraph: {
       title: ogTitle(type.seo.title),
       description: type.seo.description || type.summary,

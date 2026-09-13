@@ -7,7 +7,7 @@ import { Container } from "@/components/ui/container";
 import { getCaseStudyBySlug, getPublishedCaseStudySlugs } from "@/lib/data/caseStudies";
 import { getIndustryById } from "@/lib/data/industries";
 import { BeforeAfterComparison } from "@/components/case-studies/BeforeAfterComparison";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle, canonicalUrl } from "@/lib/seo";
 
 
 /*
@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: pageTitle(caseStudy.seo.title),
     description: caseStudy.seo.description,
+    alternates: { canonical: canonicalUrl(`/case-studies/${slug}`, caseStudy.seo.canonical) },
     openGraph: {
       title: ogTitle(caseStudy.seo.title),
       description: caseStudy.seo.description,

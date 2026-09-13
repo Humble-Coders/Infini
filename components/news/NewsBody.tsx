@@ -33,10 +33,12 @@ export function NewsBody({ markdown }: { markdown: string }) {
           ),
           strong: ({ children }) => <strong className="font-medium text-foreground">{children}</strong>,
           img: ({ src, alt }) => {
+            if (typeof src !== "string") return null;
+            // next/image needs explicit dimensions, which CMS-dropped markdown
+            // images don't have — a remote URL with no size metadata. Plain
+            // img with lazy load + async decode is the honest choice here.
             // eslint-disable-next-line @next/next/no-img-element
-            return typeof src === "string" ? (
-              <img src={src} alt={alt ?? ""} className="w-full rounded-xl border border-border" />
-            ) : null;
+            return <img src={src} alt={alt ?? ""} loading="lazy" decoding="async" className="w-full rounded-xl border border-border" />;
           },
         }}
       >

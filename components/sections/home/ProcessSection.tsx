@@ -58,11 +58,15 @@ export function ProcessSection({ copy }: { copy: TechnologyCopy | null }) {
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           {lead && (
             <div className="lg:col-span-7">
-              <Photo
-                image={lead}
-                className="aspect-[4/3] w-full sm:aspect-[16/10] lg:sticky lg:top-28 lg:aspect-[4/5]"
-                sizes="(min-width: 1024px) 58vw, 100vw"
-              />
+              {/* Sticky lives on the wrapper: next/image fill requires its
+                  direct parent (the figure) to be relative, not sticky. */}
+              <div className="lg:sticky lg:top-28">
+                <Photo
+                  image={lead}
+                  className="aspect-[4/3] w-full sm:aspect-[16/10] lg:aspect-[4/5]"
+                  sizes="(min-width: 1024px) 58vw, 100vw"
+                />
+              </div>
             </div>
           )}
           <div className="flex flex-col gap-12 lg:col-span-5">

@@ -74,7 +74,7 @@ export function IndustriesIndex({
         <div className="mt-8 flex justify-center w-full">
           <Link
             href="/industries"
-            className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 font-mono text-[11px] tracking-[0.2em] text-white uppercase transition-colors hover:bg-white/10"
+            className="group inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-mono text-[11px] tracking-[0.2em] text-white uppercase transition-colors hover:bg-white/10"
           >
             Explore all industries
             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />

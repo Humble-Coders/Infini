@@ -6,7 +6,8 @@ import { ArrowLeft } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { getNewsBySlug, getPublishedNewsSlugs } from "@/lib/data/news";
 import { NewsBody } from "@/components/news/NewsBody";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { JsonLd, articleJsonLd } from "@/components/seo/JsonLd";
+import { ogTitle, pageTitle, canonicalUrl, siteUrl } from "@/lib/seo";
 
 
 /*
@@ -30,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: pageTitle(post.seo.title),
     description: post.seo.description,
+    alternates: { canonical: canonicalUrl(`/news/${slug}`, post.seo.canonical) },
     openGraph: {
       title: ogTitle(post.seo.title),
       description: post.seo.description,
@@ -50,6 +52,16 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <main className="min-h-screen bg-background">
+      <JsonLd
+        data={articleJsonLd({
+          origin: siteUrl(),
+          path: `/news/${slug}`,
+          headline: post.seo.title || post.title,
+          description: post.seo.description,
+          image: post.seo.ogImage || post.coverImage || undefined,
+          datePublished: post.publishedAt.toDate().toISOString(),
+        })}
+      />
       <article>
         <section className="border-b border-border/60 py-16 sm:py-24">
           <Container className="flex flex-col gap-5">

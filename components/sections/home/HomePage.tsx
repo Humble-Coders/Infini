@@ -15,7 +15,7 @@ import { Ticker } from "@/components/sections/home/Ticker";
 import { SolutionFinder } from "@/components/sections/home/SolutionFinder";
 import { ContactPanel } from "@/components/sections/home/ContactPanel";
 import { BackToTop } from "@/components/layout/BackToTop";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle, canonicalUrl } from "@/lib/seo";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
@@ -38,6 +38,7 @@ export async function homeMetadata(): Promise<Metadata> {
   return {
     title: pageTitle(title),
     description,
+    alternates: { canonical: canonicalUrl("/") },
     openGraph: { title: ogTitle(title), description, type: "website" },
   };
 }

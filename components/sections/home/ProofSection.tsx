@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Factory, Gauge, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { CountUp } from "@/components/ui/count-up";
 import type { CertificationDoc, StatsCopy, WithId } from "@/lib/types";
@@ -26,6 +26,8 @@ function parseStat(raw: string): ParsedStat | null {
     suffix: raw.slice(match.index + match[1].length),
   };
 }
+
+const STAT_ICONS = [Factory, BadgeCheck, Gauge] as const;
 
 /**
  * The credibility band. Headline figures come from `pages/home`'s `stats`
@@ -68,23 +70,42 @@ export function ProofSection({
             </p>
           </div>
 
-          <dl className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3 lg:col-span-7">
-            {items.map((item) => {
+          <div className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3 lg:col-span-7">
+            {items.map((item, index) => {
               const parsed = parseStat(item.value);
+              const Icon = STAT_ICONS[index % STAT_ICONS.length] ?? ShieldCheck;
               return (
-                <div key={item.label} className="flex flex-col-reverse gap-3 bg-background p-7 sm:p-8">
-                  <dt className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">{item.label}</dt>
-                  <dd className="text-[clamp(1.75rem,2.9vw,3rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance text-foreground tabular-nums">
+                <div
+                  key={item.label}
+                  className="group relative flex min-h-[240px] flex-col justify-between gap-6 overflow-hidden bg-background p-7 transition-colors duration-300 hover:bg-accent/[0.04] sm:min-h-[260px] sm:p-8"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-accent transition-transform duration-300 group-hover:scale-x-100"
+                  />
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="flex size-11 items-center justify-center rounded-xl bg-accent/10 text-accent transition-colors duration-300 group-hover:bg-accent group-hover:text-white">
+                      <Icon className="size-5" strokeWidth={1.75} aria-hidden="true" />
+                    </span>
+                    <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground tabular-nums">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <p className="text-[clamp(2rem,3vw,3.25rem)] leading-[1.02] font-semibold tracking-[-0.035em] text-balance text-foreground tabular-nums">
                     {parsed ? (
                       <CountUp value={parsed.value} decimals={parsed.decimals} prefix={parsed.prefix} suffix={parsed.suffix} />
                     ) : (
                       item.value
                     )}
-                  </dd>
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <span aria-hidden="true" className="h-px w-10 bg-accent/70" />
+                    <p className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">{item.label}</p>
+                  </div>
                 </div>
               );
             })}
-          </dl>
+          </div>
         </div>
 
         {showCertifications && certifications.length > 0 && (

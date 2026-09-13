@@ -58,7 +58,7 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
           </p>
 
           <div className="hero-reveal flex flex-wrap items-center gap-3 pt-2" style={reveal(3)}>
-            <Button asChild size="lg" className="h-12 rounded-full px-7 text-[15px]">
+            <Button asChild size="lg" className="h-12 rounded-xl px-7 text-[15px]">
               <Link href="/contact">
                 Send us a part
                 <ArrowUpRight className="size-4" aria-hidden="true" />
@@ -68,7 +68,7 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
               asChild
               size="lg"
               variant="outline"
-              className="h-12 rounded-full border-border bg-transparent px-7 text-[15px] text-foreground hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground"
+              className="h-12 rounded-xl border-border bg-transparent px-7 text-[15px] text-foreground hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground"
             >
               <Link href="#process">
                 How MMP works
