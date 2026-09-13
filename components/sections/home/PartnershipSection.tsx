@@ -88,7 +88,7 @@ export function PartnershipSection() {
           <Reveal className="mt-4">
             <Link
               href="/company"
-              className="group inline-flex min-h-11 items-center gap-2 rounded-full border border-border px-6 py-3 font-mono text-[11px] tracking-[0.2em] text-foreground uppercase transition-colors hover:border-foreground/40 hover:bg-foreground/5"
+              className="group inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-6 py-3 font-mono text-[11px] tracking-[0.2em] text-foreground uppercase transition-colors hover:border-foreground/40 hover:bg-foreground/5"
             >
               Our Heritage
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />

@@ -133,14 +133,14 @@ export function SolutionFinder({
               <Link
                 href={targetSlug}
                 className={cn(
-                  "group inline-flex min-h-11 items-center gap-2 rounded-full border px-6 py-3 font-mono text-[11px] tracking-[0.2em] uppercase transition-colors",
+                  "group inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border px-5 font-mono text-[11px] tracking-[0.16em] whitespace-nowrap uppercase transition-colors",
                   isReady
                     ? "border-transparent bg-accent text-accent-foreground shadow-[0_0_1.5rem_-0.5rem_rgba(var(--color-accent-rgb),0.5)] hover:bg-accent/90"
                     : "border-border bg-background text-foreground hover:border-foreground/40 hover:bg-foreground/5"
                 )}
               >
-                {isReady ? "See solutions for this industry" : "Browse all industries"}
-                <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                {isReady ? "See industry solutions" : "Browse all industries"}
+                <ArrowRight className="size-3.5 shrink-0 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </Link>
             </div>
           </div>

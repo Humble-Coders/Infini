@@ -4,7 +4,7 @@ import { getIndustryBySlug, getPublishedIndustries, getPublishedIndustrySlugs } 
 import { IndustryPageContent } from "@/components/sections/industry/IndustryPageContent";
 import { getCaseStudiesByIndustry } from "@/lib/data/caseStudies";
 import { getCertificationsByIds } from "@/lib/data/certifications";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle, canonicalUrl } from "@/lib/seo";
 
 
 /*
@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: pageTitle(industry.seo.title),
     description: industry.seo.description,
+    alternates: { canonical: canonicalUrl(`/industries/${slug}`, industry.seo.canonical) },
     openGraph: {
       title: ogTitle(industry.seo.title),
       description: industry.seo.description,

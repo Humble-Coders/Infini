@@ -37,9 +37,32 @@ const nextConfig: NextConfig = {
       headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
     };
 
-    if (isProduction) return [assetCaching];
+    // Baseline hardening. Deliberately no Content-Security-Policy here: the
+    // app ships inline scripts/styles (route curtain, fonts, oily anti-flicker
+    // bits) that a static CSP string would break. A nonce-based CSP is the
+    // right follow-up and needs middleware support, not a one-line header.
+    const securityHeaders = [
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "X-Frame-Options", value: "SAMEORIGIN" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+      },
+      { key: "X-DNS-Prefetch-Control", value: "on" },
+      // Production-only: App Hosting already terminates TLS, so HSTS just
+      // pins the browser to it. Never on staging, where preview URLs vary.
+      ...(isProduction
+        ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }]
+        : []),
+    ];
+
+    const globalSecurity = { source: "/:path*", headers: securityHeaders };
+
+    if (isProduction) return [assetCaching, globalSecurity];
     return [
       assetCaching,
+      globalSecurity,
       {
         source: "/:path*",
         headers: [{ key: "X-Robots-Tag", value: "noindex" }],

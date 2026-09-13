@@ -9,7 +9,7 @@ import type { TestimonialDoc, WithId } from "@/lib/types";
 export const DEMO_TESTIMONIALS: WithId<TestimonialDoc>[] = [
   {
     id: "demo-t1",
-    quote: "Burr-free edges on every batch, with measurement data we can file directly into our quality system.",
+    quote: "Burr free edges on every batch, with measurement data we can file directly into our quality system.",
     personName: "Aarav Sharma",
     designation: "Quality Head",
     company: "AeroWorks",
@@ -49,7 +49,7 @@ export const DEMO_TESTIMONIALS: WithId<TestimonialDoc>[] = [
   },
   {
     id: "demo-t5",
-    quote: "As-printed roughness on our AM lattices came down to spec without touching the geometry.",
+    quote: "As printed roughness on our AM lattices came down to spec without touching the geometry.",
     personName: "Vikram Nair",
     designation: "AM Lead",
     company: "PrintForm",

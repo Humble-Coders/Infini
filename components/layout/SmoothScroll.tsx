@@ -18,6 +18,16 @@ function getServerSnapshot() {
   return false;
 }
 
+/**
+ * Post-mount flag as an external store: server snapshot false, client
+ * snapshot true. The subscription fires once on mount, so the server HTML
+ * and the first client render always agree (see below).
+ */
+function subscribeMounted(callback: () => void) {
+  callback();
+  return () => {};
+}
+
 /** Component to reset scroll on route change */
 function RouteScrollReset() {
   const pathname = usePathname();
@@ -35,7 +45,14 @@ function RouteScrollReset() {
 }
 
 export function SmoothScroll({ children }: { children: ReactNode }) {
-  const reducedMotion = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const prefersReducedMotion = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  // Mounted gate: the server always renders the Lenis branch, and the
+  // client's first render must too. Without this, a reduced-motion device
+  // renders the fragment branch on its first client pass where the server
+  // had ReactLenis, remounting the entire app subtree with shifted useIds
+  // and tripping a hydration mismatch on every page.
+  const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false);
+  const reducedMotion = prefersReducedMotion && mounted;
 
   if (reducedMotion) {
     return (

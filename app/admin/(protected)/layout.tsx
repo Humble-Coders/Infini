@@ -4,14 +4,14 @@ import { requireSession } from "@/lib/auth/requireRole";
 import { SignOutButton } from "@/components/admin/SignOutButton";
 import { ClaimsSync } from "@/components/admin/ClaimsSync";
 import { AdminSidebarNav } from "@/components/admin/AdminSidebarNav";
+import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Sidebar is visible from md (768px) up, matching the ticket's floor
-// ("usable at 768px and above", an iPad in portrait). Below that, nav is
-// intentionally out of scope for this ticket rather than half-built.
+// Sidebar is visible from md (768px) up ("usable at 768px and above", an iPad
+// in portrait). Below that AdminMobileNav carries the same links.
 export default async function ProtectedAdminLayout({ children }: { children: ReactNode }) {
   const session = await requireSession();
 
@@ -30,7 +30,10 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
       <aside className="hidden border-r border-border md:block">
         <AdminSidebarNav role={session.role} />
       </aside>
-      <main className="p-6">{children}</main>
+      <div className="md:contents">
+        <AdminMobileNav role={session.role} />
+        <main className="p-4 sm:p-6">{children}</main>
+      </div>
     </div>
   );
 }

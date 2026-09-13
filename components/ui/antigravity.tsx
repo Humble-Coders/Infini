@@ -29,6 +29,9 @@ const AntigravityInner = ({
   const lastMousePos = useRef({ x: 0, y: 0 });
   const lastMouseMoveTime = useRef(0);
   const virtualMouse = useRef({ x: 0, y: 0 });
+  // Own elapsed-time accumulator instead of THREE.Clock: immune to
+  // background-tab jumps (delta clamped) and to upstream Clock deprecations.
+  const elapsed = useRef(0);
 
   const particles = useMemo(() => {
     const temp = [];
@@ -71,9 +74,12 @@ const AntigravityInner = ({
     return temp;
   }, [count, viewport.width, viewport.height]);
 
-  useFrame(state => {
+  useFrame((state, delta) => {
     const mesh = meshRef.current;
     if (!mesh) return;
+
+    elapsed.current += Math.min(delta, 0.1);
+    const time = elapsed.current;
 
     const { viewport: v, pointer: m } = state;
 
@@ -88,7 +94,6 @@ const AntigravityInner = ({
     let destY = (m.y * v.height) / 2;
 
     if (autoAnimate && Date.now() - lastMouseMoveTime.current > 2000) {
-      const time = state.clock.getElapsedTime();
       destX = Math.sin(time * 0.5) * (v.width / 4);
       destY = Math.cos(time * 0.5 * 2) * (v.height / 4);
     }
@@ -100,7 +105,7 @@ const AntigravityInner = ({
     const targetX = virtualMouse.current.x;
     const targetY = virtualMouse.current.y;
 
-    const globalRotation = state.clock.getElapsedTime() * rotationSpeed;
+    const globalRotation = time * rotationSpeed;
 
     particles.forEach((particle, i) => {
       let { t, speed, mx, my, mz, cz, randomRadiusOffset } = particle;

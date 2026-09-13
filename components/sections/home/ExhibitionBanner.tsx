@@ -31,6 +31,15 @@ function subscribe(onChange: () => void) {
   return () => window.removeEventListener("storage", onChange);
 }
 
+/**
+ * Post-mount flag as an external store: server snapshot false, client
+ * snapshot true. The subscription fires once on mount (see below).
+ */
+function subscribeMounted(callback: () => void) {
+  callback();
+  return () => {};
+}
+
 export function ExhibitionBanner({
   title = "Upcoming Exhibition: EMO Hannover",
   date = "September 18-23, 2026",
@@ -39,8 +48,14 @@ export function ExhibitionBanner({
   isActive = true,
 }: ExhibitionBannerProps) {
   const key = storageKey(title, date);
-  // Server render and hydration assume "not dismissed"; the stored choice applies right after.
-  const dismissedEarlier = useSyncExternalStore(subscribe, () => readDismissed(key), () => false);
+  // Server render and hydration assume "not dismissed"; the stored choice
+  // applies right after. Without the mounted gate, a return visitor who
+  // dismissed the banner renders null on the first client pass where the
+  // server rendered the aside, shifting every useId below it and tripping a
+  // hydration mismatch.
+  const storedDismissed = useSyncExternalStore(subscribe, () => readDismissed(key), () => false);
+  const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false);
+  const dismissedEarlier = storedDismissed && mounted;
   const [dismissedNow, setDismissedNow] = useState(false);
 
   if (!isActive || dismissedEarlier || dismissedNow) return null;

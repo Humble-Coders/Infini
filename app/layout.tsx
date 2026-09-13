@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, JetBrains_Mono, Manrope } from "next/font/google";
 import Script from "next/script";
 import type { ReactNode } from "react";
@@ -6,6 +6,8 @@ import { RouteCurtain } from "@/components/layout/RouteCurtain";
 import { Toaster } from "sonner";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SmokeCursor } from "@/components/ui/smoke-cursor";
+import { JsonLd, organizationJsonLd, webSiteJsonLd } from "@/components/seo/JsonLd";
+import { siteUrl } from "@/lib/seo";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -35,8 +37,10 @@ const SITE_DESCRIPTION =
   "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment, validation through mirror-like finish.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: { default: `${SITE_NAME} | Precision Surface-Finishing`, template: `%s | ${SITE_NAME}` },
   description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
   openGraph: {
     siteName: SITE_NAME,
     title: `${SITE_NAME} | Precision Surface-Finishing`,
@@ -45,15 +49,16 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${manrope.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
-      <head>
-        {/* Fetch the curtain clip at top priority: it is the first thing on
-            screen, so it must not queue behind the page's own assets. */}
-        <link rel="preload" as="video" href="/infinity_animation.mp4" type="video/mp4" />
-      </head>
       <body>
+        <JsonLd data={organizationJsonLd(siteUrl())} />
+        <JsonLd data={webSiteJsonLd(siteUrl())} />
         <ScrollProgress />
         <SmokeCursor />
         {/*

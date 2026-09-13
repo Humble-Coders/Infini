@@ -16,7 +16,7 @@
 process.loadEnvFile(".env");
 import { cert, initializeApp, applicationDefault } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import { buildCaseStudies, buildEvents } from "./content";
+import { buildEvents } from "./content";
 
 const EXPECTED_PROJECT_ID = "infini-f4388";
 const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;

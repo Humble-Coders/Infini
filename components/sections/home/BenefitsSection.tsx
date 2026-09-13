@@ -1,31 +1,40 @@
+import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { ThemeSection } from "@/components/sections/shared/ThemeSection";
 import { Activity, Wind, Sparkles, Shield } from "lucide-react";
 import { MonoLabel } from "./MonoLabel";
 import { Reveal } from "@/components/ui/reveal";
 import { EmphasisHeading } from "./EmphasisHeading";
-import { Antigravity } from "@/components/ui/antigravity";
+import { AntigravityLazy } from "@/components/ui/antigravity-lazy";
 
 const BENEFITS = [
   {
     icon: Activity,
     title: "Friction Reduction",
     description: "Dramatically lower friction coefficients on transmission and engine components, minimizing energy loss and heat generation.",
+    image: "/images/placeholders/gallery-02-spur-gear.jpg",
+    imageAlt: "Superfinished spur gear teeth and bore, friction reduced on every flank",
   },
   {
     icon: Shield,
     title: "Extended Lifespan",
     description: "By eliminating micro-defects and stress concentrators, components exhibit superior fatigue resistance and durability.",
+    image: "/images/placeholders/gallery-05-carbide-drills.jpg",
+    imageAlt: "Carbide drills with extended tool life after MMP treatment",
   },
   {
     icon: Wind,
     title: "Aerodynamics & Hydrodynamics",
     description: "Optimized surface profiles for turbine blades and fluid-handling parts to maximize flow efficiency.",
+    image: "/images/placeholders/gallery-01-turbine-ring.jpg",
+    imageAlt: "Mirror-polished bladed turbine ring for aerodynamic flow",
   },
   {
     icon: Sparkles,
     title: "Premium Aesthetics",
     description: "Mirror-like finishes that not only perform exceptionally but provide the visual perfection required by luxury and medical sectors.",
+    image: "/images/placeholders/gallery-03-knee-implant.jpg",
+    imageAlt: "Mirror-finish femoral knee implant component",
   },
 ];
 
@@ -37,7 +46,7 @@ export function BenefitsSection() {
       
       {/* React Bits Antigravity Background */}
       <div className="absolute inset-0 z-0 opacity-40 pointer-events-none mix-blend-screen">
-        <Antigravity
+        <AntigravityLazy
           count={250}
           magnetRadius={8}
           ringRadius={8}
@@ -69,15 +78,26 @@ export function BenefitsSection() {
             return (
               <Reveal 
                 key={benefit.title} 
-                className="group relative flex-1 flex flex-col justify-end overflow-hidden rounded-3xl bg-neutral-900/50 border border-white/10 p-6 sm:p-8 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] lg:hover:flex-[1.5] hover:bg-neutral-950 hover:border-accent/50 cursor-pointer shadow-lg backdrop-blur-sm"
+                className="group relative flex-1 flex flex-col gap-5 overflow-hidden rounded-3xl bg-neutral-900/50 border border-white/10 p-5 sm:p-6 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] lg:hover:flex-[1.5] hover:bg-neutral-950 hover:border-accent/50 cursor-pointer shadow-lg backdrop-blur-sm"
               >
+                {/* Black-and-white component photograph, top of card */}
+                <div className="relative z-10 h-44 w-full shrink-0 overflow-hidden rounded-2xl border border-white/10 sm:h-48">
+                  <Image
+                    src={benefit.image}
+                    alt={benefit.imageAlt}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 25vw"
+                    loading="lazy"
+                    className="object-cover grayscale contrast-[1.05] transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-t from-neutral-950/70 via-transparent to-transparent"
+                  />
+                </div>
+
                 {/* Background Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-                
-                {/* Large Background Icon */}
-                <div className="absolute -right-8 -top-8 z-0 text-white/5 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:-translate-x-4 group-hover:translate-y-4 group-hover:scale-110 group-hover:text-accent/10">
-                  <Icon className="size-64" strokeWidth={1} />
-                </div>
                 
                 {/* Content */}
                 <div className="relative z-10 flex flex-col gap-5 mt-auto">

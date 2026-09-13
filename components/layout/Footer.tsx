@@ -83,24 +83,42 @@ export function Footer({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-muted-foreground">
-            &copy; {year} INFINI Precision Pvt. Ltd. ISO 9001-certified MMP surface finishing.
-          </p>
-          {/* The mark the process is licensed under. The old header lockup carried it,
-              but dark-on-dark it was invisible against the near-black chrome. */}
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-[11px] tracking-[0.24em] text-muted-foreground uppercase">
-              Powered by
-            </span>
-            <Image
-              src="/brand/mmp-technology-light.png"
-              data-mono="off"
-              alt="MMP Technology"
-              width={700}
-              height={538}
-              className="h-9 w-auto opacity-80"
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-start sm:justify-end">
+            <a
+              href="https://www.humblesolutions.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase transition-colors hover:text-accent"
+            >
+              Crafted by Humble Solutions
+            </a>
+          </div>
+          <div className="flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground">
+              &copy; {year} INFINI Precision Pvt. Ltd. ISO 9001-certified MMP surface finishing.
+            </p>
+            {/* The mark the process is licensed under. The old header lockup carried it,
+                but dark-on-dark it was invisible against the near-black chrome. */}
+            <a
+              href="https://mmptechnology.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="MMP Technology (opens in a new tab)"
+              className="flex w-fit items-center gap-3 transition-opacity hover:opacity-100"
+            >
+              <span className="font-mono text-[11px] tracking-[0.24em] text-muted-foreground uppercase">
+                Powered by
+              </span>
+              <Image
+                src="/brand/mmp-technology-light.png"
+                data-mono="off"
+                alt="MMP Technology"
+                width={700}
+                height={538}
+                className="h-9 w-auto opacity-80"
+              />
+            </a>
           </div>
         </div>
       </Container>
