@@ -71,21 +71,22 @@ export function ExhibitionBanner({
 
   return (
     <aside aria-label="Upcoming exhibition" className="relative bg-primary text-primary-foreground">
-      <Container className="py-3 pr-14 pl-14 sm:py-4">
-        <div className="flex flex-col items-center justify-center gap-3 text-sm sm:flex-row sm:text-base">
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-6 text-center sm:text-left">
-            <strong className="font-semibold tracking-wide uppercase text-xs sm:text-sm bg-background/20 px-2 py-1 rounded">
+      <Container className="px-4 py-2 pr-12 sm:py-4 sm:pr-14 sm:pl-14">
+        <div className="flex flex-col items-center justify-center gap-1 text-center sm:gap-3 sm:text-base">
+          <div className="flex flex-row flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center sm:gap-6 sm:text-left">
+            <strong className="font-semibold tracking-wide uppercase text-[10px] sm:text-sm bg-background/20 px-2 py-1 rounded">
               Meet Us
             </strong>
-            <span className="font-medium">{title}</span>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-primary-foreground/80 text-xs sm:text-sm text-center">
+            <span className="font-medium text-xs sm:text-base">{title}</span>
+            <div className="flex flex-row flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-primary-foreground/80 text-[11px] sm:gap-4 sm:text-sm text-center">
               <span className="flex items-center gap-1.5">
                 <Calendar className="size-3.5" aria-hidden="true" />
                 {date}
               </span>
               <span className="flex items-center gap-1.5">
                 <MapPin className="size-3.5" aria-hidden="true" />
-                {location} ({booth})
+                {location}
+                <span className="hidden sm:inline">({booth})</span>
               </span>
             </div>
           </div>
@@ -96,7 +97,7 @@ export function ExhibitionBanner({
         type="button"
         onClick={dismiss}
         aria-label="Dismiss the exhibition banner"
-        className="absolute top-1/2 right-1 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-primary-foreground/80 transition-colors hover:bg-background/20 hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground sm:right-3"
+        className="absolute top-1/2 right-0.5 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-primary-foreground/80 transition-colors hover:bg-background/20 hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground sm:right-3"
       >
         <X className="size-5" aria-hidden="true" />
       </button>

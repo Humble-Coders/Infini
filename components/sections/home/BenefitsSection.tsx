@@ -6,6 +6,7 @@ import { MonoLabel } from "./MonoLabel";
 import { Reveal } from "@/components/ui/reveal";
 import { EmphasisHeading } from "./EmphasisHeading";
 import { AntigravityLazy } from "@/components/ui/antigravity-lazy";
+import { DesktopOnly } from "@/components/ui/desktop-only";
 
 const BENEFITS = [
   {
@@ -44,22 +45,26 @@ export function BenefitsSection() {
       {/* Subtle background glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[400px] bg-accent/20 blur-[120px] rounded-full pointer-events-none opacity-50" />
       
-      {/* React Bits Antigravity Background */}
-      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none mix-blend-screen">
-        <AntigravityLazy
-          count={250}
-          magnetRadius={8}
-          ringRadius={8}
-          waveSpeed={0.3}
-          waveAmplitude={1.5}
-          particleSize={1.5}
-          lerpSpeed={0.05}
-          color="#ff274a" // INFINI brand red
-          autoAnimate={true}
-          particleVariance={1}
-          rotationSpeed={0.2}
-        />
-      </div>
+      {/* React Bits Antigravity Background, desktop only: a 250-particle WebGL
+          field is a slideshow on phone GPUs and pulls three.js onto mobile
+          data. Phones keep the static glow above, which carries the look. */}
+      <DesktopOnly>
+        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none mix-blend-screen">
+          <AntigravityLazy
+            count={250}
+            magnetRadius={8}
+            ringRadius={8}
+            waveSpeed={0.3}
+            waveAmplitude={1.5}
+            particleSize={1.5}
+            lerpSpeed={0.05}
+            color="#ff274a" // INFINI brand red
+            autoAnimate={true}
+            particleVariance={1}
+            rotationSpeed={0.2}
+          />
+        </div>
+      </DesktopOnly>
       
       <Container className="relative z-10 flex flex-col gap-12 lg:gap-16">
         <Reveal className="flex flex-col items-center text-center gap-4 max-w-3xl mx-auto">

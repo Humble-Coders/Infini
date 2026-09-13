@@ -65,7 +65,7 @@ export function SolutionFinder({
   ];
 
   return (
-    <section data-surface="light" className="bg-background-elevated pt-20 pb-12 sm:pt-28 sm:pb-16">
+    <section data-surface="light" className="bg-background-elevated pt-12 pb-10 sm:pt-28 sm:pb-16">
       <Container className="flex flex-col gap-12 max-w-5xl">
         <Reveal className="flex flex-col gap-4 text-center items-center">
           <MonoLabel>Find your industry</MonoLabel>
@@ -146,14 +146,16 @@ export function SolutionFinder({
           </div>
         </Reveal>
 
-        {/* Counters */}
+        {/* Counters: tidy 2-up grid on phones (dividers only make sense in the
+            desktop row, where they never wrap to a line start and strand a
+            stray bar), flex row from sm up. */}
         <Reveal delay={0.15}>
-          <div className="flex flex-wrap items-center justify-center gap-8 border-t border-border pt-8 sm:gap-14">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 border-t border-border pt-8 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-14">
             {counters.map((counter, index) => (
               <Fragment key={counter.label}>
-                {index > 0 && <div aria-hidden="true" className="h-8 w-px bg-border" />}
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-[2.25rem] leading-[1] font-mono font-medium text-accent sm:text-[3rem]">
+                {index > 0 && <div aria-hidden="true" className="hidden h-8 w-px bg-border sm:block" />}
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <span className="text-[1.9rem] leading-[1] font-mono font-medium text-accent tabular-nums sm:text-[3rem]">
                     <CountUp value={counter.value} />
                   </span>
                   <span className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">

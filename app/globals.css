@@ -338,10 +338,21 @@
   * {
     border-color: var(--color-border);
   }
+  html {
+    /* Decorative oversized marks (hero infinity, aurora blobs) sit partly
+       off-canvas; clip the x-axis globally so a phone never gets a sideways
+       scrollbar or a swipeable white gutter from one stray section. */
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    overflow-x: clip;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
   }
   h1 {
     font-size: 1.5rem;
@@ -467,7 +478,10 @@
   justify-content: center;
   overflow: hidden;
   pointer-events: none;
-  background: var(--color-background);
+  /* Pure black, not the #060606 surface token: the clip's own corners are
+     near-black and the phone SVG variant has no footage at all, so anything
+     lighter reads as a grey flash around the mark. */
+  background: #000;
   opacity: 1;
   visibility: visible;
   transition:
@@ -484,15 +498,85 @@
 }
 
 .route-curtain-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  display: none;
   pointer-events: none;
+}
+
+/*
+ * Mobile variant: a small inline-SVG infinity on the same pure-black ground.
+ * Fully contained and centred, so the whole loop is visible exactly like on
+ * a laptop, instead of the cropped full-bleed video blow-up portrait phones
+ * used to get. Capped in both axes so it stays small on every handset. This
+ * is also the pre-hydration paint on desktop: the glyph draws from the first
+ * frame while the clip buffers, then `data-video="ready"` swaps the footage
+ * in over it, so the curtain never sits blank.
+ */
+.route-curtain-glyph {
+  width: min(68vw, 280px);
+  max-height: 32svh;
+  height: auto;
+  overflow: visible;
+}
+
+@media (min-width: 641px) {
+  .route-curtain-glyph {
+    width: min(36vw, 26rem);
+    max-height: 60svh;
+  }
+  .route-curtain[data-video="ready"] .route-curtain-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .route-curtain[data-video="ready"] .route-curtain-glyph {
+    display: none;
+  }
+}
+
+.route-curtain-draw {
+  /* pathLength="1" is set on the element, so a 0..1 dash draws the loop. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: route-curtain-draw 0.7s ease-in-out 0.05s forwards;
+}
+
+@keyframes route-curtain-draw {
+  from {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.route-curtain[data-state="done"] .route-curtain-glyph {
+  opacity: 0;
+  transition: opacity 200ms ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .route-curtain {
     display: none;
+  }
+}
+
+/*
+ * Entrance blur is paint-expensive on phone GPUs (a full-layer blur repaints
+ * every frame of every Reveal on the page). Inline styles set by framer-motion
+ * lose to `!important`, so on small screens entrances keep their fade + rise
+ * and simply skip the de-blur pass. Desktop is untouched.
+ */
+@media (max-width: 640px) {
+  [data-reveal] {
+    filter: none !important;
   }
 }
 

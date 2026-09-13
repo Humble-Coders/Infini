@@ -152,10 +152,10 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
       )}
     >
       <Container>
-        <nav
-          aria-label="Primary"
-          className={cn("flex items-center justify-between", TRANSITION, scrolled ? "h-16" : "h-24")}
-        >
+          <nav
+            aria-label="Primary"
+            className={cn("flex items-center justify-between", TRANSITION, scrolled ? "h-16" : "h-20 sm:h-24")}
+          >
           {/* INFINI + MMP lockup, as the old single-image lockup had it. MMP is the
               licensed process mark, so it sits behind a divider rather than reading
               as part of the INFINI wordmark, and drops away on narrow screens where
@@ -276,7 +276,7 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
             mobileOpen
               ? cn(
                   "overflow-y-auto overscroll-contain",
-                  scrolled ? "max-h-[calc(100dvh-4rem)]" : "max-h-[calc(100dvh-6rem)]"
+                  scrolled ? "max-h-[calc(100dvh-4rem)]" : "max-h-[calc(100dvh-5rem)] sm:max-h-[calc(100dvh-6rem)]"
                 )
               : "overflow-hidden"
           )}

@@ -110,7 +110,7 @@ export function BeforeAfterSlider({
         style={{ width: `${position}%` }}
       >
         {/* The image itself must be fixed to the container width so it crops instead of squishing */}
-        <div className="absolute inset-y-0 left-0 w-full h-full" style={{ width: containerWidth !== null ? containerWidth + "px" : "100vw" }}>
+        <div className="absolute inset-y-0 left-0 w-full h-full" style={{ width: containerWidth !== null ? containerWidth + "px" : "100%" }}>
           <Image 
             src={beforeImage} 
             alt={`${alt} (Before)`} 

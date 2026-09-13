@@ -118,7 +118,7 @@ export function PageTransition() {
       <div className="flex h-full w-full items-center justify-center overflow-hidden">
         <motion.svg
           viewBox="0 0 200 100"
-          className="w-72 will-change-transform sm:w-96"
+          className="w-48 max-w-[68vw] will-change-transform sm:w-96"
           role="presentation"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: GLYPH_SCALE, opacity: GLYPH_OPACITY }}

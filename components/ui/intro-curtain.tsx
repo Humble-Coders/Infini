@@ -44,9 +44,9 @@ export function IntroCurtain() {
       initial={{ y: 0 }}
       animate={phase === "exit" ? { y: "-100%" } : { y: 0 }}
       transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-background motion-reduce:hidden"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black motion-reduce:hidden"
     >
-      <svg viewBox="0 0 200 100" className="w-64 sm:w-[28rem]" role="presentation">
+      <svg viewBox="0 0 200 100" className="w-44 max-w-[68vw] sm:w-[28rem]" role="presentation">
         {/* Boundary only, transparent inside, drawn at 90% opacity. */}
         <motion.path
           d={INFINITY_PATH}

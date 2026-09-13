@@ -2,22 +2,33 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { INFINITY_PATH } from "@/components/ui/infinity";
 
 /**
  * The opening curtain: the supplied infinity animation, full bleed on black.
  *
  * Plays on first load, on reload, and on every route change.
  *
- * Timing. The source clip is 4s, but only the first 3.4s carries motion: past
- * that it is a black tail, measured frame by frame (lit pixels drop to 0% at
- * 3.6s). Playing all four seconds on every navigation would put a dead
- * half-second in front of the page each time, so playback is cut at the end of
- * the motion and run at 2.8x, which lands the whole curtain at about 1.2s.
+ * Two layers, zero blank frames. The server HTML always contains a small
+ * inline-SVG infinity whose draw animation is pure CSS, so the very first
+ * paint already shows the mark moving — even before hydration, on a slow
+ * phone, with JS still downloading. On desktop the effect then attaches the
+ * 16:9 source clip and swaps it in the moment it can play; on mobile the
+ * video element is never given a source (CSS keeps it `display: none` under
+ * 640px and `preload="none"` means it never fetches), so phones get the
+ * lightweight SVG only: small, fully visible, ~1s, no megabytes.
+ *
+ * Timing (desktop). The source clip is 4s, but only the first 3.4s carries
+ * motion: past that it is a black tail, measured frame by frame (lit pixels
+ * drop to 0% at 3.6s). Playing all four seconds on every navigation would
+ * put a dead half-second in front of the page each time, so playback is cut
+ * at the end of the motion and run at 2.8x, which lands the whole curtain at
+ * about 1.2s.
  *
  * Nothing about the page waits on the video. The black ground is a plain CSS
  * background on this element, server-rendered, so the first frame the browser
- * paints is already black and the site is never glimpsed underneath, whether or
- * not the file has arrived. And three separate conditions lift the curtain:
+ * paints is already black and the site is never glimpsed underneath, whether
+ * or not the file has arrived. And three separate conditions lift the curtain:
  * reaching the cut point, the video erroring, or a hard timeout. If the network
  * is slow, the codec is unsupported, or autoplay is refused, the site still
  * appears on schedule; the animation is decoration and is never load-bearing.
@@ -35,6 +46,9 @@ const CUT_AT = 3.4;
 const RATE = 2.8;
 /** How long the curtain is up: the played span at the played speed. */
 const PLAY_MS = Math.round((CUT_AT / RATE) * 1000);
+/** Mobile SVG curtain: shorter on purpose, phones should feel instant. */
+const MOBILE_PLAY_MS = 950;
+const MOBILE_QUERY = "(max-width: 640px)";
 
 export function RouteCurtain() {
   const pathname = usePathname();
@@ -44,11 +58,11 @@ export function RouteCurtain() {
   // with no state written synchronously inside the effect.
   const [donePath, setDonePath] = useState<string | null>(null);
   const done = donePath === pathname;
+  // Flips once the desktop clip can actually paint, swapping the SVG out.
+  // Never set on mobile, where the video stays sourceless and hidden.
+  const [videoReady, setVideoReady] = useState(false);
 
   useLayoutEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
     // Reduced motion is handled entirely in CSS, which hides the curtain
     // outright, so there is nothing to schedule here.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -60,6 +74,25 @@ export function RouteCurtain() {
       setDonePath(pathname);
     };
 
+    // Mobile path: pure-CSS/SVG mark, no video, no network. Just the timer.
+    if (window.matchMedia(MOBILE_QUERY).matches) {
+      const timer = window.setTimeout(finish, MOBILE_PLAY_MS);
+      return () => window.clearTimeout(timer);
+    }
+
+    const video = videoRef.current;
+    if (!video) {
+      finish();
+      return;
+    }
+
+    // Attached client-side on desktop only: a phone that only ever sees the
+    // SVG must never start downloading the ~2MB clip ahead of hydration.
+    if (!video.getAttribute("src")) {
+      video.src = "/infinity_animation.mp4";
+      video.load();
+    }
+
     // `defaultPlaybackRate` as well as `playbackRate`, and re-applied on load:
     // the media load algorithm resets playbackRate to defaultPlaybackRate, so
     // setting only the latter here loses the speed the moment the element
@@ -68,9 +101,11 @@ export function RouteCurtain() {
       video.defaultPlaybackRate = RATE;
       video.playbackRate = RATE;
     };
+    const markReady = () => setVideoReady(true);
     applyRate();
     video.addEventListener("loadedmetadata", applyRate);
     video.addEventListener("play", applyRate);
+    video.addEventListener("canplay", markReady);
 
     try {
       video.currentTime = 0;
@@ -90,21 +125,38 @@ export function RouteCurtain() {
       window.clearTimeout(timer);
       video.removeEventListener("loadedmetadata", applyRate);
       video.removeEventListener("play", applyRate);
+      video.removeEventListener("canplay", markReady);
       video.removeEventListener("ended", finish);
       video.removeEventListener("error", finish);
     };
   }, [pathname]);
 
   return (
-    <div aria-hidden="true" className="route-curtain" data-state={done ? "done" : "playing"}>
+    <div
+      aria-hidden="true"
+      className="route-curtain"
+      data-state={done ? "done" : "playing"}
+      data-video={videoReady ? "ready" : "waiting"}
+    >
+      <svg viewBox="0 0 200 100" className="route-curtain-glyph" role="presentation">
+        <path
+          d={INFINITY_PATH}
+          pathLength={1}
+          fill="none"
+          stroke="var(--color-accent)"
+          strokeOpacity={0.9}
+          strokeWidth={3}
+          strokeLinecap="round"
+          className="route-curtain-draw"
+        />
+      </svg>
       <video
         ref={videoRef}
         className="route-curtain-video"
-        src="/infinity_animation.mp4"
         muted
         playsInline
         autoPlay
-        preload="auto"
+        preload="none"
         tabIndex={-1}
       />
     </div>

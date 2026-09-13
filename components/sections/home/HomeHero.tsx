@@ -46,7 +46,7 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
             {eyebrow}
           </p>
 
-          <h1 className="text-[clamp(3.25rem,10vw,8rem)] leading-[0.9] font-semibold tracking-[-0.045em] text-balance text-foreground">
+          <h1 className="text-[clamp(2.5rem,13vw,8rem)] leading-[0.95] font-semibold tracking-[-0.045em] text-balance text-foreground">
             <BlurText text={heading} accentLast delay={0.45} stagger={0.07} />
           </h1>
 

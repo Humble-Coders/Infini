@@ -26,6 +26,9 @@ export function Reveal({ children, className, delay = 0, y = 24 }: RevealProps) 
   return (
     <motion.div
       className={className}
+      // data-reveal lets CSS strip the blur pass on phones (see globals.css):
+      // animating filter blur is paint-expensive on mobile GPUs.
+      data-reveal=""
       initial={{ opacity: 0, y: reduce || y === 0 ? 0 : y, filter: reduce ? "blur(0px)" : "blur(6px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-80px" }}
