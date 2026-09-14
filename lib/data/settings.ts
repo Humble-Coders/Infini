@@ -1,10 +1,5 @@
 import { cache } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { requireDb } from "./firestore";
 import type { SettingsDoc } from "@/lib/types";
-
-const COLLECTION = "settings";
-const GLOBAL_DOC_ID = "global";
 
 /** Global site settings, contact info, social links, nav, default SEO, cookie banner copy. */
 async function getSettingsUncached(): Promise<SettingsDoc | null> {

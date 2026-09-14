@@ -1,9 +1,5 @@
 import { cache } from "react";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import { requireDb } from "./firestore";
 import type { TestimonialDoc, WithId } from "@/lib/types";
-
-const COLLECTION = "testimonials";
 
 /** All published testimonials, in display order. */
 async function getPublishedTestimonialsUncached(): Promise<WithId<TestimonialDoc>[]> {
