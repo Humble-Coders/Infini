@@ -1,10 +1,9 @@
 import { cache } from "react";
 import type { TestimonialDoc, WithId } from "@/lib/types";
-import { buildTestimonials } from "@/backend/scripts/content";
 
 /** All published testimonials, in display order. */
 async function getPublishedTestimonialsUncached(): Promise<WithId<TestimonialDoc>[]> {
-  return buildTestimonials() as unknown as WithId<TestimonialDoc>[];
+  return [];
 }
 
 /*

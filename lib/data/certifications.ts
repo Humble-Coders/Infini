@@ -13,15 +13,12 @@ import {
 } from "firebase/firestore";
 import { requireDb } from "./firestore";
 import type { CertificationDoc, WithId } from "@/lib/types";
-import { buildCertifications } from "@/backend/scripts/content";
 
 const COLLECTION = "certifications";
 
-const mockTs = { fromDate: (date: Date) => ({ toDate: () => date }) as unknown };
-
 /** All published certifications, in display order, including expired ones. Used by admin and as the base for public reads. */
 async function getPublishedCertificationsUncached(): Promise<WithId<CertificationDoc>[]> {
-  return buildCertifications(mockTs) as unknown as WithId<CertificationDoc>[];
+  return [];
 }
 
 /**

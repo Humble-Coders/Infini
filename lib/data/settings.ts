@@ -1,10 +1,17 @@
 import { cache } from "react";
 import type { SettingsDoc } from "@/lib/types";
-import { buildSettings } from "@/backend/scripts/content";
 
 /** Global site settings, contact info, social links, nav, default SEO, cookie banner copy. */
 async function getSettingsUncached(): Promise<SettingsDoc | null> {
-  return buildSettings() as unknown as SettingsDoc;
+  return {
+    nav: [{ label: "Home", href: "/" }],
+    contact: {
+      email: "hello@infini.com",
+      phone: "+1 800 555 0199",
+      address: "123 Innovation Drive\nTech District\nCA 94103",
+    },
+    footerLegalLinks: [{ label: "Privacy Policy", href: "/privacy" }],
+  } as SettingsDoc;
 }
 
 /*
