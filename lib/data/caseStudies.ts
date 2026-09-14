@@ -1,26 +1,32 @@
 import { cache } from "react";
 import type { CaseStudyDoc, WithId } from "@/lib/types";
+import { buildCaseStudies } from "@/backend/scripts/content";
+
+const mockTs = { fromDate: (date: Date) => ({ toDate: () => date }) as unknown };
 
 /** All published case studies, newest first. */
 async function getPublishedCaseStudiesUncached(): Promise<WithId<CaseStudyDoc>[]> {
-  return [];
+  return buildCaseStudies(mockTs) as unknown as WithId<CaseStudyDoc>[];
 }
 
 /** A single published case study by slug, or null. */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getCaseStudyBySlugUncached(slug: string): Promise<WithId<CaseStudyDoc> | null> {
-  return null;
+  const studies = await getPublishedCaseStudiesUncached();
+  return studies.find((s) => s.slug === slug) ?? null;
 }
 
 /** Published case studies cross-linked to a given industry, for that industry's page. */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getCaseStudiesByIndustryUncached(industryId: string): Promise<WithId<CaseStudyDoc>[]> {
-  return [];
+  const studies = await getPublishedCaseStudiesUncached();
+  return studies.filter((s) => s.industryId === industryId);
 }
 
 /** All published case study slugs, for generateStaticParams. */
 async function getPublishedCaseStudySlugsUncached(): Promise<string[]> {
-  return [];
+  const studies = await getPublishedCaseStudiesUncached();
+  return studies.map((s) => s.slug);
 }
 
 /*
