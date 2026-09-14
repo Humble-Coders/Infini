@@ -19,15 +19,7 @@ const COLLECTION = "certifications";
 
 /** All published certifications, in display order, including expired ones. Used by admin and as the base for public reads. */
 async function getPublishedCertificationsUncached(): Promise<WithId<CertificationDoc>[]> {
-  try {
-    const snap = await getDocs(
-      query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
-    );
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as CertificationDoc) }));
-  } catch (e) {
-    console.warn("Firestore unavailable, falling back to empty certifications.");
-    return [];
-  }
+  return [];
 }
 
 /**
