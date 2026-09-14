@@ -8,9 +8,22 @@ const GLOBAL_DOC_ID = "global";
 
 /** Global site settings, contact info, social links, nav, default SEO, cookie banner copy. */
 async function getSettingsUncached(): Promise<SettingsDoc | null> {
-  const snap = await getDoc(doc(requireDb(), COLLECTION, GLOBAL_DOC_ID));
-  if (!snap.exists()) return null;
-  return snap.data() as SettingsDoc;
+  try {
+    const snap = await getDoc(doc(requireDb(), COLLECTION, GLOBAL_DOC_ID));
+    if (!snap.exists()) return null;
+    return snap.data() as SettingsDoc;
+  } catch (e) {
+    console.warn("Firestore unavailable, falling back to mock settings.");
+    return {
+      nav: [{ label: "Home", href: "/" }],
+      contact: {
+        email: "hello@infini.com",
+        phone: "+1 800 555 0199",
+        address: "123 Innovation Drive\nTech District\nCA 94103",
+      },
+      footerLegalLinks: [{ label: "Privacy Policy", href: "/privacy" }],
+    } as SettingsDoc;
+  }
 }
 
 /*

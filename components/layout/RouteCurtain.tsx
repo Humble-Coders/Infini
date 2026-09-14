@@ -139,15 +139,30 @@ export function RouteCurtain() {
       data-video={videoReady ? "ready" : "waiting"}
     >
       <svg viewBox="0 0 200 100" className="route-curtain-glyph" role="presentation">
+        <defs>
+          <filter id="route-curtain-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" />
+          </filter>
+        </defs>
         <path
           d={INFINITY_PATH}
           pathLength={1}
           fill="none"
           stroke="var(--color-accent)"
-          strokeOpacity={0.9}
-          strokeWidth={3}
+          strokeOpacity={0.7}
+          strokeWidth={4.5}
           strokeLinecap="round"
           className="route-curtain-draw"
+        />
+        <path
+          d={INFINITY_PATH}
+          pathLength={1}
+          fill="none"
+          stroke="var(--color-accent)"
+          strokeWidth={8}
+          strokeLinecap="round"
+          className="route-curtain-dot"
+          filter="url(#route-curtain-glow)"
         />
       </svg>
       <video

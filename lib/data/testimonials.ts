@@ -7,10 +7,15 @@ const COLLECTION = "testimonials";
 
 /** All published testimonials, in display order. */
 async function getPublishedTestimonialsUncached(): Promise<WithId<TestimonialDoc>[]> {
-  const snap = await getDocs(
-    query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
-  );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as TestimonialDoc) }));
+  try {
+    const snap = await getDocs(
+      query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
+    );
+    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as TestimonialDoc) }));
+  } catch (e) {
+    console.warn("Firestore unavailable, falling back to empty testimonials.");
+    return [];
+  }
 }
 
 /*
