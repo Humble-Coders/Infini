@@ -10,7 +10,29 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import type { CaseStudyResult, CaseStudyDoc, WithId } from "@/lib/types";
+import type { CaseStudyResult, CaseStudySpecs } from "@/lib/types";
+
+export interface CaseStudyShowcaseItem {
+  id?: string;
+  slug: string;
+  title: string;
+  industryId?: string;
+  industryName?: string;
+  challenge: string;
+  results?: CaseStudyResult[];
+  afterImage?: string;
+  specs?: Partial<CaseStudySpecs> & Record<string, string | undefined>;
+}
+
+function getIndustryName(
+  caseStudy: CaseStudyShowcaseItem,
+  lookup?: Record<string, string | undefined> | Map<string, string | undefined>
+): string | undefined {
+  if (caseStudy.industryName) return caseStudy.industryName;
+  if (!lookup || !caseStudy.industryId) return undefined;
+  if (lookup instanceof Map) return lookup.get(caseStudy.industryId);
+  return lookup[caseStudy.industryId];
+}
 
 /**
  * A sticky two-column showcase of the case studies loaded for the current
@@ -26,8 +48,8 @@ export function CaseStudyShowcase({
   caseStudies,
   industryNameById,
 }: {
-  caseStudies: WithId<CaseStudyDoc>[];
-  industryNameById: Map<string, string | undefined>;
+  caseStudies: CaseStudyShowcaseItem[];
+  industryNameById?: Record<string, string | undefined> | Map<string, string | undefined>;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -44,7 +66,7 @@ export function CaseStudyShowcase({
       <div className="grid lg:grid-cols-2">
         {/* Sticky left column, text */}
         <div className="sticky top-20 hidden h-[70vh] items-center lg:flex">
-          <div className="relative w-full">
+          <div className="relative h-full w-full">
             {caseStudies.map((caseStudy, i) => (
               <ShowcaseSlide
                 key={caseStudy.slug}
@@ -52,7 +74,7 @@ export function CaseStudyShowcase({
                 index={i}
                 total={total}
                 progress={scrollYProgress}
-                industryName={industryNameById.get(caseStudy.industryId)}
+                industryName={getIndustryName(caseStudy, industryNameById)}
               />
             ))}
           </div>
@@ -79,12 +101,60 @@ export function CaseStudyShowcase({
           <MobileStudyCard
             key={caseStudy.slug}
             caseStudy={caseStudy}
-            industryName={industryNameById.get(caseStudy.industryId)}
+            industryName={getIndustryName(caseStudy, industryNameById)}
           />
         ))}
       </div>
     </div>
   );
+}
+
+function getSlideAnimationRanges(index: number, total: number) {
+  if (total <= 1) {
+    return {
+      inputRange: [0, 1],
+      opacityRange: [1, 1],
+      yRange: [0, 0],
+      zIndexRange: [10, 10],
+    };
+  }
+
+  const step = 1 / total;
+  const trans = 0.15 * step; // clean 15% transition window
+
+  if (index === 0) {
+    const exitStart = step - trans;
+    const exitEnd = step;
+    return {
+      inputRange: [0, exitStart, exitEnd, 1],
+      opacityRange: [1, 1, 0, 0],
+      yRange: [0, 0, -20, -20],
+      zIndexRange: [10, 10, 0, 0],
+    };
+  }
+
+  if (index === total - 1) {
+    const enterStart = index * step;
+    const enterEnd = enterStart + trans;
+    return {
+      inputRange: [0, enterStart, enterEnd, 1],
+      opacityRange: [0, 0, 1, 1],
+      yRange: [20, 20, 0, 0],
+      zIndexRange: [0, 0, 10, 10],
+    };
+  }
+
+  const enterStart = index * step;
+  const enterEnd = enterStart + trans;
+  const exitStart = (index + 1) * step - trans;
+  const exitEnd = (index + 1) * step;
+
+  return {
+    inputRange: [0, enterStart, enterEnd, exitStart, exitEnd, 1],
+    opacityRange: [0, 0, 1, 1, 0, 0],
+    yRange: [20, 20, 0, 0, -20, -20],
+    zIndexRange: [0, 0, 10, 10, 0, 0],
+  };
 }
 
 /** A text slide pinned in the left column, fades in/out across its segment. */
@@ -95,26 +165,21 @@ function ShowcaseSlide({
   progress,
   industryName,
 }: {
-  caseStudy: WithId<CaseStudyDoc>;
+  caseStudy: CaseStudyShowcaseItem;
   index: number;
   total: number;
   progress: MotionValue<number>;
   industryName?: string;
 }) {
-  const opacity = useTransform(
-    progress,
-    [index / total, (index + 0.5) / total, (index + 1.5) / total],
-    [0, 1, 0]
-  );
-  const y = useTransform(
-    progress,
-    [index / total, (index + 0.5) / total],
-    [30, 0]
-  );
+  const { inputRange, opacityRange, yRange, zIndexRange } = getSlideAnimationRanges(index, total);
+
+  const opacity = useTransform(progress, inputRange, opacityRange, { clamp: true });
+  const y = useTransform(progress, inputRange, yRange, { clamp: true });
+  const zIndex = useTransform(progress, inputRange, zIndexRange, { clamp: true });
 
   return (
     <motion.div
-      style={{ opacity, y }}
+      style={{ opacity, y, zIndex }}
       className="absolute inset-0 flex flex-col justify-center gap-5 pr-12"
     >
       <span className="font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
@@ -171,15 +236,16 @@ function ShowcaseImage({
   total,
   progress,
 }: {
-  caseStudy: WithId<CaseStudyDoc>;
+  caseStudy: CaseStudyShowcaseItem;
   index: number;
   total: number;
   progress: MotionValue<number>;
 }) {
   const scale = useTransform(
     progress,
-    [index / total, (index + 1) / total],
-    [0.92, 1]
+    [Math.max(0, index / total), Math.min(1, (index + 1) / total)],
+    [0.92, 1],
+    { clamp: true }
   );
 
   return (
@@ -218,7 +284,7 @@ function MobileStudyCard({
   caseStudy,
   industryName,
 }: {
-  caseStudy: WithId<CaseStudyDoc>;
+  caseStudy: CaseStudyShowcaseItem;
   industryName?: string;
 }) {
   return (

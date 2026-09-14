@@ -196,7 +196,19 @@ export default async function CaseStudiesIndexPage({
           ) : (
             <>
               {/* Sticky scroll showcase: pinned left text + scrolling imagery */}
-              <CaseStudyShowcaseLoader caseStudies={caseStudies} industryNameById={industryNameById} />
+              <CaseStudyShowcaseLoader
+                caseStudies={caseStudies.map((caseStudy) => ({
+                  id: caseStudy.id,
+                  slug: caseStudy.slug,
+                  title: caseStudy.title,
+                  industryId: caseStudy.industryId,
+                  industryName: industryNameById.get(caseStudy.industryId),
+                  challenge: caseStudy.challenge,
+                  results: caseStudy.results,
+                  afterImage: caseStudy.afterImage,
+                  specs: caseStudy.specs,
+                }))}
+              />
 
               <div className="flex items-center gap-4 pt-6">
                 <span className="h-px flex-1 bg-border" />

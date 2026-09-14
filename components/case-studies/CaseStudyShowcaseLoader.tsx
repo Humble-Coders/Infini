@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { CaseStudyDoc, WithId } from "@/lib/types";
+import type { CaseStudyShowcaseItem } from "@/components/case-studies/CaseStudyShowcase";
 
 /**
  * Thin client boundary for the framer-motion-heavy sticky showcase.
@@ -18,8 +18,9 @@ export function CaseStudyShowcaseLoader({
   caseStudies,
   industryNameById,
 }: {
-  caseStudies: WithId<CaseStudyDoc>[];
-  industryNameById: Map<string, string | undefined>;
+  caseStudies: CaseStudyShowcaseItem[];
+  industryNameById?: Record<string, string | undefined> | Map<string, string | undefined>;
 }) {
   return <CaseStudyShowcase caseStudies={caseStudies} industryNameById={industryNameById} />;
 }
+
