@@ -1,12 +1,16 @@
 import { cache } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { requireDb } from "./firestore";
 import type { PageDoc, PageId, PageSection } from "@/lib/types";
+
+const COLLECTION = "pages";
 
 import { buildPages } from "@/backend/scripts/content";
 
 /** A singleton page's content by ID (home, company, capabilities, contact). */
 async function getPageUncached(id: PageId): Promise<PageDoc | null> {
-  const pages = buildPages() as Record<string, any>;
-  return (pages[id] as PageDoc) ?? null;
+  const pages = buildPages();
+  return (pages[id] as unknown as PageDoc) ?? null;
 }
 
 /**

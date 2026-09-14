@@ -1,5 +1,9 @@
 import { cache } from "react";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { requireDb } from "./firestore";
 import type { IndustryDoc, WithId } from "@/lib/types";
+
+const COLLECTION = "industries";
 
 // TEMP DEMO, random placeholder photos for the hero carousel, keyed by
 // slug so each industry gets a stable (but unrelated) image. Delete this
@@ -43,8 +47,16 @@ async function getPublishedIndustriesUncached(): Promise<WithId<IndustryDoc>[]> 
 
 /** A single published industry by slug, or null if it doesn't exist / isn't published. */
 async function getIndustryBySlugUncached(slug: string): Promise<WithId<IndustryDoc> | null> {
-  const industries = await getPublishedIndustriesUncached();
-  return industries.find(ind => ind.slug === slug) ?? null;
+  const snap = await getDocs(
+    query(
+      collection(requireDb(), COLLECTION),
+      where("slug", "==", slug),
+      where("published", "==", true),
+      limit(1)
+    )
+  );
+  const found = snap.docs[0];
+  return found ? { id: found.id, ...(found.data() as IndustryDoc) } : null;
 }
 
 /** All published industry slugs, for generateStaticParams. */
@@ -55,8 +67,11 @@ async function getPublishedIndustrySlugsUncached(): Promise<string[]> {
 
 /** A published industry by its own document ID, for resolving relatedIndustry-style references. */
 async function getIndustryByIdUncached(id: string): Promise<WithId<IndustryDoc> | null> {
-  const industries = await getPublishedIndustriesUncached();
-  return industries.find(ind => ind.id === id) ?? null;
+  const snap = await getDoc(doc(requireDb(), COLLECTION, id));
+  if (!snap.exists()) return null;
+  const data = snap.data() as IndustryDoc;
+  if (!data.published) return null;
+  return { id: snap.id, ...data };
 }
 
 /*

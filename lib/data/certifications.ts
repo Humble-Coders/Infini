@@ -10,6 +10,7 @@ import {
   query,
   runTransaction,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { requireDb } from "./firestore";
 import type { CertificationDoc, WithId } from "@/lib/types";
