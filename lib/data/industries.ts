@@ -34,27 +34,16 @@ const DEMO_HERO_IMAGES: Record<string, string> = {
   "powder-metallurgy": unsplash("photo-1611117775350-ac3950990985"),
 };
 
-import { buildIndustries } from "@/backend/scripts/content";
-
 /** All 7 published industries, in display order. */
 async function getPublishedIndustriesUncached(): Promise<WithId<IndustryDoc>[]> {
-  try {
-    const snap = await getDocs(
-      query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
-    );
-    return snap.docs.map((d) => {
-      const data = d.data() as IndustryDoc;
-      const heroImage = data.hero.image || DEMO_HERO_IMAGES[data.slug] || "";
-      return { id: d.id, ...data, hero: { ...data.hero, image: heroImage } };
-    });
-  } catch (e) {
-    console.warn("Firestore unavailable, falling back to mock industries.");
-    return buildIndustries().map(industry => {
-      const data = industry as unknown as IndustryDoc;
-      const heroImage = data.hero.image || DEMO_HERO_IMAGES[data.slug] || "";
-      return { id: data.slug, ...data, hero: { ...data.hero, image: heroImage } };
-    });
-  }
+  const snap = await getDocs(
+    query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
+  );
+  return snap.docs.map((d) => {
+    const data = d.data() as IndustryDoc;
+    const heroImage = data.hero.image || DEMO_HERO_IMAGES[data.slug] || "";
+    return { id: d.id, ...data, hero: { ...data.hero, image: heroImage } };
+  });
 }
 
 /** A single published industry by slug, or null if it doesn't exist / isn't published. */

@@ -5,19 +5,11 @@ import type { PageDoc, PageId, PageSection } from "@/lib/types";
 
 const COLLECTION = "pages";
 
-import { buildPages } from "@/backend/scripts/content";
-
 /** A singleton page's content by ID (home, company, capabilities, contact). */
 async function getPageUncached(id: PageId): Promise<PageDoc | null> {
-  try {
-    const snap = await getDoc(doc(requireDb(), COLLECTION, id));
-    if (!snap.exists()) return null;
-    return snap.data() as PageDoc;
-  } catch (e) {
-    console.warn(`Firestore unavailable, falling back to mock page for ${id}.`);
-    const pages = buildPages();
-    return (pages[id] as unknown as PageDoc) ?? null;
-  }
+  const snap = await getDoc(doc(requireDb(), COLLECTION, id));
+  if (!snap.exists()) return null;
+  return snap.data() as PageDoc;
 }
 
 /**

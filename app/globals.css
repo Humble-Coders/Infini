@@ -520,13 +520,17 @@
 
 @media (min-width: 641px) {
   .route-curtain-glyph {
-    display: none;
+    width: min(36vw, 26rem);
+    max-height: 60svh;
   }
   .route-curtain[data-video="ready"] .route-curtain-video {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  .route-curtain[data-video="ready"] .route-curtain-glyph {
+    display: none;
   }
 }
 
@@ -537,14 +541,9 @@
   animation: route-curtain-draw 0.7s ease-in-out 0.05s forwards;
 }
 
-.route-curtain-dot {
-  stroke-dasharray: 0 1;
-  stroke-dashoffset: 1;
-  animation: route-curtain-draw 0.7s ease-in-out 0.05s forwards;
-}
-
 @keyframes route-curtain-draw {
   from {
+    stroke-dasharray: 1;
     stroke-dashoffset: 1;
     opacity: 0;
   }
@@ -552,6 +551,7 @@
     opacity: 1;
   }
   to {
+    stroke-dasharray: 1;
     stroke-dashoffset: 0;
     opacity: 1;
   }

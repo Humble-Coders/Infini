@@ -7,15 +7,10 @@ const COLLECTION = "caseStudies";
 
 /** All published case studies, newest first. */
 async function getPublishedCaseStudiesUncached(): Promise<WithId<CaseStudyDoc>[]> {
-  try {
-    const snap = await getDocs(
-      query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("publishedAt", "desc"))
-    );
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as CaseStudyDoc) }));
-  } catch (e) {
-    console.warn("Firestore unavailable, falling back to empty case studies.");
-    return [];
-  }
+  const snap = await getDocs(
+    query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("publishedAt", "desc"))
+  );
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as CaseStudyDoc) }));
 }
 
 /** A single published case study by slug, or null. */
