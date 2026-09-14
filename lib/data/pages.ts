@@ -5,7 +5,7 @@ import { buildPages } from "@/backend/scripts/content";
 
 /** A singleton page's content by ID (home, company, capabilities, contact). */
 async function getPageUncached(id: PageId): Promise<PageDoc | null> {
-  const pages = buildPages() as Record<string, unknown>;
+  const pages = buildPages() as Record<string, any>;
   return (pages[id] as PageDoc) ?? null;
 }
 

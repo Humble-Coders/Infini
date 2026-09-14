@@ -7,14 +7,12 @@ async function getPublishedCaseStudiesUncached(): Promise<WithId<CaseStudyDoc>[]
 }
 
 /** A single published case study by slug, or null. */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getCaseStudyBySlugUncached(slug: string): Promise<WithId<CaseStudyDoc> | null> {
+async function getCaseStudyBySlugUncached(_slug: string): Promise<WithId<CaseStudyDoc> | null> {
   return null;
 }
 
 /** Published case studies cross-linked to a given industry, for that industry's page. */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getCaseStudiesByIndustryUncached(industryId: string): Promise<WithId<CaseStudyDoc>[]> {
+async function getCaseStudiesByIndustryUncached(_industryId: string): Promise<WithId<CaseStudyDoc>[]> {
   return [];
 }
 
