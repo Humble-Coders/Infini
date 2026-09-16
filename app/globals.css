@@ -476,21 +476,10 @@
 }
 
 /*
- * Route curtain: the supplied infinity clip, full bleed on black.
+ * Route curtain: the glowing neon infinity animation, centered on black.
  *
- * The black is this element's own background, not the video's, and it is in the
- * server-rendered HTML. That is what makes the curtain instant: the browser
- * paints black on its first frame and the site is never visible underneath,
- * whether the video has arrived, is still buffering, or failed outright.
- *
- * `object-fit: cover` because the clip is 16:9 and the viewport is not; the
- * mark sits centre frame, so cropping the sides costs nothing. The clip's own
- * corners are already near-black, so it composites onto the ground seamlessly.
- *
- * The lift is a plain opacity transition driven by `data-state`, which the
- * component flips when the animation reaches its cut point. `visibility` goes
- * with it so the finished curtain is out of the accessibility tree, and
- * `pointer-events: none` means it could never intercept a click even mid-fade.
+ * Instant paint: the browser paints #000 on its first frame, preventing any
+ * unstyled flicker. The lift is a smooth opacity transition driven by `data-state`.
  */
 .route-curtain {
   position: fixed;
@@ -501,14 +490,11 @@
   justify-content: center;
   overflow: hidden;
   pointer-events: none;
-  /* Pure black, not the #060606 surface token: the clip's own corners are
-     near-black and the phone SVG variant has no footage at all, so anything
-     lighter reads as a grey flash around the mark. */
-  background: #000;
+  background: #000000;
   opacity: 1;
   visibility: visible;
   transition:
-    opacity 260ms ease,
+    opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
     visibility 0s linear 0s;
 }
 
@@ -516,73 +502,8 @@
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 260ms ease,
-    visibility 0s linear 260ms;
-}
-
-.route-curtain-video {
-  display: none;
-  pointer-events: none;
-}
-
-/*
- * Mobile variant: a small inline-SVG infinity on the same pure-black ground.
- * Fully contained and centred, so the whole loop is visible exactly like on
- * a laptop, instead of the cropped full-bleed video blow-up portrait phones
- * used to get. Capped in both axes so it stays small on every handset. This
- * is also the pre-hydration paint on desktop: the glyph draws from the first
- * frame while the clip buffers, then `data-video="ready"` swaps the footage
- * in over it, so the curtain never sits blank.
- */
-.route-curtain-glyph {
-  width: min(68vw, 280px);
-  max-height: 32svh;
-  height: auto;
-  overflow: visible;
-}
-
-@media (min-width: 641px) {
-  .route-curtain-glyph {
-    width: min(36vw, 26rem);
-    max-height: 60svh;
-  }
-  .route-curtain[data-video="ready"] .route-curtain-video {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .route-curtain[data-video="ready"] .route-curtain-glyph {
-    display: none;
-  }
-}
-
-.route-curtain-draw {
-  /* pathLength="1" is set on the element, so a 0..1 dash draws the loop. */
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: route-curtain-draw 0.7s ease-in-out 0.05s forwards;
-}
-
-@keyframes route-curtain-draw {
-  from {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  to {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-}
-
-.route-curtain[data-state="done"] .route-curtain-glyph {
-  opacity: 0;
-  transition: opacity 200ms ease;
+    opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 320ms;
 }
 
 @media (prefers-reduced-motion: reduce) {

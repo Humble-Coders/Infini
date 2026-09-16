@@ -66,12 +66,18 @@ export function SmokeCursor() {
   if (!mounted || reduce || !finePointer) return null;
 
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[80] motion-reduce:hidden">
-      <motion.div style={{ x: smokeX, y: smokeY }} className="absolute top-0 left-0 will-change-transform">
-        <div className="h-52 w-52 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-[64px] mix-blend-screen" />
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[80] motion-reduce:hidden overflow-hidden">
+      <motion.div
+        style={{ x: smokeX, y: smokeY }}
+        className="absolute top-0 left-0 will-change-transform transform-gpu"
+      >
+        <div className="h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-[48px] pointer-events-none" />
       </motion.div>
-      <motion.div style={{ x: coreX, y: coreY }} className="absolute top-0 left-0 will-change-transform">
-        <div className="size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_4px_rgba(var(--color-accent-rgb),0.55)]" />
+      <motion.div
+        style={{ x: coreX, y: coreY }}
+        className="absolute top-0 left-0 will-change-transform transform-gpu"
+      >
+        <div className="size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_10px_3px_rgba(var(--color-accent-rgb),0.55)] pointer-events-none" />
       </motion.div>
     </div>
   );

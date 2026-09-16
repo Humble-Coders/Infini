@@ -2,27 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { INFINITY_PATH } from "./infinity";
+import { InfinityMark } from "@/components/sections/home/InfinityMark";
 
-type Phase = "draw" | "fill" | "exit" | "done";
+type Phase = "play" | "exit" | "done";
 
 /**
- * Opening curtain: on every full page load a large red brand-infinity
- * boundary draws itself at 90% opacity, no fill, no text, holds a beat,
- * then the whole curtain lifts to reveal the site (~2.1s total).
- * Client-side navigations don't retrigger it, the root layout persists, so
- * it plays on load/reload only. Scroll is locked while it plays; under
- * reduced motion it renders nothing at all.
+ * Opening curtain: on full page load, plays the glowing hero infinity neon mark
+ * centered on black, holds briefly, and then lifts to reveal the site.
  */
 export function IntroCurtain() {
   const reduce = useReducedMotion();
-  const [phase, setPhase] = useState<Phase>("draw");
+  const [phase, setPhase] = useState<Phase>("play");
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase("fill"), 900),
-      setTimeout(() => setPhase("exit"), 1400),
-      setTimeout(() => setPhase("done"), 2250),
+      setTimeout(() => setPhase("exit"), 1100),
+      setTimeout(() => setPhase("done"), 1550),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -41,25 +36,18 @@ export function IntroCurtain() {
   return (
     <motion.div
       aria-hidden="true"
-      initial={{ y: 0 }}
-      animate={phase === "exit" ? { y: "-100%" } : { y: 0 }}
-      transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black motion-reduce:hidden"
+      initial={{ opacity: 1 }}
+      animate={phase === "exit" ? { opacity: 0 } : { opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black motion-reduce:hidden pointer-events-none"
     >
-      <svg viewBox="0 0 200 100" className="w-44 max-w-[68vw] sm:w-[28rem]" role="presentation">
-        {/* Boundary only, transparent inside, drawn at 90% opacity. */}
-        <motion.path
-          d={INFINITY_PATH}
-          fill="none"
-          stroke="var(--color-accent)"
-          strokeOpacity={0.9}
-          strokeWidth={2.5}
-          strokeLinecap="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: 0.9, ease: "easeInOut" }}
+      <div className="flex w-full flex-col items-center justify-center p-4 sm:p-6">
+        <InfinityMark
+          alwaysActive
+          duration={3800}
+          className="w-[82vw] max-w-[420px] sm:max-w-[540px] md:max-w-[660px] lg:max-w-[760px] h-auto drop-shadow-[0_0_36px_rgba(242,53,64,0.48)]"
         />
-      </svg>
+      </div>
     </motion.div>
   );
 }

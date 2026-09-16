@@ -51,25 +51,43 @@ function createLemniscateTrack(a = 100, cx = 120, cy = 60, numSamples = 2000) {
 
 const track = createLemniscateTrack();
 
-export function InfinityMark({ className }: { className?: string }) {
+export interface InfinityMarkProps {
+  className?: string;
+  duration?: number;
+  alwaysActive?: boolean;
+}
+
+export function InfinityMark({
+  className,
+  duration = 4400,
+  alwaysActive = false,
+}: InfinityMarkProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    let animId: number;
+    let animId: number = 0;
     let startTime: number | null = null;
-    const duration = 4400; // 4.4s per loop
+    let isVisible = true;
 
     // Trail configuration: covers 82% of loop length so the infinity figure is clearly visible
     const trailFraction = 0.82;
     const trailDist = track.totalDist * trailFraction;
-    const N = 240; // Dense polygon ribbon sampling for silky smooth edges
+    const N = 180; // Optimal sampling for silky smooth edges with zero micro-stutter
 
     const render = (time: number) => {
+      if (!isVisible && !alwaysActive) {
+        animId = 0;
+        return;
+      }
+
       if (startTime === null) startTime = time;
       const elapsed = time - startTime;
       const progress = (elapsed % duration) / duration;
@@ -119,13 +137,12 @@ export function InfinityMark({ className }: { className?: string }) {
       const head = spine[spine.length - 1];
 
       // -----------------------------------------------------------------
-      // PASS 1: Wide Ambient Red Neon Aura (Continuous Polygon Ribbon)
+      // PASS 1: Wide Ambient Red Neon Aura (Single Continuous Polygon Ribbon)
       // -----------------------------------------------------------------
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 10;
       ctx.shadowColor = "#E31B23";
 
       ctx.beginPath();
-      // Left side
       for (let i = 0; i <= N; i++) {
         const pt = spine[i];
         const halfW = 3.6 * Math.pow(pt.u, 1.25);
@@ -134,10 +151,7 @@ export function InfinityMark({ className }: { className?: string }) {
         if (i === 0) ctx.moveTo(lx, ly);
         else ctx.lineTo(lx, ly);
       }
-      // Head rounded cap
-      const headAuraW = 3.6;
-      ctx.arc(head.x, head.y, headAuraW, head.angle - Math.PI / 2, head.angle + Math.PI / 2);
-      // Right side
+      ctx.arc(head.x, head.y, 3.6, head.angle - Math.PI / 2, head.angle + Math.PI / 2);
       for (let i = N; i >= 0; i--) {
         const pt = spine[i];
         const halfW = 3.6 * Math.pow(pt.u, 1.25);
@@ -146,14 +160,14 @@ export function InfinityMark({ className }: { className?: string }) {
         ctx.lineTo(rx, ry);
       }
       ctx.closePath();
-      ctx.fillStyle = "rgba(227, 27, 35, 0.35)";
+      ctx.fillStyle = "rgba(227, 27, 35, 0.38)";
       ctx.fill();
 
       // -----------------------------------------------------------------
-      // PASS 2: Main Tapered Neon Body (Smooth Quad Slices, NO line steps)
+      // PASS 2: Main Tapered Neon Body (Hardware-accelerated batched quads)
       // -----------------------------------------------------------------
-      ctx.shadowBlur = 6;
-      ctx.shadowColor = "#F23540";
+      // Reset shadowBlur to 0 for instant GPU quad rendering without blur stall
+      ctx.shadowBlur = 0;
 
       for (let i = 0; i < N; i++) {
         const p0 = spine[i];
@@ -184,19 +198,18 @@ export function InfinityMark({ className }: { className?: string }) {
         ctx.fill();
       }
 
-      // Head rounded cap for main body
-      const headBodyW = 1.75;
+      // Head rounded cap for main body with subtle glow
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = "#F23540";
       ctx.beginPath();
-      ctx.arc(head.x, head.y, headBodyW, head.angle - Math.PI / 2, head.angle + Math.PI / 2);
+      ctx.arc(head.x, head.y, 1.75, head.angle - Math.PI / 2, head.angle + Math.PI / 2);
       ctx.fillStyle = "#F23540";
       ctx.fill();
 
       // -----------------------------------------------------------------
       // PASS 3: Seamless White-Hot Luminous Core (Tapered front 55%)
       // -----------------------------------------------------------------
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = "#FFFFFF";
-
+      ctx.shadowBlur = 0;
       const coreStartIdx = Math.floor(N * 0.45);
       for (let i = coreStartIdx; i < N; i++) {
         const p0 = spine[i];
@@ -229,7 +242,7 @@ export function InfinityMark({ className }: { className?: string }) {
       }
 
       // Leading white-hot nucleus sphere cap
-      ctx.shadowBlur = 8;
+      ctx.shadowBlur = 6;
       ctx.shadowColor = "#FFFFFF";
       ctx.beginPath();
       ctx.arc(head.x, head.y, 0.75, 0, Math.PI * 2);
@@ -240,12 +253,31 @@ export function InfinityMark({ className }: { className?: string }) {
       animId = requestAnimationFrame(render);
     };
 
+    // Pause canvas loop when scrolled off-screen
+    let observer: IntersectionObserver | null = null;
+    if (!alwaysActive && typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animId) {
+            animId = requestAnimationFrame(render);
+          }
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(container);
+    }
+
     animId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animId);
-  }, []);
+
+    return () => {
+      if (observer) observer.disconnect();
+      if (animId) cancelAnimationFrame(animId);
+    };
+  }, [duration, alwaysActive]);
 
   return (
-    <div className={className}>
+    <div ref={containerRef} className={className}>
       <canvas
         ref={canvasRef}
         className="w-full h-auto aspect-[240/120] pointer-events-none"
