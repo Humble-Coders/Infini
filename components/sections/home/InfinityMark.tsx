@@ -1,79 +1,256 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useEffect, useRef } from "react";
 
 /**
- * The brand's infinity loop (from the "Finish Unlimited" logo) as a large,
- * faint backdrop figure, with a red tracer running the loop: a glowing dot
- * travels the lemniscate, and the whole figure flares as it completes a lap.
- *
- * All motion is CSS driven off `stroke-dashoffset` (see globals.css), so there
- * is no JS and no hydration boundary. The animation needs the path's own
- * length, which is measured here at module load and handed to CSS as
- * `--infinity-length` so the dash maths stays in sync with the geometry.
+ * Creates an arc-length normalized lemniscate track for perfectly constant motion.
+ * Flow direction: top-left -> center crossover -> top-right -> right apex -> bottom-right -> center -> bottom-left -> left apex.
  */
-function lemniscate(a = 100, steps = 180, cx = 120, cy = 60) {
-  const points: Array<[number, number]> = [];
-  for (let i = 0; i <= steps; i++) {
-    const t = (i / steps) * Math.PI * 2;
-    const denominator = 1 + Math.sin(t) ** 2;
-    points.push([(a * Math.cos(t)) / denominator + cx, (a * Math.sin(t) * Math.cos(t)) / denominator + cy]);
+function createLemniscateTrack(a = 100, cx = 120, cy = 60, numSamples = 2000) {
+  const rawPoints: { x: number; y: number; dist: number }[] = [];
+  let totalDist = 0;
+
+  for (let i = 0; i <= numSamples; i++) {
+    const t = (i / numSamples) * Math.PI * 2;
+    const denom = 1 + Math.sin(t) ** 2;
+    const x = cx - (a * Math.cos(t)) / denom;
+    const y = cy - (a * Math.sin(t) * Math.cos(t)) / denom;
+
+    if (i > 0) {
+      const prev = rawPoints[i - 1];
+      totalDist += Math.hypot(x - prev.x, y - prev.y);
+    }
+    rawPoints.push({ x, y, dist: totalDist });
   }
 
-  let d = "";
-  let length = 0;
-  points.forEach(([x, y], index) => {
-    d += `${index === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`;
-    if (index > 0) {
-      const [px, py] = points[index - 1];
-      length += Math.hypot(x - px, y - py);
+  function getPointAtDistance(d: number): { x: number; y: number } {
+    d = ((d % totalDist) + totalDist) % totalDist;
+    let low = 0;
+    let high = rawPoints.length - 1;
+    while (low <= high) {
+      const mid = (low + high) >> 1;
+      if (rawPoints[mid].dist < d) {
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
     }
-  });
+    const idx = Math.max(1, Math.min(low, rawPoints.length - 1));
+    const p0 = rawPoints[idx - 1];
+    const p1 = rawPoints[idx];
+    const segmentLen = p1.dist - p0.dist;
+    const ratio = segmentLen > 0 ? (d - p0.dist) / segmentLen : 0;
+    return {
+      x: p0.x + (p1.x - p0.x) * ratio,
+      y: p0.y + (p1.y - p0.y) * ratio,
+    };
+  }
 
-  return { d: `${d}Z`, length };
+  return { totalDist, getPointAtDistance };
 }
 
-const { d: PATH, length: LENGTH } = lemniscate();
-
-/**
- * The loop's geometry, exported so the route curtain draws the identical figure.
- * Sharing one path means the opening mark and the hero mark can never drift into
- * two subtly different infinity signs.
- */
-export const INFINITY_PATH = PATH;
-export const INFINITY_VIEWBOX = "0 0 240 120";
-/** Path length, so a dash-based draw-on can be set up without measuring in the browser. */
-export const INFINITY_LENGTH = LENGTH;
+const track = createLemniscateTrack();
 
 export function InfinityMark({ className }: { className?: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    let animId: number;
+    let startTime: number | null = null;
+    const duration = 4400; // 4.4s per loop
+
+    // Trail configuration: covers 82% of loop length so the infinity figure is clearly visible
+    const trailFraction = 0.82;
+    const trailDist = track.totalDist * trailFraction;
+    const N = 240; // Dense polygon ribbon sampling for silky smooth edges
+
+    const render = (time: number) => {
+      if (startTime === null) startTime = time;
+      const elapsed = time - startTime;
+      const progress = (elapsed % duration) / duration;
+      const currentDist = progress * track.totalDist;
+
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      if (width === 0 || height === 0) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const targetW = Math.round(width * dpr);
+      const targetH = Math.round(height * dpr);
+
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+
+      ctx.save();
+      ctx.scale(targetW / 240, targetH / 120);
+      ctx.clearRect(0, 0, 240, 120);
+
+      // 1. Sample centerline points and compute continuous normal vectors
+      const spine: { x: number; y: number; u: number; nx: number; ny: number; angle: number }[] = [];
+      const delta = 0.5;
+
+      for (let i = 0; i <= N; i++) {
+        const u = i / N; // 0 = tail tip (razor thin), 1 = head (thick & white hot)
+        const d = currentDist - trailDist * (1 - u);
+        const p = track.getPointAtDistance(d);
+        const pPrev = track.getPointAtDistance(d - delta);
+        const pNext = track.getPointAtDistance(d + delta);
+
+        const tx = pNext.x - pPrev.x;
+        const ty = pNext.y - pPrev.y;
+        const len = Math.hypot(tx, ty) || 1;
+        const nx = -ty / len;
+        const ny = tx / len;
+        const angle = Math.atan2(ty, tx);
+
+        spine.push({ x: p.x, y: p.y, u, nx, ny, angle });
+      }
+
+      const head = spine[spine.length - 1];
+
+      // -----------------------------------------------------------------
+      // PASS 1: Wide Ambient Red Neon Aura (Continuous Polygon Ribbon)
+      // -----------------------------------------------------------------
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = "#E31B23";
+
+      ctx.beginPath();
+      // Left side
+      for (let i = 0; i <= N; i++) {
+        const pt = spine[i];
+        const halfW = 3.6 * Math.pow(pt.u, 1.25);
+        const lx = pt.x + pt.nx * halfW;
+        const ly = pt.y + pt.ny * halfW;
+        if (i === 0) ctx.moveTo(lx, ly);
+        else ctx.lineTo(lx, ly);
+      }
+      // Head rounded cap
+      const headAuraW = 3.6;
+      ctx.arc(head.x, head.y, headAuraW, head.angle - Math.PI / 2, head.angle + Math.PI / 2);
+      // Right side
+      for (let i = N; i >= 0; i--) {
+        const pt = spine[i];
+        const halfW = 3.6 * Math.pow(pt.u, 1.25);
+        const rx = pt.x - pt.nx * halfW;
+        const ry = pt.y - pt.ny * halfW;
+        ctx.lineTo(rx, ry);
+      }
+      ctx.closePath();
+      ctx.fillStyle = "rgba(227, 27, 35, 0.35)";
+      ctx.fill();
+
+      // -----------------------------------------------------------------
+      // PASS 2: Main Tapered Neon Body (Smooth Quad Slices, NO line steps)
+      // -----------------------------------------------------------------
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = "#F23540";
+
+      for (let i = 0; i < N; i++) {
+        const p0 = spine[i];
+        const p1 = spine[i + 1];
+        const midU = (p0.u + p1.u) / 2;
+
+        const w0 = 1.75 * Math.pow(p0.u, 1.35);
+        const w1 = 1.75 * Math.pow(p1.u, 1.35);
+        const alpha = Math.pow(midU, 1.3);
+
+        const l0x = p0.x + p0.nx * w0;
+        const l0y = p0.y + p0.ny * w0;
+        const r0x = p0.x - p0.nx * w0;
+        const r0y = p0.y - p0.ny * w0;
+
+        const l1x = p1.x + p1.nx * w1;
+        const l1y = p1.y + p1.ny * w1;
+        const r1x = p1.x - p1.nx * w1;
+        const r1y = p1.y - p1.ny * w1;
+
+        ctx.beginPath();
+        ctx.moveTo(l0x, l0y);
+        ctx.lineTo(l1x, l1y);
+        ctx.lineTo(r1x, r1y);
+        ctx.lineTo(r0x, r0y);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(242, 53, 64, ${alpha})`;
+        ctx.fill();
+      }
+
+      // Head rounded cap for main body
+      const headBodyW = 1.75;
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, headBodyW, head.angle - Math.PI / 2, head.angle + Math.PI / 2);
+      ctx.fillStyle = "#F23540";
+      ctx.fill();
+
+      // -----------------------------------------------------------------
+      // PASS 3: Seamless White-Hot Luminous Core (Tapered front 55%)
+      // -----------------------------------------------------------------
+      ctx.shadowBlur = 4;
+      ctx.shadowColor = "#FFFFFF";
+
+      const coreStartIdx = Math.floor(N * 0.45);
+      for (let i = coreStartIdx; i < N; i++) {
+        const p0 = spine[i];
+        const p1 = spine[i + 1];
+        const midU = (p0.u + p1.u) / 2;
+        const coreU = (midU - 0.45) / 0.55;
+
+        const w0 = 0.75 * Math.pow((p0.u - 0.45) / 0.55, 1.4);
+        const w1 = 0.75 * Math.pow((p1.u - 0.45) / 0.55, 1.4);
+        const alpha = Math.pow(coreU, 1.5);
+
+        const l0x = p0.x + p0.nx * w0;
+        const l0y = p0.y + p0.ny * w0;
+        const r0x = p0.x - p0.nx * w0;
+        const r0y = p0.y - p0.ny * w0;
+
+        const l1x = p1.x + p1.nx * w1;
+        const l1y = p1.y + p1.ny * w1;
+        const r1x = p1.x - p1.nx * w1;
+        const r1y = p1.y - p1.ny * w1;
+
+        ctx.beginPath();
+        ctx.moveTo(l0x, l0y);
+        ctx.lineTo(l1x, l1y);
+        ctx.lineTo(r1x, r1y);
+        ctx.lineTo(r0x, r0y);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(255, 248, 248, ${alpha * 0.98})`;
+        ctx.fill();
+      }
+
+      // Leading white-hot nucleus sphere cap
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = "#FFFFFF";
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 0.75, 0, Math.PI * 2);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fill();
+
+      ctx.restore();
+      animId = requestAnimationFrame(render);
+    };
+
+    animId = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(animId);
+  }, []);
+
   return (
-    <svg
-      viewBox="0 0 240 120"
-      className={className}
-      fill="none"
-      aria-hidden="true"
-      style={{ "--infinity-length": LENGTH.toFixed(1) } as CSSProperties}
-    >
-      <defs>
-        <filter id="infinity-glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="4.5" />
-        </filter>
-      </defs>
-
-      {/* The figure itself: always visible, bold and refined. */}
-      <path d={PATH} stroke="currentColor" strokeWidth="3.5" strokeOpacity="0.2" />
-
-      {/* Flares as the tracer closes a lap. */}
-      <path className="infinity-shine" d={PATH} stroke="var(--color-accent)" strokeWidth="3.5" />
-
-      {/* Blurred halo behind the travelling dot, then the dot itself. */}
-      <path
-        className="infinity-halo"
-        d={PATH}
-        stroke="var(--color-accent)"
-        strokeWidth="14"
-        strokeLinecap="round"
-        filter="url(#infinity-glow)"
+    <div className={className}>
+      <canvas
+        ref={canvasRef}
+        className="w-full h-auto aspect-[240/120] pointer-events-none"
+        aria-hidden="true"
       />
-      <path className="infinity-dot" d={PATH} stroke="var(--color-accent)" strokeWidth="7" strokeLinecap="round" />
-    </svg>
+    </div>
   );
 }

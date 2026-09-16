@@ -150,33 +150,61 @@
 }
 
 /*
- * Hero infinity mark. One shared 15s cycle: a glowing red dot runs the loop by
- * sweeping stroke-dashoffset from the path's full length down to zero, and the
- * figure flares as the dot crosses the start point again.
- * `--infinity-length` is set inline by the component from its own geometry, so
- * the dash maths cannot drift out of step with the path.
+ * Hero infinity mark: Pure SVG/CSS tapered glowing neon beam.
+ * Multi-layer synchronized stroke composition creating a continuous,
+ * white-hot leading head, saturated brand red body, and tapered fading tail.
  */
-.infinity-halo,
-.infinity-dot,
-.infinity-shine {
-  animation: infinity-trace var(--infinity-duration, 15s) linear infinite;
+.infinity-layer-aura,
+.infinity-layer-bloom,
+.infinity-layer-tail,
+.infinity-layer-mid-tail,
+.infinity-layer-body,
+.infinity-layer-inner-core,
+.infinity-layer-head-white {
+  animation: infinity-running-loop var(--infinity-duration, 4.4s) linear infinite;
+  will-change: stroke-dashoffset;
 }
 
-/* Gap of a full path length keeps exactly one dash on the curve at a time. */
-.infinity-halo {
-  stroke-dasharray: 0.01 var(--infinity-length);
-  opacity: 0.75;
-}
-.infinity-dot {
-  stroke-dasharray: 0.01 var(--infinity-length);
+/* Layer 1: Wide diffuse red aura */
+.infinity-layer-aura {
+  stroke-dasharray: calc(var(--infinity-length) * 0.46) calc(var(--infinity-length) * 0.54);
+  opacity: 0.35;
 }
 
-.infinity-shine {
-  animation-name: infinity-shine;
-  stroke-opacity: 0;
+/* Layer 2: Tight bright red bloom */
+.infinity-layer-bloom {
+  stroke-dasharray: calc(var(--infinity-length) * 0.48) calc(var(--infinity-length) * 0.52);
+  opacity: 0.8;
 }
 
-@keyframes infinity-trace {
+/* Layer 3: Fading fine tail tip (spans 58% of loop, thin & subtle) */
+.infinity-layer-tail {
+  stroke-dasharray: calc(var(--infinity-length) * 0.58) calc(var(--infinity-length) * 0.42);
+  opacity: 0.4;
+}
+
+/* Layer 4: Mid-tail stroke (spans 48% of loop) */
+.infinity-layer-mid-tail {
+  stroke-dasharray: calc(var(--infinity-length) * 0.48) calc(var(--infinity-length) * 0.52);
+  opacity: 0.85;
+}
+
+/* Layer 5: Main thick red beam body (spans 38% of loop) */
+.infinity-layer-body {
+  stroke-dasharray: calc(var(--infinity-length) * 0.38) calc(var(--infinity-length) * 0.62);
+}
+
+/* Layer 6: Inner bright luminous core (spans 24% of loop at front) */
+.infinity-layer-inner-core {
+  stroke-dasharray: calc(var(--infinity-length) * 0.24) calc(var(--infinity-length) * 0.76);
+}
+
+/* Layer 7: Leading white-hot center nucleus (spans 14% of loop at front tip) */
+.infinity-layer-head-white {
+  stroke-dasharray: calc(var(--infinity-length) * 0.14) calc(var(--infinity-length) * 0.86);
+}
+
+@keyframes infinity-running-loop {
   from {
     stroke-dashoffset: var(--infinity-length);
   }
@@ -185,21 +213,9 @@
   }
 }
 
-/* Peaks at the lap boundary (100% of one cycle is 0% of the next). */
-@keyframes infinity-shine {
-  0% {
-    stroke-opacity: 0.5;
-  }
-  14% {
-    stroke-opacity: 0;
-  }
-  86% {
-    stroke-opacity: 0;
-  }
-  100% {
-    stroke-opacity: 0.5;
-  }
-}
+
+
+
 
 /* Staggered entrance for hero copy, pair with an inline animation-delay. */
 .hero-reveal {
@@ -260,10 +276,17 @@
   }
   /* The global reduce rule snaps animations to their end state, which would
      otherwise leave the flare lit and the tail mid-curve. Park a single dot. */
-  .infinity-halo,
-  .infinity-shine {
+  .infinity-layer-aura,
+  .infinity-layer-bloom,
+  .infinity-layer-tail,
+  .infinity-layer-mid-tail,
+  .infinity-layer-body,
+  .infinity-layer-inner-core,
+  .infinity-layer-head-white {
     display: none;
   }
+
+
 }
 
 @keyframes accordion-down {
