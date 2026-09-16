@@ -67,8 +67,8 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     <ReactLenis
       root
       options={{
-        lerp: 0.1,
-        duration: 1.2,
+        lerp: 0.13,
+        duration: 0.9,
         smoothWheel: true,
         // Native touch scroll on phones: Lenis syncing touch input fights
         // the browser's own momentum, feels laggy, and costs battery. Wheel

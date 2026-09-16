@@ -11,12 +11,13 @@ import { InfinityMark } from "@/components/sections/home/InfinityMark";
  * Plays smoothly on first load and on route transitions without any heavy video decoding,
  * network video requests, or layout lag.
  */
-const PLAY_MS = 1050;
+const INITIAL_PLAY_MS = 750;
+const ROUTE_PLAY_MS = 550;
 
 export function RouteCurtain() {
   const pathname = usePathname();
-  // Which route the curtain has finished playing for
   const [donePath, setDonePath] = useState<string | null>(null);
+  const [isFirstNav, setIsFirstNav] = useState(true);
   const done = donePath === pathname;
 
   useEffect(() => {
@@ -26,12 +27,14 @@ export function RouteCurtain() {
       return () => window.clearTimeout(timer);
     }
 
+    const duration = isFirstNav ? INITIAL_PLAY_MS : ROUTE_PLAY_MS;
     const timer = window.setTimeout(() => {
       setDonePath(pathname);
-    }, PLAY_MS);
+      setIsFirstNav(false);
+    }, duration);
 
     return () => window.clearTimeout(timer);
-  }, [pathname]);
+  }, [pathname, isFirstNav]);
 
   return (
     <div
