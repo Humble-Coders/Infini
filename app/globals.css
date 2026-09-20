@@ -207,6 +207,7 @@
   from {
     stroke-dashoffset: var(--infinity-length);
   }
+
   to {
     stroke-dashoffset: 0;
   }
@@ -233,6 +234,7 @@
   from {
     transform: translateX(-50%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -244,6 +246,7 @@
   from {
     transform: translate3d(-10%, 6%, 0) scale(1);
   }
+
   to {
     transform: translate3d(16%, 20%, 0) scale(1.2);
   }
@@ -253,6 +256,7 @@
   from {
     transform: translate3d(12%, -8%, 0) scale(1.12);
   }
+
   to {
     transform: translate3d(-16%, 14%, 0) scale(0.92);
   }
@@ -262,6 +266,7 @@
   from {
     transform: translate3d(0%, 8%, 0) scale(1);
   }
+
   to {
     transform: translate3d(-18%, -12%, 0) scale(1.25);
   }
@@ -273,6 +278,7 @@
   .statement-word {
     opacity: 1 !important;
   }
+
   /* The global reduce rule snaps animations to their end state, which would
      otherwise leave the flare lit and the tail mid-curve. Park a single dot. */
   .infinity-layer-aura,
@@ -292,6 +298,7 @@
   from {
     height: 0;
   }
+
   to {
     height: var(--radix-accordion-content-height);
   }
@@ -301,6 +308,7 @@
   from {
     height: var(--radix-accordion-content-height);
   }
+
   to {
     height: 0;
   }
@@ -311,6 +319,7 @@
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-50%);
   }
@@ -322,12 +331,15 @@
     transform: rotate(215deg) translateX(0);
     opacity: 0;
   }
+
   10% {
     opacity: 1;
   }
+
   70% {
     opacity: 1;
   }
+
   100% {
     transform: rotate(215deg) translateX(600px);
     opacity: 0;
@@ -339,6 +351,7 @@
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -350,6 +363,7 @@
     opacity: 0;
     transform: translateY(28px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -360,6 +374,7 @@
   * {
     border-color: var(--color-border);
   }
+
   html {
     /* Decorative oversized marks (hero infinity, aurora blobs) sit partly
        off-canvas; clip the x-axis globally so a phone never gets a sideways
@@ -368,6 +383,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -376,36 +392,43 @@
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
   }
+
   h1 {
     font-size: 1.5rem;
     font-weight: 500;
     line-height: 1.5;
   }
+
   h2 {
     font-size: 1.25rem;
     font-weight: 500;
     line-height: 1.5;
   }
+
   h3 {
     font-size: 1.125rem;
     font-weight: 500;
     line-height: 1.5;
   }
+
   h4 {
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.5;
   }
+
   label {
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.5;
   }
+
   button {
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.5;
   }
+
   input {
     font-size: 1rem;
     font-weight: 400;
@@ -419,27 +442,33 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
+
   button,
   a,
   input,
   select {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   ::-webkit-scrollbar {
     width: 10px;
   }
+
   ::-webkit-scrollbar-track {
     background: var(--color-background);
   }
+
   /* Neutral rather than accent-coloured: a brand-red thumb reads as a stray
      coloured bar across the window edge, especially on a horizontal scrollbar. */
   ::-webkit-scrollbar-thumb {
     background: rgba(var(--color-foreground-rgb), 0.22);
     border-radius: 5px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(var(--color-foreground-rgb), 0.38);
   }
+
   select option {
     background-color: var(--color-popover);
     color: var(--color-popover-foreground);
@@ -447,6 +476,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -531,6 +561,7 @@
   from {
     transform: scaleX(0);
   }
+
   to {
     transform: scaleX(1);
   }
