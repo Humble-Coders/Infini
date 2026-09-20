@@ -1,18 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
-import { useLenis } from "lenis/react";
 import { cn } from "@/components/ui/utils";
 
 /**
  * Back to top, for the long scroll on the home page.
- *
- * Scrolling is handed to Lenis rather than `window.scrollTo`. The site runs
- * Lenis in root mode, so it owns the scroll position; calling the native API
- * would fight it and land somewhere between the two. `useLenis` also gives the
- * scroll callback, which is where the button's visibility is decided, so the
- * component never adds a second scroll listener of its own.
  *
  * It appears after roughly two screens, far enough down that returning to the
  * top is a real journey, and it is a real `<button>` so it is reachable by
@@ -21,18 +14,19 @@ import { cn } from "@/components/ui/utils";
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
 
-  const lenis = useLenis(({ scroll }) => {
-    setVisible(scroll > window.innerHeight * 2);
-  });
-
-  // No initial-position effect: the root layout disables scroll restoration and
-  // forces the top on load, so every page starts at zero and the first Lenis
-  // callback is the first time this can be true.
+  useEffect(() => {
+    function handleScroll() {
+      setVisible(window.scrollY > window.innerHeight * 2);
+    }
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <button
       type="button"
-      onClick={() => lenis?.scrollTo(0, { duration: 1.1 })}
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Back to top"
       tabIndex={visible ? 0 : -1}
       className={cn(
