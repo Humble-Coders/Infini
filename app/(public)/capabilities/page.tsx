@@ -93,7 +93,7 @@ const STAGES = [
 const CAPABILITY_ROWS = [
   {
     label: "Roughness control",
-    detail: "From as-machined down to 0.02 µm Ra, targeted to your specification rather than to a fixed recipe.",
+    detail: "From as-machined down to 0.01 µm Ra, targeted to your specification rather than to a fixed recipe.",
     href: "/mirror-like-finish",
   },
   {
@@ -147,7 +147,7 @@ export default async function CapabilitiesPage() {
         badges={[{ label: "ISO 9001:2015" }, { label: "Measured per batch" }, { label: "Form preserved" }]}
         spec={{
           title: "Achievable finish",
-          body: "0.1 down to 0.02 µm Ra, confirmed on your own components during validation before anything runs in series.",
+          body: "0.1 down to 0.01 µm Ra, confirmed on your own components during validation before anything runs in series.",
         }}
       />
 

@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import {
@@ -164,6 +164,31 @@ export function SolutionFinder({
                 </div>
               </Fragment>
             ))}
+          </div>
+        </Reveal>
+
+        {/* Plant location, deck slide 2. */}
+        <Reveal delay={0.2} className="flex items-center justify-center gap-2 text-muted-foreground">
+          <MapPin className="size-4 text-accent" aria-hidden="true" />
+          <span className="font-mono text-[11px] tracking-[0.16em] uppercase">Parwanoo, Himachal Pradesh, India</span>
+        </Reveal>
+
+        {/* Catch-all for sectors not listed in the dropdown, deck slide 2. */}
+        <Reveal delay={0.25}>
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-background px-6 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div className="flex flex-col gap-1">
+              <p className="font-mono text-[10px] tracking-[0.2em] text-accent uppercase">Industrial Applications &amp; Others</p>
+              <p className="max-w-xl text-sm text-muted-foreground sm:text-base">
+                Do not see your sector? MMP treatment applies across many more industrial components. Tell us what you need finished.
+              </p>
+            </div>
+            <Link
+              href="/contact"
+              className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-background px-5 font-mono text-[11px] tracking-[0.16em] whitespace-nowrap text-foreground uppercase transition-colors hover:border-foreground/40 hover:bg-foreground/5"
+            >
+              Talk to our engineers
+              <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </Link>
           </div>
         </Reveal>
       </Container>

@@ -25,7 +25,11 @@ function reveal(step: number) {
 }
 
 export function HomeHero({ copy }: { copy: HeroCopy | null }) {
-  const { eyebrow, heading, body, ctaNote } = { ...FALLBACK, ...(copy ?? {}) };
+  const { heading, body, ctaNote } = { ...FALLBACK, ...(copy ?? {}) };
+  // Tagline line above the headline (deck slide 1): reads "Super Precision Surface
+  // Finishing". Fixed in code so it renders regardless of the CMS value; point this
+  // back at copy.eyebrow to make it CMS-editable again.
+  const eyebrow = "Super Precision Surface Finishing";
 
   return (
     <section className="relative overflow-hidden bg-background">
@@ -34,7 +38,7 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
         <Spotlight x="70%" />
         <div className="hero-grid absolute inset-0" />
         <div className="absolute -bottom-48 -left-48 size-[42rem] rounded-full bg-[radial-gradient(closest-side,rgba(var(--color-primary-rgb),0.32),transparent)] blur-2xl" />
-        <InfinityMark className="absolute -top-[7%] -right-[18%] w-[92%] text-foreground sm:w-[70%] lg:-right-[8%] lg:-top-[4.5%] lg:w-[46%] lg:max-w-[660px]" />
+        <InfinityMark className="absolute -top-[6%] -right-[16%] w-[80%] text-foreground sm:w-[58%] lg:-right-[7%] lg:-top-[4%] lg:w-[40%] lg:max-w-[560px]" />
       </div>
 
       <Container className="relative grid min-h-[calc(100svh-6rem)] items-center gap-14 py-16 sm:py-20 lg:grid-cols-12 lg:gap-10 lg:py-24">

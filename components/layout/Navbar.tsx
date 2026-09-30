@@ -149,9 +149,8 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
             className={cn("flex items-center justify-between", TRANSITION, scrolled ? "h-16" : "h-20 sm:h-24")}
           >
           {/* INFINI + MMP lockup, as the old single-image lockup had it. MMP is the
-              licensed process mark, so it sits behind a divider rather than reading
-              as part of the INFINI wordmark, and drops away on narrow screens where
-              the mobile menu needs the room. */}
+              licensed process mark and drops away on narrow screens where the
+              mobile menu needs the room. */}
           <Link
             href="/"
             className={cn("flex shrink-0 items-center gap-3 sm:gap-4", TRANSITION)}
@@ -163,17 +162,16 @@ export function Navbar({ navItems }: { navItems: NavLink[] }) {
               alt="INFINI, Finish Unlimited"
               width={1000}
               height={491}
-              className="h-10 w-auto sm:h-12"
+              className="h-12 w-auto sm:h-14"
               priority
             />
-            <span aria-hidden="true" className={cn("hidden w-px bg-foreground/20 sm:block", scrolled ? "h-8" : "h-9")} />
             <Image
               src="/brand/mmp-technology-light.png"
               data-mono="off"
               alt="MMP Technology"
               width={700}
               height={538}
-              className="hidden h-12 w-auto sm:block"
+              className="h-10 w-auto sm:h-14"
               priority
             />
           </Link>

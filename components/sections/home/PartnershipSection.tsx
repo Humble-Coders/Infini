@@ -9,9 +9,9 @@ import { cn } from "@/components/ui/utils";
 /**
  * The joint venture behind INFINI, in the white run directly after the hero.
  *
- * Runs on the light-surface tokens so every colour flips with the band, and
- * uses the logo files drawn for a light ground (the "-light" variants are the
- * white ones, for dark bands).
+ * Runs on the light-surface tokens so every colour flips with the band. The
+ * partner marks are the AXIS IND-SPHINX and BINC Industries logos, colour
+ * artwork on transparency, which sits on this light band as delivered.
  */
 function PartnerCard({
   sweep,
@@ -59,17 +59,43 @@ export function PartnershipSection() {
             <p className="max-w-2xl font-sans text-base leading-relaxed text-muted-foreground sm:text-lg">
               INFINI is the synergy of IND-SPHINX&apos;s precision manufacturing expertise and BINC Industries&apos; proprietary MMP Technology. A partnership built to deliver European surface-finishing standards directly from India.
             </p>
+            {/* The two countries behind the joint venture, deck slide 3. Inline SVG
+                flags, not emoji, so they render on Windows (which shows flag emoji
+                as country-code letters). */}
+            <div className="mt-1 flex items-center justify-center gap-3 font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
+              <svg viewBox="0 0 20 14" className="h-3.5 w-5 rounded-[2px] shadow-sm" role="img" aria-label="Switzerland">
+                <rect width="20" height="14" fill="#D52B1E" />
+                <rect x="8.5" y="3.5" width="3" height="7" fill="#fff" />
+                <rect x="6" y="5.5" width="8" height="3" fill="#fff" />
+              </svg>
+              <span>Switzerland</span>
+              <span aria-hidden="true" className="text-accent">&times;</span>
+              <span>India</span>
+              <svg viewBox="0 0 20 14" className="h-3.5 w-5 rounded-[2px] shadow-sm" role="img" aria-label="India">
+                <rect width="20" height="14" fill="#fff" />
+                <rect width="20" height="4.67" fill="#FF9933" />
+                <rect y="9.33" width="20" height="4.67" fill="#138808" />
+                <g stroke="#0A3A8B" strokeWidth="0.28">
+                  <circle cx="10" cy="7" r="1.9" fill="none" />
+                  <line x1="10" y1="5.1" x2="10" y2="8.9" />
+                  <line x1="8.1" y1="7" x2="11.9" y2="7" />
+                  <line x1="8.66" y1="5.66" x2="11.34" y2="8.34" />
+                  <line x1="8.66" y1="8.34" x2="11.34" y2="5.66" />
+                </g>
+                <circle cx="10" cy="7" r="0.45" fill="#0A3A8B" />
+              </svg>
+            </div>
           </Reveal>
 
           <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-8 sm:flex-row sm:gap-12">
             <PartnerCard sweep="start" caption="Precision manufacturing & engineering excellence in India.">
               <Image
-                src="/brand/ind-sphinx.png"
-                alt="IND-SPHINX"
+                src="/brand/ind-sphinx-axis.png"
+                alt="AXIS IND-SPHINX, since 1987"
                 data-mono="off"
-                width={1200}
-                height={227}
-                className="h-12 w-auto"
+                width={900}
+                height={377}
+                className="h-14 w-auto"
               />
             </PartnerCard>
 
@@ -77,11 +103,16 @@ export function PartnershipSection() {
               <Plus className="size-6" strokeWidth={2.5} aria-hidden="true" />
             </div>
 
-            {/* BINC is the company; MMP Technology is the mark it is known by, so the card shows both. */}
+            {/* BINC Industries, inventors of MMP Technology. The caption keeps the MMP link. */}
             <PartnerCard sweep="opposite" caption="Inventors of MMP Technology, pioneering super precision finishing.">
-              <span className="text-2xl font-bold tracking-tight text-foreground">BINC</span>
-              <span aria-hidden="true" className="h-8 w-px bg-border" />
-              <Image src="/brand/mmp-technology.png" alt="MMP Technology" width={700} height={538} className="h-14 w-auto" />
+              <Image
+                src="/brand/binc-industries.png"
+                alt="BINC Industries, super precision surface finishes"
+                data-mono="off"
+                width={900}
+                height={375}
+                className="h-14 w-auto"
+              />
             </PartnerCard>
           </div>
 

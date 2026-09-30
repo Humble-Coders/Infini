@@ -1,7 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import {
+  IconBrandLinkedin,
+  IconBrandInstagram,
+  IconBrandFacebook,
+  IconBrandX,
+  IconBrandYoutube,
+} from "@tabler/icons-react";
 import { Container } from "@/components/ui/container";
-import type { NavLink, SettingsContact } from "@/lib/types";
+import type { NavLink, SettingsContact, SettingsSocial } from "@/lib/types";
 
 function contactDetailsFrom(contact: SettingsContact | null) {
   if (!contact) return [];
@@ -12,6 +19,32 @@ function contactDetailsFrom(contact: SettingsContact | null) {
   ];
 }
 
+/**
+ * Canonical INFINI social URLs. Mirrors `settings.social` in the seed
+ * (backend/scripts/content.ts) and stands in per field when the live settings
+ * document has not set that network, the same "never render a hole" fallback
+ * pattern the hero and gallery use. A value set in Firestore always wins.
+ */
+const SOCIAL_FALLBACK: SettingsSocial = {
+  linkedin: "https://www.linkedin.com/in/infini-precision-private-limited-73b19921b/",
+  instagram: "https://www.instagram.com/infiniprecisionpvt.ltd/",
+  youtube: "https://youtu.be/YKcmtDuxXks",
+  facebook: "https://www.facebook.com/profile.php?id=100064548354724",
+  x: "https://x.com/preision",
+};
+
+/** Social profiles, in display order. Each falls back to the canonical URL above, so a network the live settings document has not set still renders. */
+function socialLinksFrom(social: SettingsSocial | null) {
+  const s = social ?? SOCIAL_FALLBACK;
+  return [
+    { label: "LinkedIn", href: s.linkedin || SOCIAL_FALLBACK.linkedin, Icon: IconBrandLinkedin },
+    { label: "Instagram", href: s.instagram || SOCIAL_FALLBACK.instagram, Icon: IconBrandInstagram },
+    { label: "Facebook", href: s.facebook || SOCIAL_FALLBACK.facebook, Icon: IconBrandFacebook },
+    { label: "X", href: s.x || SOCIAL_FALLBACK.x, Icon: IconBrandX },
+    { label: "YouTube", href: s.youtube || SOCIAL_FALLBACK.youtube, Icon: IconBrandYoutube },
+  ].filter((entry) => Boolean(entry.href));
+}
+
 const COLUMN_HEADING = "font-mono text-[11px] font-medium tracking-[0.22em] text-muted-foreground uppercase";
 const COLUMN_LINK = "w-fit text-sm text-foreground/80 transition-colors hover:text-accent";
 
@@ -19,13 +52,16 @@ export function Footer({
   navItems,
   legalLinks,
   contact,
+  social,
 }: {
   navItems: NavLink[];
   legalLinks: NavLink[];
   contact: SettingsContact | null;
+  social: SettingsSocial | null;
 }) {
   const year = new Date().getFullYear();
   const contactDetails = contactDetailsFrom(contact);
+  const socialLinks = socialLinksFrom(social);
 
   return (
     <footer className="relative overflow-hidden border-t border-border bg-background">
@@ -45,6 +81,23 @@ export function Footer({
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
               A specialist surface finishing partner to precision manufacturers. MMP treatment applied in-house, verified before it ships.
             </p>
+            {socialLinks.length > 0 && (
+              <ul className="flex flex-wrap items-center gap-3">
+                {socialLinks.map(({ label, href, Icon }) => (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${label} (opens in a new tab)`}
+                      className="flex size-10 items-center justify-center rounded-full border border-border text-foreground/70 transition-colors hover:border-accent hover:text-accent"
+                    >
+                      <Icon className="size-[18px]" stroke={1.75} aria-hidden="true" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <nav aria-label="Footer" className="flex flex-col gap-3 lg:col-span-2 lg:col-start-6">

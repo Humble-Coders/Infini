@@ -10,6 +10,8 @@ export interface SettingsSocial {
   linkedin: string;
   instagram: string;
   youtube: string;
+  facebook?: string;
+  x?: string;
   whatsapp?: string;
   maps?: string;
 }

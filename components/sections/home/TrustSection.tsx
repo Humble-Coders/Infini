@@ -66,7 +66,7 @@ const ROW_B: TrustLogo[] = [
 ];
 
 const LOGO_IMG_CLASSES =
-  "h-10 w-auto max-w-[190px] object-contain transition-transform duration-300 hover:scale-105 cursor-pointer sm:h-12";
+  "h-12 w-auto max-w-[220px] object-contain transition-transform duration-300 hover:scale-105 cursor-pointer sm:h-16";
 
 /** Filenames contain spaces and parentheses, encode so static serving resolves them. */
 function logoSrc(file: string) {
@@ -92,7 +92,7 @@ function LogoRow({ logos, reverse = false }: { logos: TrustLogo[]; reverse?: boo
               alt={`${logo.name} logo`}
               width={220}
               height={90}
-              sizes="170px"
+              sizes="220px"
               loading="lazy"
               data-mono="off"
               className={LOGO_IMG_CLASSES}
@@ -110,7 +110,7 @@ function LogoRow({ logos, reverse = false }: { logos: TrustLogo[]; reverse?: boo
               alt={`${logo.name} logo`}
               width={220}
               height={90}
-              sizes="170px"
+              sizes="220px"
               loading="lazy"
               data-mono="off"
               className={LOGO_IMG_CLASSES}
@@ -184,7 +184,7 @@ export function TrustSection({
     <ThemeSection
       theme="light"
       ariaLabel="Trusted by industry leaders"
-      className={cn("relative overflow-hidden pt-10 sm:pt-12", className)}
+      className={cn("relative overflow-hidden pt-4 sm:pt-6", className)}
     >
       {body}
     </ThemeSection>

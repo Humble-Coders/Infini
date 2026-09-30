@@ -72,7 +72,7 @@ const FALLBACK_SPEC: SpecTableCopy = {
     "Achievable values depend on the incoming surface, the alloy and the geometry. These are the bands INFINI works to, confirmed against your own parts during validation.",
   caption: "Typical treatment envelope",
   rows: [
-    { parameter: "Achievable roughness", unit: "µm Ra", value: "0.1 to 0.02" },
+    { parameter: "Achievable roughness", unit: "µm Ra", value: "0.1 to 0.01" },
     { parameter: "Achievable roughness", unit: "µin Ra", value: "4 to 0.8" },
     {
       parameter: "Material removal",
@@ -100,7 +100,7 @@ const FALLBACK_SPEC: SpecTableCopy = {
 const FALLBACK_STATS: StatTripletCopy = {
   heading: "Measured, not asserted.",
   figures: [
-    { value: "0.02", unit: "µm Ra", label: "Achievable finish", detail: "Verified on the part before the batch ships." },
+    { value: "0.01", unit: "µm Ra", label: "Achievable finish", detail: "Verified on the part before the batch ships." },
     { value: "7", label: "Key markets", detail: "From cutting tools to medical implants, and countless other applications." },
     { value: "ISO 9001", label: "Certified process", detail: "Quality management across the treatment line." },
   ],

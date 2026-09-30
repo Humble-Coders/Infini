@@ -55,6 +55,8 @@ export interface TechnologyCopy {
 export interface GalleryItem extends HomeImage {
   /** Small mono label above the caption, usually the industry. */
   label: string;
+  /** Optional internal link for the tile, e.g. the industry page. When set, the whole tile becomes a keyboard-focusable link. */
+  href?: string;
 }
 
 /** The "what we finish" photo band directly below the hero. */

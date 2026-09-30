@@ -27,12 +27,12 @@ const GRADES: Grade[] = [
   { name: "As machined", raFrom: 3.2, raTo: 1.6, note: "The condition most components arrive in" },
   { name: "Fine ground", raFrom: 0.8, raTo: 0.4, note: "Conventional grinding, still directional" },
   { name: "Superfinished", raFrom: 0.2, raTo: 0.1, note: "Where MMP typically starts", mmp: true },
-  { name: "Mirror-like", raFrom: 0.05, raTo: 0.02, note: "Optically reflective, non-directional", mmp: true },
+  { name: "Mirror-like", raFrom: 0.05, raTo: 0.01, note: "Optically reflective, non-directional", mmp: true },
 ];
 
 const MIN = 0.01;
 const MAX = 5;
-const TICKS = [5, 1, 0.1, 0.02];
+const TICKS = [5, 1, 0.1, 0.01];
 
 /** Log position, 0 at the roughest end of the scale and 1 at the smoothest. */
 function pos(ra: number): number {

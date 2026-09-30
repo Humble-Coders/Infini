@@ -35,7 +35,7 @@ const FALLBACK_SPEC: SpecTableCopy = {
     "Very little, which is the point. Conventional routes to this finish keep removing stock until the roughness is gone; MMP filters the surface with a small, controlled removal, so form and tolerance hold.",
   caption: "Treatment envelope for mirror work",
   rows: [
-    { parameter: "Achievable roughness", unit: "µm Ra", value: "0.05 to 0.02" },
+    { parameter: "Achievable roughness", unit: "µm Ra", value: "0.05 to 0.01" },
     { parameter: "Achievable roughness", unit: "µin Ra", value: "2 to 0.8" },
     { parameter: "Material removal", unit: "", value: "Minimal, controlled", note: "Form and tolerance held" },
     { parameter: "Edge condition", unit: "", value: "Controlled micro-radius", note: "Set by the aggregate size" },
@@ -105,8 +105,8 @@ export function MirrorFinishPageContent({
       <CapabilityHero
         hero={hero}
         image={HERO_IMAGERY.mirror}
-        badges={[{ label: "0.02 µm Ra" }, { label: "Non-directional" }, { label: "Form preserved" }]}
-        spec={{ title: "Mirror band", body: "0.05 down to 0.02 µm Ra, reached by filtering the surface with a minimal, controlled removal, so the part keeps its form." }}
+        badges={[{ label: "0.01 µm Ra" }, { label: "Non-directional" }, { label: "Form preserved" }]}
+        spec={{ title: "Mirror band", body: "0.05 down to 0.01 µm Ra, reached by filtering the surface with a minimal, controlled removal, so the part keeps its form." }}
       />
       <ComponentGallery copy={gallery} />
 

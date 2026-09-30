@@ -174,7 +174,7 @@ export function MmpProcessSteps({ surface = "dark" }: MmpProcessStepsProps) {
                   isDark ? "border-white/10 bg-white/[0.04] text-foreground" : "border-border bg-muted/30 text-foreground"
                 )}
               >
-                <div className="text-accent font-semibold text-sm">Ra &lt; 0.02 µm</div>
+                <div className="text-accent font-semibold text-sm">Ra &lt; 0.01 µm</div>
                 <div className="text-[11px] text-muted-foreground mt-0.5">Surface roughness</div>
               </div>
               <div

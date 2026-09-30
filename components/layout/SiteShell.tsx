@@ -17,7 +17,12 @@ export async function SiteShell({ children }: { children: ReactNode }) {
     <div data-site="public" className="contents">
       <Navbar navItems={navItems} />
       {children}
-      <Footer navItems={navItems} legalLinks={settings?.footerLegalLinks ?? []} contact={settings?.contact ?? null} />
+      <Footer
+        navItems={navItems}
+        legalLinks={settings?.footerLegalLinks ?? []}
+        contact={settings?.contact ?? null}
+        social={settings?.social ?? null}
+      />
     </div>
   );
 }
