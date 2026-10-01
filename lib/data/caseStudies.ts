@@ -46,7 +46,15 @@ async function getPublishedCaseStudiesUncached(): Promise<WithId<CaseStudyDoc>[]
     specs: { material: "Carbide", process: "MMP Treatment", duration: "1 LinkedIn Post" },
     published: true,
     publishedAt: Timestamp.now(),
-    seo: { title: "LinkedIn Case Study", description: "Fetched from LinkedIn" }
+    seo: { 
+      title: "LinkedIn Case Study", 
+      description: "Fetched from LinkedIn",
+      ogTitle: "LinkedIn Case Study",
+      ogDescription: "Fetched from LinkedIn",
+      ogImage: "/images/cutting-tool-1.jpg",
+      canonical: "/case-studies/linkedin-recent-achievement",
+      noindex: false
+    }
   };
 
   return [linkedInMock, ...firestoreDocs];
@@ -75,7 +83,15 @@ async function getCaseStudyBySlugUncached(slug: string): Promise<WithId<CaseStud
       specs: { material: "Carbide", process: "MMP Treatment", duration: "1 LinkedIn Post" },
       published: true,
       publishedAt: Timestamp.now(),
-      seo: { title: "LinkedIn Case Study", description: "Fetched from LinkedIn" }
+      seo: { 
+        title: "LinkedIn Case Study", 
+        description: "Fetched from LinkedIn",
+        ogTitle: "LinkedIn Case Study",
+        ogDescription: "Fetched from LinkedIn",
+        ogImage: "/images/cutting-tool-1.jpg",
+        canonical: "/case-studies/linkedin-recent-achievement",
+        noindex: false
+      }
     };
   }
 
@@ -139,7 +155,15 @@ async function getCaseStudiesByIndustryUncached(industryId: string): Promise<Wit
       specs: { material: "Carbide", process: "MMP Treatment", duration: "1 LinkedIn Post" },
       published: true,
       publishedAt: Timestamp.now(),
-      seo: { title: "LinkedIn Case Study", description: "Fetched from LinkedIn" }
+      seo: { 
+        title: "LinkedIn Case Study", 
+        description: "Fetched from LinkedIn",
+        ogTitle: "LinkedIn Case Study",
+        ogDescription: "Fetched from LinkedIn",
+        ogImage: "/images/cutting-tool-1.jpg",
+        canonical: "/case-studies/linkedin-recent-achievement",
+        noindex: false
+      }
     };
     return [linkedInMock, ...firestoreDocs];
   }

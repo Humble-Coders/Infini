@@ -32,7 +32,7 @@ async function getSettingsUncached(): Promise<SettingsDoc | null> {
   if (!data.social) {
     data.social = {
       linkedin: "https://www.linkedin.com/in/infini-precision-private-limited-73b19921b/",
-      twitter: "https://x.com/preision",
+      x: "https://x.com/preision",
       instagram: "https://www.instagram.com/infiniprecisionpvt.ltd/?hl=en",
       facebook: "https://www.facebook.com/profile.php?id=100064548354724",
       youtube: "https://youtu.be/YKcmtDuxXks?si=btPyU3ZyS3xiqF5D"
