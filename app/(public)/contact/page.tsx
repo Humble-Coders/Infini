@@ -1,8 +1,10 @@
+// Facility label comes from INFINI_CONTACT (Treatment & validation labs).
 import type { Metadata } from "next";
 import { ContactPanel } from "@/components/sections/home/ContactPanel";
+import { Container } from "@/components/ui/container";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
-import { getSettings } from "@/lib/data/settings";
+import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { ogTitle, pageTitle } from "@/lib/seo";
 import type { TeaserCopy } from "@/lib/types";
 
@@ -29,10 +31,9 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const [page, industries, settings] = await Promise.all([
+  const [page, industries] = await Promise.all([
     getPage("home"), // Reusing home page content for the contact teaser
     getPublishedIndustries(),
-    getSettings(),
   ]);
 
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
@@ -41,11 +42,26 @@ export default async function ContactPage() {
     <main className="min-h-screen bg-background">
       <ContactPanel
         copy={contactTeaser}
-        contact={settings?.contact ?? null}
+        contact={INFINI_CONTACT}
         industries={industries}
         headingLevel="h1"
         compact
       />
+
+      {/* Google Map of the INFINI facility in Parwanoo, India. */}
+      <section aria-label="Our facility on the map" className="bg-background pb-20 sm:pb-24">
+        <Container>
+          <div className="overflow-hidden rounded-3xl border border-border">
+            <iframe
+              title="INFINI facility, 1 Taksal Road, Parwanoo, Himachal Pradesh, India"
+              src="https://maps.google.com/maps?q=1%20Taksal%20Road%2C%20Parwanoo%2C%20Himachal%20Pradesh%20173220&z=14&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="block h-[380px] w-full border-0 sm:h-[460px]"
+            />
+          </div>
+        </Container>
+      </section>
     </main>
   );
 }

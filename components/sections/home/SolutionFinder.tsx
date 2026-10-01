@@ -59,7 +59,7 @@ export function SolutionFinder({
 
   const counters = [
     { value: industries.length, label: "Industries" },
-    { value: 7, label: "Plants worldwide" },
+    { value: 6, label: "Plants worldwide" },
     { value: 2002, label: "Process since" },
     { value: certificationsCount, label: "Certifications" },
   ];

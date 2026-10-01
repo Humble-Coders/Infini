@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { getSettings } from "@/lib/data/settings";
+import { INFINI_CONTACT } from "@/lib/constants/contact";
 
 const FALLBACK_NAV = [{ label: "Home", href: "/" }];
 
@@ -20,7 +21,7 @@ export async function SiteShell({ children }: { children: ReactNode }) {
       <Footer
         navItems={navItems}
         legalLinks={settings?.footerLegalLinks ?? []}
-        contact={settings?.contact ?? null}
+        contact={INFINI_CONTACT}
         social={settings?.social ?? null}
       />
     </div>

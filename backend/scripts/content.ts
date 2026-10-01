@@ -570,7 +570,7 @@ export function buildNews(ts: TimestampFactory) {
 export function buildSettings() {
   return {
     contact: {
-      phone: "+91 98765 43210",
+      phone: "+91 (1792) 234459",
       // As printed on the MMP brochure (INF_V2-09/2025). The phone number above is still a placeholder.
       email: "superfinish@infini.co.in",
       address: "MMP Treatment Labs, INFINI Precision Pvt Ltd, Parwanoo, Himachal Pradesh, India",

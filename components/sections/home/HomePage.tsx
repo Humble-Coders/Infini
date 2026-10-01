@@ -22,6 +22,7 @@ import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getPublishedTestimonials } from "@/lib/data/testimonials";
 import { getSettings } from "@/lib/data/settings";
+import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
 import type { GalleryCopy, HeroCopy, StatsCopy, TeaserCopy, TechnologyCopy } from "@/lib/types";
@@ -108,7 +109,7 @@ export async function HomePage() {
         <Testimonials copy={null} testimonials={voices} />
         <ContactPanel
           copy={contactTeaser}
-          contact={settings?.contact ?? null}
+          contact={INFINI_CONTACT}
           industries={industries}
         />
         <BackToTop />

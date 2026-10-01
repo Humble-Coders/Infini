@@ -40,7 +40,7 @@ const FALLBACK: Metadata = {
 /*
  * The MMP network as published by mmptechnology.com: BinC in France and
  * Switzerland, MicroTek in the United States, and the licensed plants in
- * Germany, India, Japan and China. INFINI's own plant is the highlighted row.
+ * Germany, India and Japan. INFINI's own plant is the highlighted row.
  */
 const NETWORK_SITES = [
   { name: "St Priest", company: "BinC Industries, France", lat: 45.7, lon: 4.94 },
@@ -81,7 +81,7 @@ export default async function CompanyPage() {
         ]}
         image={HERO_IMAGERY.company.src}
         imageAlt={HERO_IMAGERY.company.alt}
-        badges={[{ label: "Parwanoo, Himachal Pradesh" }, { label: "MMP licensed plant" }, { label: "Seven-site network" }]}
+        badges={[{ label: "Parwanoo, Himachal Pradesh" }, { label: "MMP licensed plant" }, { label: "Six-site network" }]}
       />
       
 
@@ -139,10 +139,10 @@ export default async function CompanyPage() {
       )}
       <NetworkMap
         eyebrow="The network"
-        heading="One process. Seven plants. Four continents."
+        heading="One process. Six plants. Three continents."
         body="MMP was industrialised in France in 2002 and licensed outward from there. INFINI runs the Indian plant, to the same process and the same standards as every other site on this map."
         stats={[
-          { value: "7", label: "Plants worldwide", detail: "France, Switzerland, Germany, the United States, India, Japan and China." },
+          { value: "6", label: "Plants worldwide", detail: "France, Switzerland, Germany, the United States, India and Japan." },
           { value: "2002", label: "Process industrialised", detail: "MMP was first run in production at St Priest, then licensed outward." },
         ]}
         sites={NETWORK_SITES}

@@ -1,18 +1,24 @@
+"use client";
+
+import { useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { cn } from "@/components/ui/utils";
 
 /*
- * The MMP network, as a dotted world map with a site list beside it.
+ * The MMP network: an interactive dotted world map on the left, the site list on
+ * the right. Hovering, focusing or tapping a map marker OR a list row lights the
+ * matching office in both places (the marker turns red and pulses with a popup,
+ * the row highlights), so the two stay in sync.
  *
  * The dots are generated, not hand-drawn: a lon/lat grid is tested against
  * coarse continent polygons, so the landmass is data rather than a large SVG
- * path nobody can edit. Sites are placed from their real coordinates through
- * the same equirectangular projection the grid uses, which means a pin can
- * never drift out of step with the map under it.
+ * path nobody can edit. Office markers are placed from their real coordinates
+ * through the same equirectangular projection the grid uses, so a pin can never
+ * drift out of step with the map under it.
  *
- * Sites and coordinates are the network mmptechnology.com publishes. INFINI's
- * own plant is the highlighted row.
+ * Sites and coordinates are the network mmptechnology.com (the parent company)
+ * publishes. INFINI's own plant is the highlighted row.
  */
 
 const MAP_W = 720;
@@ -59,6 +65,12 @@ const project = (lon: number, lat: number) => ({
   y: ((90 - lat) / 180) * MAP_H,
 });
 
+/** Percent position inside the map box, for the HTML marker overlay. */
+const percent = (lon: number, lat: number) => ({
+  left: ((lon + 180) / 360) * 100,
+  top: ((90 - lat) / 180) * 100,
+});
+
 /** Computed once at module scope so it is identical on server and client. */
 const DOTS = (() => {
   const out: { x: number; y: number }[] = [];
@@ -75,7 +87,7 @@ export interface NetworkSite {
   company: string;
   lat: number;
   lon: number;
-  /** The row that renders on brand red. INFINI's own plant. */
+  /** The row and marker that render on brand red by default. INFINI's own plant. */
   primary?: boolean;
 }
 
@@ -88,19 +100,10 @@ export interface NetworkStat {
   detail?: string;
 }
 
-/**
- * Composition follows the reference: the whole band on brand red, oversized
- * heading across the top, stat blocks down the left, the map in the middle and
- * the site list on the right.
- *
- * The reference runs this band on red. INFINI's rule is that red is a text
- * colour and never a ground, so the band is black and the red survives only in
- * the eyebrow. The composition is what transfers, not the fill.
- */
 export function NetworkMap({
   eyebrow = "Geography",
   index = 3,
-  heading = "One process. Seven plants. Four continents.",
+  heading = "One process. Six plants. Three continents.",
   body,
   stats = [],
   sites,
@@ -112,96 +115,149 @@ export function NetworkMap({
   stats?: NetworkStat[];
   sites: NetworkSite[];
 }) {
-  return (
-    <section className="bg-background relative overflow-hidden py-20 sm:py-24">
-      {/* Background Map */}
-      <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-20 mt-40 sm:mt-56">
-        <svg
-          viewBox={`0 0 ${MAP_W} ${MAP_H}`}
-          className="w-[200%] sm:w-[150%] lg:w-full h-auto max-w-[1400px] object-contain"
-          role="img"
-          aria-label="Map of the MMP network across France, Switzerland, Germany, the United States, India, Japan and China"
-        >
-          <g className="text-white/40" fill="currentColor">
-            {DOTS.map((d, i) => (
-              <circle key={i} cx={d.x.toFixed(1)} cy={d.y.toFixed(1)} r={DOT_R} />
-            ))}
-          </g>
-          {sites.map((site) => {
-            const { x, y } = project(site.lon, site.lat);
-            return (
-              <g key={site.name}>
-                <circle
-                  cx={x.toFixed(1)}
-                  cy={y.toFixed(1)}
-                  r={site.primary ? 10 : 6}
-                  className={site.primary ? "text-accent/30" : "text-white/15"}
-                  fill="currentColor"
-                />
-                <circle
-                  cx={x.toFixed(1)}
-                  cy={y.toFixed(1)}
-                  r={site.primary ? 4.5 : 2.8}
-                  className={site.primary ? "text-accent" : "text-white"}
-                  fill="currentColor"
-                />
-              </g>
-            );
-          })}
-        </svg>
-      </div>
+  const [active, setActive] = useState<string | null>(null);
+  const clear = (name: string) => setActive((a) => (a === name ? null : a));
 
-      <Container className="relative z-10 flex flex-col gap-12 lg:gap-24">
+  return (
+    <section className="bg-background relative py-20 sm:py-24">
+      <Container className="relative z-10 flex flex-col gap-12 lg:gap-16">
         <div className="flex flex-col gap-6">
-          <Eyebrow index={index}>
-            {eyebrow}
-          </Eyebrow>
+          <Eyebrow index={index}>{eyebrow}</Eyebrow>
           <h2 className="max-w-4xl text-[clamp(2rem,5vw,3.75rem)] leading-[0.98] font-semibold tracking-[-0.045em] text-balance text-foreground uppercase">
             {heading}
           </h2>
           {body && <p className="max-w-2xl text-base leading-relaxed text-pretty text-muted-foreground">{body}</p>}
         </div>
 
-        <div className="flex flex-col lg:flex-row justify-between gap-10 lg:gap-8">
-          {stats.length > 0 && (
-            <div className="flex flex-col gap-10 lg:w-1/3">
-              {stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col gap-2">
-                  <span className="text-[clamp(2.5rem,5vw,3.5rem)] leading-[0.9] font-mono font-semibold tracking-[-0.05em] tabular-nums text-foreground">
-                    {stat.value}
-                  </span>
-                  <span className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                    {stat.label}
-                  </span>
-                  {stat.detail && (
-                    <span className="mt-2 max-w-[16rem] text-sm leading-relaxed text-muted-foreground">
-                      {stat.detail}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+        {stats.length > 0 && (
+          <div className="flex flex-wrap gap-10 sm:gap-16">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex max-w-[16rem] flex-col gap-2">
+                <span className="text-[clamp(2.25rem,4vw,3rem)] leading-[0.9] font-mono font-semibold tracking-[-0.05em] tabular-nums text-foreground">
+                  {stat.value}
+                </span>
+                <span className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">{stat.label}</span>
+                {stat.detail && <span className="mt-1 text-sm leading-relaxed text-muted-foreground">{stat.detail}</span>}
+              </div>
+            ))}
+          </div>
+        )}
 
-          <ul className="flex flex-col lg:w-1/3 mt-10 lg:mt-0">
-            {sites.map((site) => (
-              <li key={site.name} className="border-b border-border py-4 first:border-t-0 border-t border-border">
-                <div className="flex flex-col gap-0.5">
-                  <span className="font-mono text-[10px] tracking-[0.12em] tabular-nums text-muted-foreground">
-                    {formatCoord(site.lat, site.lon)}
-                  </span>
-                  <span
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
+          {/* LEFT: interactive dotted map. */}
+          <div className="relative w-full lg:flex-1">
+            <div className="relative aspect-[2/1] w-full">
+              <svg
+                viewBox={`0 0 ${MAP_W} ${MAP_H}`}
+                className="absolute inset-0 h-full w-full"
+                role="img"
+                aria-label="Map of the MMP network across France, Switzerland, Germany, the United States, India and Japan"
+              >
+                <g className="text-foreground/20" fill="currentColor">
+                  {DOTS.map((d, i) => (
+                    <circle key={i} cx={d.x.toFixed(1)} cy={d.y.toFixed(1)} r={DOT_R} />
+                  ))}
+                </g>
+              </svg>
+
+              {sites.map((site) => {
+                const { left, top } = percent(site.lon, site.lat);
+                const isActive = active === site.name;
+                const anchor = left > 68 ? "right" : left < 32 ? "left" : "center";
+                return (
+                  <div
+                    key={site.name}
+                    className="absolute z-10"
+                    style={{ left: `${left}%`, top: `${top}%`, transform: "translate(-50%, -50%)" }}
+                  >
+                    <button
+                      type="button"
+                      onMouseEnter={() => setActive(site.name)}
+                      onMouseLeave={() => clear(site.name)}
+                      onFocus={() => setActive(site.name)}
+                      onBlur={() => clear(site.name)}
+                      onClick={() => setActive((a) => (a === site.name ? null : site.name))}
+                      aria-label={`${site.name}, ${site.company}`}
+                      className="group relative flex size-5 items-center justify-center outline-none"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={cn("absolute size-4 rounded-full", isActive ? "animate-ping bg-accent/50" : "bg-transparent")}
+                      />
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "relative inline-flex rounded-full ring-2 ring-background transition-all duration-200",
+                          isActive
+                            ? "size-3 animate-pulse bg-accent"
+                            : site.primary
+                              ? "size-2.5 bg-accent/80 group-hover:bg-accent"
+                              : "size-2 bg-foreground/45 group-hover:bg-accent group-focus-visible:bg-accent"
+                        )}
+                      />
+                    </button>
+
+                    {isActive && (
+                      <div
+                        role="tooltip"
+                        className={cn(
+                          "pointer-events-none absolute bottom-full z-20 mb-2 w-max max-w-[220px] rounded-lg border border-border bg-popover p-3 text-left shadow-xl",
+                          anchor === "center" && "left-1/2 -translate-x-1/2",
+                          anchor === "left" && "left-0",
+                          anchor === "right" && "right-0"
+                        )}
+                      >
+                        <p className="font-mono text-[9px] tracking-[0.12em] tabular-nums text-muted-foreground">
+                          {formatCoord(site.lat, site.lon)}
+                        </p>
+                        <p className={cn("mt-1 text-sm leading-snug font-semibold text-foreground", site.primary && "text-accent")}>
+                          {site.name}
+                        </p>
+                        <p className="text-xs leading-snug text-muted-foreground">{site.company}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* RIGHT: the site list, in sync with the map. */}
+          <ul className="flex w-full flex-col lg:w-[340px]">
+            {sites.map((site) => {
+              const isActive = active === site.name;
+              return (
+                <li key={site.name} className="border-b border-border first:border-t">
+                  <button
+                    type="button"
+                    onMouseEnter={() => setActive(site.name)}
+                    onMouseLeave={() => clear(site.name)}
+                    onFocus={() => setActive(site.name)}
+                    onBlur={() => clear(site.name)}
+                    onClick={() => setActive((a) => (a === site.name ? null : site.name))}
+                    aria-label={`${site.name}, ${site.company}`}
                     className={cn(
-                      "text-base leading-snug tracking-[-0.01em] text-foreground",
-                      site.primary ? "font-semibold text-accent underline decoration-2 underline-offset-4" : "font-medium"
+                      "flex w-full flex-col gap-0.5 px-3 py-4 text-left outline-none transition-colors",
+                      "border-l-2",
+                      isActive ? "border-accent bg-accent/10" : "border-transparent hover:bg-foreground/5 focus-visible:bg-foreground/5"
                     )}
                   >
-                    {site.name}
-                  </span>
-                  <span className="text-sm text-muted-foreground">{site.company}</span>
-                </div>
-              </li>
-            ))}
+                    <span className="font-mono text-[10px] tracking-[0.12em] tabular-nums text-muted-foreground">
+                      {formatCoord(site.lat, site.lon)}
+                    </span>
+                    <span
+                      className={cn(
+                        "text-base leading-snug tracking-[-0.01em]",
+                        isActive || site.primary ? "font-semibold text-accent" : "font-medium text-foreground"
+                      )}
+                    >
+                      {site.name}
+                    </span>
+                    <span className="text-sm text-muted-foreground">{site.company}</span>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </Container>
