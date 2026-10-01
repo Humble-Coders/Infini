@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/backend/firebase/admin";
 import { clientIp, isRateLimited } from "@/lib/rateLimit";
+import * as fs from "fs";
+import * as path from "path";
 
 /**
  * Contact / enquiry submission endpoint.
@@ -113,8 +115,6 @@ export async function POST(request: NextRequest) {
   let imageUrl: string | null = null;
   if (imageFile && imageFile.size > 0) {
     try {
-      const fs = require('fs');
-      const path = require('path');
       const ext = imageFile.name.split('.').pop() || 'png';
       const filename = `lead-${Date.now()}.${ext}`;
       const uploadDir = path.join(process.cwd(), 'public', 'uploads');

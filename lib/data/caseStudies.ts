@@ -19,7 +19,7 @@ async function getPublishedCaseStudiesUncached(): Promise<WithId<CaseStudyDoc>[]
   if (firestoreDocs.length === 0) {
     const tsFactory = { fromDate: (date: Date) => Timestamp.fromDate(date) };
     const mockData = buildCaseStudies(tsFactory);
-    firestoreDocs = mockData.map(doc => ({ id: doc.id, ...(doc as any) }));
+    firestoreDocs = mockData.map(doc => ({ id: doc.id, ...(doc as CaseStudyDoc) }));
   }
 
   // --- LINKEDIN INTEGRATION ---
@@ -108,7 +108,7 @@ async function getCaseStudyBySlugUncached(slug: string): Promise<WithId<CaseStud
     const tsFactory = { fromDate: (date: Date) => Timestamp.fromDate(date) };
     const mockData = buildCaseStudies(tsFactory);
     const mock = mockData.find(doc => doc.slug === slug);
-    if (mock) return { id: mock.id, ...(mock as any) };
+    if (mock) return { id: mock.id, ...(mock as CaseStudyDoc) };
     return null;
   }
   
@@ -131,7 +131,7 @@ async function getCaseStudiesByIndustryUncached(industryId: string): Promise<Wit
   if (firestoreDocs.length === 0) {
     const tsFactory = { fromDate: (date: Date) => Timestamp.fromDate(date) };
     const mockData = buildCaseStudies(tsFactory);
-    firestoreDocs = mockData.map(doc => ({ id: doc.id, ...(doc as any) })).filter(doc => doc.industryId === industryId);
+    firestoreDocs = mockData.map(doc => ({ id: doc.id, ...(doc as CaseStudyDoc) })).filter(doc => doc.industryId === industryId);
   }
 
   // Inject LinkedIn mock for cutting tools

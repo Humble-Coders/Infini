@@ -21,7 +21,6 @@ import { getPublishedIndustries } from "@/lib/data/industries";
 import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getPublishedTestimonials } from "@/lib/data/testimonials";
-import { getSettings } from "@/lib/data/settings";
 import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
@@ -55,13 +54,12 @@ export async function homeMetadata(): Promise<Metadata> {
  * Certifications and news are not repeated here; each has its own page.
  */
 export async function HomePage() {
-  const [page, industries, caseStudies, certifications, testimonials, settings] = await Promise.all([
+  const [page, industries, caseStudies, certifications, testimonials] = await Promise.all([
     getPage("home"),
     getPublishedIndustries(),
     getPublishedCaseStudies(),
     getActiveCertifications(),
     getPublishedTestimonials(),
-    getSettings(),
   ]);
 
   const hero = getSection<HeroCopy>(page, "hero");
