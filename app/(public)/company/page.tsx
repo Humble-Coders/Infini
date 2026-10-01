@@ -49,7 +49,6 @@ const NETWORK_SITES = [
   { name: "Stuttgart", company: "First Surface, Germany", lat: 48.7758, lon: 9.1829 },
   { name: "Parwanoo", company: "INFINI Precision Pvt. Ltd., India", lat: 30.8372, lon: 76.9618, primary: true },
   { name: "Tokyo", company: "INFINI Japan", lat: 35.6762, lon: 139.6503 },
-  { name: "Shanghai", company: "Bridge Fine Works, China", lat: 31.2304, lon: 121.4737 },
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
