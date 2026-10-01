@@ -65,8 +65,8 @@ export function ContactPanel({
       <Container className="relative grid gap-6 lg:grid-cols-12 lg:gap-8">
         <div
           className={cn(
-            "relative flex flex-col overflow-hidden rounded-3xl border border-border bg-background-elevated p-8 text-foreground sm:p-10 lg:col-span-5 lg:p-12",
-            compact ? "h-fit gap-10" : "justify-between gap-14"
+            "relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border bg-background-elevated p-8 text-foreground sm:p-10 lg:col-span-5 lg:p-12",
+            compact ? "gap-10" : "gap-14"
           )}
         >
           <Meteors numberOfMeteors={8} className="opacity-40" />
@@ -110,13 +110,13 @@ export function ContactPanel({
           )}
         </div>
 
-        <div className="lg:col-span-7 relative z-10">
+        <div className="lg:col-span-7 relative z-10 h-full">
           {/* Meteor rain sits above the form. */}
           <div aria-hidden="true" className="absolute -top-32 left-0 right-0 h-48 hidden lg:block -z-10">
             <Meteors numberOfMeteors={30} className="opacity-60" />
           </div>
-          <div className={cn("transition-all", compact ? "" : "mt-8 lg:mt-24")}>
-            <ContactForm industries={industries} />
+          <div className="h-full">
+            <ContactForm industries={industries} className="h-full" />
           </div>
         </div>
       </Container>

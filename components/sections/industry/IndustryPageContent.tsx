@@ -32,6 +32,11 @@ const RELATED = [
 
 // Helper to get a relevant Unsplash image for a component/application name
 function getApplicationImage(appName: string, index: number) {
+  // Use real client-provided images for specific cutting tool applications
+  if (appName === "Deep-hole drills") return "/images/cutting-tool-1.jpg";
+  if (appName === "Forming taps") return "/images/cutting-tool-2.png";
+  if (appName === "High-performance inserts" || appName === "Milling cutters for nickel and titanium alloys") return "/images/cutting-tool-3.png";
+
   // Using a seeded approach based on the index to get consistent professional industrial photos
   const seeds = [
     "photo-1581091226825-a6a2a5aee158", // precision part

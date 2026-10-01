@@ -9,8 +9,37 @@ const GLOBAL_DOC_ID = "global";
 /** Global site settings, contact info, social links, nav, default SEO, cookie banner copy. */
 async function getSettingsUncached(): Promise<SettingsDoc | null> {
   const snap = await getDoc(doc(requireDb(), COLLECTION, GLOBAL_DOC_ID));
-  if (!snap.exists()) return null;
-  return snap.data() as SettingsDoc;
+  
+  let data: SettingsDoc;
+  if (!snap.exists()) {
+    data = {} as SettingsDoc;
+  } else {
+    data = snap.data() as SettingsDoc;
+  }
+
+  // FALLBACK: Ensure contact details exist so UI doesn't break
+  if (!data.contact || !data.contact.phone || !data.contact.email) {
+    data.contact = {
+      email: "superfinish@infini.co.in",
+      phone: "+91 1792 233216",
+      address: "Parwanoo, Himachal Pradesh, India",
+    };
+  } else {
+    // HARDCODED OVERRIDE: Ensure the contact email matches the latest brochure
+    data.contact.email = "superfinish@infini.co.in";
+  }
+
+  if (!data.social) {
+    data.social = {
+      linkedin: "https://www.linkedin.com/in/infini-precision-private-limited-73b19921b/",
+      twitter: "https://x.com/preision",
+      instagram: "https://www.instagram.com/infiniprecisionpvt.ltd/?hl=en",
+      facebook: "https://www.facebook.com/profile.php?id=100064548354724",
+      youtube: "https://youtu.be/YKcmtDuxXks?si=btPyU3ZyS3xiqF5D"
+    };
+  }
+
+  return data;
 }
 
 /*

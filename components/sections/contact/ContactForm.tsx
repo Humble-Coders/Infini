@@ -64,12 +64,13 @@ const FIELD_CLASS =
 
 const LABEL_CLASS = "text-xs font-medium text-foreground";
 
-export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] }) {
+export function ContactForm({ industries, className }: { industries: WithId<IndustryDoc>[]; className?: string }) {
   const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
   // Anti-spam: honeypot no human ever fills + render timestamp for the
   // server's fill-time trap. Both ride along in the POST body.
   const [honeypot, setHoneypot] = useState("");
@@ -94,19 +95,25 @@ export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] 
 
     setSubmitting(true);
     try {
+      const formData = new FormData();
+      formData.append("name", values.name.trim());
+      formData.append("company", values.company.trim());
+      formData.append("email", values.email.trim());
+      formData.append("phone", values.phone.trim());
+      formData.append("industry", values.industry);
+      formData.append("message", values.message.trim());
+      formData.append("website", honeypot);
+      formData.append("startedAt", String(startedAtRef.current));
+      
+      const fileInput = document.getElementById("contact-image") as HTMLInputElement;
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        formData.append("image", fileInput.files[0]);
+      }
+
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: values.name.trim(),
-          company: values.company.trim(),
-          email: values.email.trim(),
-          phone: values.phone.trim(),
-          industry: values.industry,
-          message: values.message.trim(),
-          website: honeypot,
-          startedAt: startedAtRef.current,
-        }),
+        // Do NOT set Content-Type header when sending FormData, the browser will set it with the boundary!
+        body: formData,
       });
       const data = (await response.json().catch(() => null)) as {
         ok?: boolean;
@@ -133,7 +140,8 @@ export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] 
 
   const cardClass = cn(
     "rounded-[20px] border border-border bg-card p-6 shadow-[0_24px_60px_-32px_rgba(var(--color-shadow-rgb),0.25)]",
-    "sm:rounded-[24px] sm:p-10 lg:p-12"
+    "sm:rounded-[24px] sm:p-10 lg:p-12",
+    className
   );
 
   if (submitted) {
@@ -165,7 +173,7 @@ export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] 
   const messageLength = values.message.length;
 
   return (
-    <form onSubmit={handleSubmit} className={cn(cardClass, "flex flex-col gap-5")}>
+    <form onSubmit={handleSubmit} className={cn(cardClass, "flex flex-col gap-4")}>
       <div className="flex items-center gap-4 text-left">
         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
           <Send className="size-4.5" strokeWidth={1.75} aria-hidden="true" />
@@ -293,7 +301,7 @@ export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] 
           value={values.message}
           onChange={(event) => updateField("message", event.target.value)}
           className={cn(
-            "min-h-[100px] rounded-[10px] border-border bg-input-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground",
+            "min-h-[80px] rounded-[10px] border-border bg-input-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground",
             "focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/20"
           )}
           aria-invalid={Boolean(fieldErrors.message)}
@@ -304,6 +312,48 @@ export function ContactForm({ industries }: { industries: WithId<IndustryDoc>[] 
             {fieldErrors.message}
           </p>
         )}
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label className={LABEL_CLASS}>
+          Reference Image (Optional)
+        </Label>
+        <div className="relative flex items-center justify-center w-full">
+          <label
+            htmlFor="contact-image"
+            className={cn(
+              "flex w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed",
+              "border-border bg-input-background px-4 py-6 text-center transition-colors",
+              "hover:border-accent/50 hover:bg-accent/5 focus-within:ring-2 focus-within:ring-accent/20 focus-within:border-accent",
+              fileName ? "border-accent/50 bg-accent/5" : ""
+            )}
+          >
+            <div className="flex flex-col items-center justify-center gap-2">
+              <svg className="size-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              </svg>
+              {fileName ? (
+                <p className="text-sm font-medium text-foreground">{fileName}</p>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-foreground">Click to upload a photo</p>
+                  <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                </>
+              )}
+            </div>
+            <Input
+              id="contact-image"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setFileName(file.name);
+                else setFileName(null);
+              }}
+            />
+          </label>
+        </div>
       </div>
 
       {/* Honeypot: invisible to humans (and assistive tech), irresistible to

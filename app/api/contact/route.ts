@@ -50,9 +50,24 @@ function invalid(message: string, fields: FieldErrors) {
 }
 
 export async function POST(request: NextRequest) {
-  let body: Record<string, unknown>;
+  let body: Record<string, unknown> = {};
+  let imageFile: File | null = null;
   try {
-    body = await request.json();
+    const contentType = request.headers.get("content-type") || "";
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      body.name = formData.get("name") || "";
+      body.company = formData.get("company") || "";
+      body.email = formData.get("email") || "";
+      body.phone = formData.get("phone") || "";
+      body.industry = formData.get("industry") || "";
+      body.message = formData.get("message") || "";
+      body.website = formData.get("website") || "";
+      body.startedAt = Number(formData.get("startedAt")) || 0;
+      imageFile = formData.get("image") as File | null;
+    } else {
+      body = await request.json();
+    }
   } catch {
     return invalid("That submission could not be read. Please try again.", {});
   }
@@ -95,6 +110,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let imageUrl: string | null = null;
+  if (imageFile && imageFile.size > 0) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const ext = imageFile.name.split('.').pop() || 'png';
+      const filename = `lead-${Date.now()}.${ext}`;
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      const buffer = Buffer.from(await imageFile.arrayBuffer());
+      fs.writeFileSync(path.join(uploadDir, filename), buffer);
+      imageUrl = `/uploads/${filename}`;
+    } catch (e) {
+      console.error("Failed to save image", e);
+    }
+  }
+
   try {
     await adminDb.collection("leads").add({
       name,
@@ -103,6 +137,7 @@ export async function POST(request: NextRequest) {
       phone: phone || null,
       industry: industry || null,
       message,
+      imageUrl,
       source: "contact-form",
       status: "new",
       createdAt: FieldValue.serverTimestamp(),
