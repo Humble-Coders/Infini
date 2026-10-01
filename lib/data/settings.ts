@@ -39,6 +39,34 @@ async function getSettingsUncached(): Promise<SettingsDoc | null> {
     };
   }
 
+  if (!data.nav) {
+    data.nav = [];
+  }
+
+  if (!data.footerLegalLinks) {
+    data.footerLegalLinks = [];
+  }
+
+  if (!data.defaultSeo) {
+    data.defaultSeo = {
+      title: "INFINI | Precision Surface-Finishing",
+      description: "Super Precision Surface Finishing",
+      ogTitle: "INFINI | Precision Surface-Finishing",
+      ogDescription: "Super Precision Surface Finishing",
+      ogImage: "",
+      canonical: "",
+      noindex: false,
+    };
+  }
+
+  if (!data.cookieBanner) {
+    data.cookieBanner = {
+      enabled: false,
+      message: "",
+      policyUrl: "",
+    };
+  }
+
   return data;
 }
 

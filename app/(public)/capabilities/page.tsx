@@ -134,7 +134,7 @@ export default async function CapabilitiesPage() {
   const processCapabilities = getSection<ItemsCopy>(page, "processCapabilities");
   const suitability = getSection<SuitabilityCopy>(page, "suitability");
   const passageGuidelines = getSection<PassageGuidelinesCopy>(page, "passageGuidelines");
-  const legacyLinks = settings?.nav.find((item) => item.href === "/capabilities")?.children ?? [];
+  const legacyLinks = settings?.nav?.find((item) => item.href === "/capabilities")?.children ?? [];
 
   return (
     <main className="min-h-screen bg-background">
