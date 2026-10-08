@@ -6,6 +6,69 @@ import { adminDb } from "@/backend/firebase/admin";
 import { clientIp, isRateLimited } from "@/lib/rateLimit";
 import * as fs from "fs";
 import * as path from "path";
+import * as crypto from "crypto";
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB limit
+const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const ALLOWED_EXTENSIONS = new Map<string, string>([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
+]);
+
+function isValidImageMagicBytes(buffer: Buffer): boolean {
+  if (buffer.length < 12) return false;
+  // JPEG: FF D8 FF
+  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return true;
+  // PNG: 89 50 4E 47 0D 0A 1A 0A
+  if (
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47 &&
+    buffer[4] === 0x0d &&
+    buffer[5] === 0x0a &&
+    buffer[6] === 0x1a &&
+    buffer[7] === 0x0a
+  ) {
+    return true;
+  }
+  // WebP: RIFF ... WEBP
+  if (
+    buffer[0] === 0x52 &&
+    buffer[1] === 0x49 &&
+    buffer[2] === 0x46 &&
+    buffer[3] === 0x46 &&
+    buffer[8] === 0x57 &&
+    buffer[9] === 0x45 &&
+    buffer[10] === 0x42 &&
+    buffer[11] === 0x50
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isAllowedOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    const secFetchSite = request.headers.get("sec-fetch-site");
+    if (secFetchSite && secFetchSite === "cross-site") {
+      return false;
+    }
+    return true;
+  }
+  const host = request.headers.get("host");
+  try {
+    const originUrl = new URL(origin);
+    if (host && originUrl.host === host) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
 
 /**
  * Contact / enquiry submission endpoint.
@@ -52,6 +115,11 @@ function invalid(message: string, fields: FieldErrors) {
 }
 
 export async function POST(request: NextRequest) {
+  // --- CSRF Layer: Validate origin/fetch-site to block cross-site request forgery ---
+  if (!isAllowedOrigin(request)) {
+    return NextResponse.json({ error: "Cross-site request blocked." }, { status: 403 });
+  }
+
   let body: Record<string, unknown> = {};
   let imageFile: File | null = null;
   try {
@@ -114,16 +182,35 @@ export async function POST(request: NextRequest) {
 
   let imageUrl: string | null = null;
   if (imageFile && imageFile.size > 0) {
+    if (imageFile.size > MAX_IMAGE_BYTES) {
+      return invalid("The uploaded image exceeds the 5MB size limit.", { message: "Uploaded image must be under 5MB." });
+    }
+
+    const mimeType = (imageFile.type || "").toLowerCase();
+    if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+      return invalid("Invalid file type. Only JPEG, PNG, and WebP images are accepted.", { message: "Only JPG, PNG, and WebP images are allowed." });
+    }
+
+    const ext = ALLOWED_EXTENSIONS.get(mimeType) || "jpg";
+    let buffer: Buffer;
     try {
-      const ext = imageFile.name.split('.').pop() || 'png';
-      const filename = `lead-${Date.now()}.${ext}`;
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      buffer = Buffer.from(await imageFile.arrayBuffer());
+    } catch {
+      return invalid("Unable to read uploaded image.", { message: "Could not read file." });
+    }
+
+    if (!isValidImageMagicBytes(buffer)) {
+      return invalid("The uploaded file does not match a valid image format.", { message: "Corrupted or invalid image file." });
+    }
+
+    try {
+      const safeFilename = `lead-${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${ext}`;
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      fs.writeFileSync(path.join(uploadDir, filename), buffer);
-      imageUrl = `/uploads/${filename}`;
+      fs.writeFileSync(path.join(uploadDir, safeFilename), buffer);
+      imageUrl = `/uploads/${safeFilename}`;
     } catch (e) {
       console.error("Failed to save image", e);
     }

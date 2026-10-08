@@ -3,6 +3,25 @@ import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { adminAuth } from "@/backend/firebase/admin";
 import { SESSION_COOKIE, SESSION_MAX_AGE_MS } from "@/lib/auth/constants";
+import { clientIp, isRateLimited } from "@/lib/rateLimit";
+
+function isAllowedOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    const secFetchSite = request.headers.get("sec-fetch-site");
+    if (secFetchSite && secFetchSite === "cross-site") {
+      return false;
+    }
+    return true;
+  }
+  const host = request.headers.get("host");
+  try {
+    const originUrl = new URL(origin);
+    return Boolean(host && originUrl.host === host);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Exchanges a freshly-signed-in Firebase ID token for an httpOnly session
@@ -12,6 +31,14 @@ import { SESSION_COOKIE, SESSION_MAX_AGE_MS } from "@/lib/auth/constants";
  * needing to sign out and back in.
  */
 export async function POST(request: NextRequest) {
+  if (!isAllowedOrigin(request)) {
+    return NextResponse.json({ error: "Cross-site request blocked." }, { status: 403 });
+  }
+
+  if (isRateLimited(`auth-session:${clientIp(request.headers)}`, 10, 10 * 60 * 1000)) {
+    return NextResponse.json({ error: "Too many sign-in attempts. Please try again later." }, { status: 429 });
+  }
+
   const { idToken } = await request.json();
   if (typeof idToken !== "string" || !idToken) {
     return NextResponse.json({ error: "Missing idToken" }, { status: 400 });
@@ -38,7 +65,10 @@ export async function POST(request: NextRequest) {
 }
 
 /** Signs the admin out by clearing the session cookie. */
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  if (!isAllowedOrigin(request)) {
+    return NextResponse.json({ error: "Cross-site request blocked." }, { status: 403 });
+  }
   const response = NextResponse.json({ ok: true });
   response.cookies.set(SESSION_COOKIE, "", { httpOnly: true, secure: true, sameSite: "lax", maxAge: 0, path: "/" });
   return response;
