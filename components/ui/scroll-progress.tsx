@@ -10,10 +10,12 @@ import { motion, useScroll, useSpring } from "framer-motion";
  */
 export function ScrollProgress() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/admin")) return null;
+  const isAdmin = pathname?.startsWith("/admin");
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 130, damping: 28, mass: 0.4 });
+
+  if (isAdmin) return null;
 
   return (
     <motion.div

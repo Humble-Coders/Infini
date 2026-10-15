@@ -70,6 +70,10 @@ const DEMO_CASE_STUDIES: CaseStudyItem[] = [
   },
 ];
 
+function generateCaseStudyId(): string {
+  return `cs-${Date.now()}`;
+}
+
 export function CaseStudiesManager() {
   const [studies, setStudies] = useState<CaseStudyItem[]>(DEMO_CASE_STUDIES);
   const [selected, setSelected] = useState<CaseStudyItem>(DEMO_CASE_STUDIES[0]);
@@ -150,7 +154,7 @@ export function CaseStudiesManager() {
       if (res.ok && data.success && data.study) {
         const item = data.study;
         const newStudy: CaseStudyItem = {
-          id: `cs-${Date.now()}`,
+          id: generateCaseStudyId(),
           slug: item.slug,
           title: item.title,
           industry: item.industry,

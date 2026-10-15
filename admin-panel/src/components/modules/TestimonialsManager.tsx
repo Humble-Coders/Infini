@@ -312,7 +312,7 @@ export function TestimonialsManager() {
 
               {/* Quote text */}
               <p className="text-xs sm:text-sm font-normal leading-relaxed text-foreground/90 italic">
-                "{item.quote}"
+                &ldquo;{item.quote}&rdquo;
               </p>
             </div>
 

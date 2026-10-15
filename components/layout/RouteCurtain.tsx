@@ -25,21 +25,21 @@ export function RouteCurtain() {
     }
   }
 
-  // Admin routes require instant responses without transition curtain
-  if (isAdmin) {
-    return null;
-  }
-
   // Manage duration timer when curtain is active
   useEffect(() => {
-    if (!active) return;
+    if (!active || isAdmin) return;
 
     const timer = window.setTimeout(() => {
       setActive(false);
     }, DISPLAY_DURATION_MS);
 
     return () => window.clearTimeout(timer);
-  }, [active, pathname]);
+  }, [active, pathname, isAdmin]);
+
+  // Admin routes require instant responses without transition curtain
+  if (isAdmin) {
+    return null;
+  }
 
   return (
     <div

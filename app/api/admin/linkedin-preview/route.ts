@@ -77,7 +77,7 @@ export async function POST(req: Request) {
         const lastSegment = segments[segments.length - 1] || "";
 
         // Remove activity ID pattern, e.g. "infini-precision_aerospace-turbine-blades-activity-7123456789"
-        let cleanSlug = lastSegment
+        const cleanSlug = lastSegment
           .replace(/activity-\d+.*$/i, "")
           .replace(/urn:li:activity:\d+/i, "")
           .replace(/^infini-precision[_-]?/i, "")
