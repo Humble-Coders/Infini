@@ -18,30 +18,49 @@ export function ClaimsSync({ uid, role }: { uid: string; role: Role }) {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(requireDb(), "users", uid), async (snap) => {
-      const data = snap.data();
-      if (!data) return;
+    // Local dev super admin or unauthenticated client SDK does not need a remote listener
+    if (!uid || uid === "local-super-admin") return;
 
-      if (data.active === false) {
-        await fetch("/api/auth/session", { method: "DELETE" });
-        router.push("/admin/sign-in");
-        return;
-      }
+    let unsubscribe: (() => void) | undefined;
+    try {
+      const authUser = requireAuth().currentUser;
+      if (!authUser) return;
 
-      if (data.role !== role) {
-        const user = requireAuth().currentUser;
-        if (!user) return;
-        const idToken = await user.getIdToken(true);
-        await fetch("/api/auth/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken }),
-        });
-        router.refresh();
-      }
-    });
+      unsubscribe = onSnapshot(
+        doc(requireDb(), "users", uid),
+        async (snap) => {
+          const data = snap.data();
+          if (!data) return;
 
-    return unsubscribe;
+          if (data.active === false) {
+            await fetch("/api/auth/session", { method: "DELETE" });
+            router.push("/admin/sign-in");
+            return;
+          }
+
+          if (data.role !== role) {
+            const user = requireAuth().currentUser;
+            if (!user) return;
+            const idToken = await user.getIdToken(true);
+            await fetch("/api/auth/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ idToken }),
+            });
+            router.refresh();
+          }
+        },
+        (_err) => {
+          // Suppress permission-denied errors gracefully when rules restrict reads
+        }
+      );
+    } catch {
+      // In local dev without live Firestore configuration, safely continue
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [uid, role, router]);
 
   return null;

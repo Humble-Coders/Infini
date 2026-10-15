@@ -7,4 +7,6 @@ export interface TestimonialDoc {
   logoUrl: string;
   order: number;
   published: boolean;
+  industry?: string;
+  rating?: number;
 }

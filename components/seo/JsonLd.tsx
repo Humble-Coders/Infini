@@ -1,14 +1,16 @@
 /**
  * Typed JSON-LD injector for structured data (Organization, WebSite,
- * Article…). The payload is built from plain data and serialised with
- * JSON.stringify into a script tag — no HTML parsing, no injection surface.
+ * Article). The payload is built from plain data and serialised with
+ * JSON.stringify into a script tag with opening bracket escaping to
+ * eliminate HTML script tag breakout attacks.
  * Render inside a server component on the page the entity describes.
  */
 export function JsonLd({ data }: { data: Record<string, unknown> }) {
+  const safeJson = JSON.stringify(data).replace(/</g, "\\u003c");
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJson }}
     />
   );
 }

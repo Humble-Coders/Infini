@@ -16,6 +16,8 @@ export const DEMO_TESTIMONIALS: WithId<TestimonialDoc>[] = [
     logoUrl: "",
     order: 1,
     published: true,
+    industry: "Aerospace & Defense",
+    rating: 5.0,
   },
   {
     id: "demo-t2",
@@ -26,6 +28,8 @@ export const DEMO_TESTIMONIALS: WithId<TestimonialDoc>[] = [
     logoUrl: "",
     order: 2,
     published: true,
+    industry: "Medical Implants",
+    rating: 5.0,
   },
   {
     id: "demo-t3",
@@ -36,6 +40,8 @@ export const DEMO_TESTIMONIALS: WithId<TestimonialDoc>[] = [
     logoUrl: "",
     order: 3,
     published: true,
+    industry: "Forging & Stamping Dies",
+    rating: 4.8,
   },
   {
     id: "demo-t4",
@@ -46,6 +52,8 @@ export const DEMO_TESTIMONIALS: WithId<TestimonialDoc>[] = [
     logoUrl: "",
     order: 4,
     published: true,
+    industry: "Cutting Tools & Tooling",
+    rating: 4.9,
   },
   {
     id: "demo-t5",
@@ -56,5 +64,7 @@ export const DEMO_TESTIMONIALS: WithId<TestimonialDoc>[] = [
     logoUrl: "",
     order: 5,
     published: true,
+    industry: "Additive Manufacturing",
+    rating: 5.0,
   },
 ];

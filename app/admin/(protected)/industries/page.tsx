@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { ComingSoonSection } from "@/components/admin/ComingSoonSection";
+import { IndustriesManager } from "@/admin-panel/src/components/modules/IndustriesManager";
 
-export const metadata: Metadata = { title: "Industries" };
+export const metadata: Metadata = { title: "Industries & Sectors | Infini Admin" };
 
 export default async function AdminIndustriesPage() {
   await requireRole(["superAdmin", "contentEditor"]);
-  return <ComingSoonSection title="Industries" />;
+  return (
+    <div className="w-full">
+      <IndustriesManager />
+    </div>
+  );
 }

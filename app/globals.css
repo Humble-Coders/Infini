@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../admin-panel";
 
 @theme {
   --font-sans: var(--font-sans-loaded), ui-sans-serif, system-ui, sans-serif;

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 /**
@@ -8,6 +9,9 @@ import { motion, useScroll, useSpring } from "framer-motion";
  * Decorative (aria-hidden); zero layout cost, fixed positioning.
  */
 export function ScrollProgress() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 130, damping: 28, mass: 0.4 });
 

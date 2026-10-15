@@ -48,3 +48,10 @@ serviceAccountKey.json
 
 # Cloud Functions build output
 backend/functions/lib
+
+# Temporary extraction directories
+temp_images/
+temp_pptx/
+.claude/
+
+

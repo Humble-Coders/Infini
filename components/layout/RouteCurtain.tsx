@@ -13,13 +13,21 @@ const DISPLAY_DURATION_MS = 500;
 
 export function RouteCurtain() {
   const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
   const [prevPath, setPrevPath] = useState(pathname);
   const [active, setActive] = useState(false);
 
   // Synchronize state on pathname change during render (React recommended pattern)
   if (prevPath !== pathname) {
     setPrevPath(pathname);
-    setActive(true);
+    if (!isAdmin && !prevPath?.startsWith("/admin")) {
+      setActive(true);
+    }
+  }
+
+  // Admin routes require instant responses without transition curtain
+  if (isAdmin) {
+    return null;
   }
 
   // Manage duration timer when curtain is active

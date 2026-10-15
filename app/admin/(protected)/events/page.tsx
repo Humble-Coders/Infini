@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { ComingSoonSection } from "@/components/admin/ComingSoonSection";
+import { EventBannerManager } from "@/admin-panel/src/components/modules/EventBannerManager";
 
-export const metadata: Metadata = { title: "Events" };
+export const metadata: Metadata = { title: "Event & Announcement Banner | Infini Admin" };
 
 export default async function AdminEventsPage() {
   await requireRole(["superAdmin", "contentEditor"]);
-  return <ComingSoonSection title="Events" />;
+  return (
+    <div className="w-full">
+      <EventBannerManager />
+    </div>
+  );
 }
