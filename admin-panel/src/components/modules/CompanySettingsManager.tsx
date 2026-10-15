@@ -49,7 +49,7 @@ const DEFAULT_SETTINGS: CompanySettings = {
   metaTitle: "INFINI | Precision Surface Finishing & MMP Technology",
   metaDescription: "Super precision surface finishing and micro-edge honing for aerospace, medical implants, cutting tools, and critical dies.",
   cookieBannerEnabled: true,
-  logoUrl: "/images/logo.png",
+  logoUrl: "/brand/infini-finish-unlimited.png",
   brochureUrl: "/docs/infini-precision-capability-brochure.pdf",
 };
 

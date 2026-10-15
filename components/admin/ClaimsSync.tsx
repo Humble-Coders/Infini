@@ -18,8 +18,8 @@ export function ClaimsSync({ uid, role }: { uid: string; role: Role }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Local dev super admin or unauthenticated client SDK does not need a remote listener
-    if (!uid || uid === "local-super-admin") return;
+    // Local dev super admin or verified admin session does not need a remote client listener
+    if (!uid || uid === "local-super-admin" || uid.startsWith("admin-verified")) return;
 
     let unsubscribe: (() => void) | undefined;
     try {

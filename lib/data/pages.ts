@@ -7,9 +7,14 @@ const COLLECTION = "pages";
 
 /** A singleton page's content by ID (home, company, capabilities, contact). */
 async function getPageUncached(id: PageId): Promise<PageDoc | null> {
-  const snap = await getDoc(doc(requireDb(), COLLECTION, id));
-  if (!snap.exists()) return null;
-  return snap.data() as PageDoc;
+  try {
+    const snap = await getDoc(doc(requireDb(), COLLECTION, id));
+    if (!snap.exists()) return null;
+    return snap.data() as PageDoc;
+  } catch (error) {
+    console.warn(`[pages] Could not load page "${id}" from Firestore:`, (error as Error)?.message);
+    return null;
+  }
 }
 
 /**

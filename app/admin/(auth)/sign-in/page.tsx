@@ -2,11 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import {
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
-import { requireAuth } from "@/lib/firebase/requireAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,29 +62,7 @@ export default function SignInPage() {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Attempt Client Firebase Auth if configured
-    try {
-      const auth = requireAuth();
-      const credential = await signInWithEmailAndPassword(auth, cleanEmail, password);
-      const idToken = await credential.user.getIdToken();
-
-      const response = await fetch("/api/auth/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (response.ok) {
-        router.push("/admin");
-        router.refresh();
-        return;
-      }
-    } catch (fbErr: unknown) {
-      // If Firebase Auth returns CONFIGURATION_NOT_FOUND or fails, fall back to direct admin auth
-      console.warn("Client Firebase Auth attempt:", (fbErr as Error)?.message);
-    }
-
-    // 2. Direct Secure Administrator Authentication
+    // Direct Secure Administrator Authentication via server session
     try {
       const response = await fetch("/api/auth/session", {
         method: "POST",
@@ -129,14 +102,7 @@ export default function SignInPage() {
 
     setSubmitting(true);
     try {
-      // 1. Attempt Firebase Client SDK reset if available
-      try {
-        await sendPasswordResetEmail(requireAuth(), cleanEmail);
-      } catch {
-        // Silently continue to server-side endpoint
-      }
-
-      // 2. Submit to server-side password reset endpoint
+      // Process password reset via authenticated server endpoint
       const response = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -194,7 +160,6 @@ export default function SignInPage() {
                   type="email"
                   autoComplete="username"
                   required
-                  placeholder="admin@infini.co.in"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="rounded-xl border-border/70 bg-background/60 text-xs h-10 px-3.5 focus-visible:ring-accent"
@@ -327,7 +292,6 @@ export default function SignInPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    placeholder="admin@infini.co.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="rounded-xl border-border/70 bg-background/60 text-xs h-10 px-3.5 focus-visible:ring-accent"

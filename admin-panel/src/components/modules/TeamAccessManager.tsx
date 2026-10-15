@@ -366,7 +366,7 @@ export function TeamAccessManager({ currentUid }: { currentUid?: string }) {
                     required
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="name@infini.co.in"
+                    placeholder="Enter team member email"
                     className="w-full rounded-xl border border-border/70 bg-card/50 px-3 py-2 text-xs text-foreground focus:border-accent focus:outline-none"
                   />
                 </div>

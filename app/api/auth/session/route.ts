@@ -44,7 +44,11 @@ export async function POST(request: NextRequest) {
     const email = String(payload.email || "").trim().toLowerCase();
     const password = String(payload.password || "");
 
-    const isRealAdmin = email === "admin@infini.co.in" || email.endsWith("@infini.co.in");
+    const adminEmailEnv = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+    const isRealAdmin =
+      (adminEmailEnv && email === adminEmailEnv) ||
+      email === "admin@infini.co.in" ||
+      email.endsWith("@infini.co.in");
     if (!isRealAdmin) {
       return NextResponse.json(
         { error: "Access denied. Only authorized @infini.co.in administrator emails may sign in." },

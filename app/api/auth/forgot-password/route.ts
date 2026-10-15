@@ -42,7 +42,11 @@ export async function POST(request: NextRequest) {
   }
 
   // Security enforcement: Restrict password resets to real INFINI administrators
-  const isRealAdmin = email === "admin@infini.co.in" || email.endsWith("@infini.co.in");
+  const adminEmailEnv = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+  const isRealAdmin =
+    (adminEmailEnv && email === adminEmailEnv) ||
+    email === "admin@infini.co.in" ||
+    email.endsWith("@infini.co.in");
   if (!isRealAdmin) {
     return NextResponse.json(
       { error: "Access restricted. Only registered @infini.co.in administrator accounts may request credentials." },

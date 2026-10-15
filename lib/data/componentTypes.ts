@@ -16,8 +16,8 @@ async function safe<T>(label: string, run: () => Promise<T>, fallback: T): Promi
     return await run();
   } catch (error) {
     const code = (error as { code?: string }).code;
-    if (code === "permission-denied") {
-      console.warn(`[${label}] permission denied. Deploy backend/firestore.rules.`);
+    if (code === "permission-denied" || code === "unavailable") {
+      console.warn(`[${label}] Firestore ${code}. Using fallback.`);
       return fallback;
     }
     throw error;
