@@ -15,7 +15,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
     <div className="min-h-screen w-full max-w-full overflow-x-clip bg-background text-foreground antialiased selection:bg-accent/20 selection:text-accent">
       <ClaimsSync uid={session.uid} role={session.role} />
       <AdminTopNav email={session.email} role={session.role} />
-      <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 lg:p-8">
+      <main className="mx-auto w-full max-w-[1600px] px-3 py-4 sm:p-6 lg:p-8">
         {children}
       </main>
     </div>

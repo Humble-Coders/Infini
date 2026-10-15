@@ -230,9 +230,64 @@ export function LeadsCRMManager() {
         </div>
       </div>
 
-      {/* Leads Table */}
+      {/* Leads Container: Mobile Cards View + Desktop Table View */}
       <div className="overflow-hidden rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm">
-        <div className="overflow-x-auto">
+        {/* Mobile Cards View (screens < md) */}
+        <div className="md:hidden divide-y divide-border/60">
+          {filteredLeads.map((lead) => (
+            <div
+              key={lead.id}
+              className="p-4 space-y-3 transition-colors hover:bg-muted/20 cursor-pointer"
+              onClick={() => setSelectedLead(lead)}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="space-y-0.5 min-w-0 flex-1">
+                  <h3 className="font-semibold text-foreground text-sm truncate">{lead.name}</h3>
+                  <p className="text-xs text-muted-foreground truncate">{lead.company}</p>
+                </div>
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-mono font-medium shrink-0 ${
+                    lead.status === "New"
+                      ? "bg-accent/15 text-accent border border-accent/30"
+                      : lead.status === "In Review"
+                      ? "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                      : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                  }`}
+                >
+                  {lead.status}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="rounded-md border border-border bg-background/80 px-2 py-0.5 font-mono text-[10px] text-foreground">
+                  {lead.industry}
+                </span>
+                {lead.imageUrl && (
+                  <span className="inline-flex items-center gap-1 text-accent font-medium font-mono text-[10px]">
+                    <FileImage className="size-3" />
+                    <span>Drawing Attached</span>
+                  </span>
+                )}
+                <span className="text-[10px] font-mono text-muted-foreground ml-auto">
+                  {lead.createdAt}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 text-xs">
+                <span className="text-muted-foreground font-mono text-[11px] truncate max-w-[200px]">
+                  {lead.email}
+                </span>
+                <span className="text-accent inline-flex items-center gap-1 text-[11px] font-medium">
+                  <span>Inspect</span>
+                  <Eye className="size-3" />
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table (screens >= md) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="border-b border-border/80 bg-background/50 font-mono text-muted-foreground uppercase text-[10px] tracking-wider">
               <tr>

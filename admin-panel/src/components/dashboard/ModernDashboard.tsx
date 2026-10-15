@@ -12,12 +12,9 @@ import {
   Phone,
   Mail,
   MapPin,
-  Clock,
   ArrowRight,
   TrendingUp,
   Image as ImageIcon,
-  CheckCircle2,
-  FileCheck2,
 } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { GlowingBorderCard } from "@/components/ui/glowing-border-card";
@@ -83,34 +80,37 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
   return (
     <div className="space-y-6">
       {/* Header Welcome Bar with running red glow border effect */}
-      <GlowingBorderCard className="rounded-2xl" innerClassName="p-6">
+      <GlowingBorderCard className="rounded-2xl" innerClassName="p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-foreground">
                 Engineering Console
               </h1>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live System
               </span>
+              <span className="inline-flex items-center rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-[10px] font-mono capitalize text-muted-foreground">
+                {role}
+              </span>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground break-words">
               Signed in as <span className="font-medium text-foreground">{email}</span>. Manage inquiries, proof case studies, exhibition announcements, and technical content.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
             <Link
               href="/admin/case-studies"
-              className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-accent-foreground shadow-sm transition-all hover:bg-accent/90"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-accent-foreground shadow-sm transition-all hover:bg-accent/90"
             >
               <Plus className="size-3.5" aria-hidden="true" />
               <span>New Case Study</span>
             </Link>
             <Link
               href="/admin/leads"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card/80 px-4 py-2.5 text-xs font-medium text-foreground transition-all hover:bg-muted"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card/80 px-4 py-2.5 text-xs font-medium text-foreground transition-all hover:bg-muted"
             >
               <Inbox className="size-3.5 text-muted-foreground" aria-hidden="true" />
               <span>View Inquiries</span>
@@ -208,7 +208,7 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left Column (8 cols): Recent Inquiries & Part RFQ Pipeline */}
         <div className="space-y-6 lg:col-span-8">
-          <div className="rounded-2xl border border-border/80 bg-card/60 p-6 backdrop-blur-sm">
+          <div className="rounded-2xl border border-border/80 bg-card/60 p-4 sm:p-6 backdrop-blur-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-semibold text-foreground">
@@ -220,13 +220,13 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
               </div>
 
               {/* Filter Pills */}
-              <div className="flex items-center gap-1 rounded-full border border-border bg-background/60 p-1">
+              <div className="flex items-center gap-1 rounded-full border border-border bg-background/60 p-1 overflow-x-auto max-w-full scrollbar-none">
                 {(["All", "New", "In Review", "Quoted"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setFilter(tab)}
                     className={cn(
-                      "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                      "rounded-full px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap shrink-0",
                       filter === tab
                         ? "bg-accent text-accent-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -243,31 +243,31 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
               {filteredLeads.map((lead) => (
                 <div
                   key={lead.id}
-                  className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between transition-colors hover:bg-muted/20 px-2 rounded-xl"
+                  className="flex flex-col gap-3 py-3.5 sm:py-4 transition-colors hover:bg-muted/20 px-2 sm:px-3 rounded-xl"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background font-mono text-xs font-semibold text-foreground">
+                  <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
+                    <span className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background font-mono text-xs font-semibold text-foreground mt-0.5">
                       {lead.name.charAt(0)}
                     </span>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-foreground">
+                    <div className="space-y-1.5 min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className="text-xs sm:text-sm font-semibold text-foreground">
                           {lead.name}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           · {lead.company}
                         </span>
                         {lead.hasDrawing && (
-                          <span className="inline-flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-[10px] font-mono text-accent">
+                          <span className="inline-flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-[10px] font-mono text-accent shrink-0">
                             Drawing Attached
                           </span>
                         )}
                       </div>
-                      <p className="line-clamp-1 text-xs text-muted-foreground max-w-xl">
+                      <p className="line-clamp-2 text-xs text-muted-foreground break-words leading-relaxed">
                         {lead.message}
                       </p>
-                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-mono">
-                        <span>{lead.email}</span>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground font-mono">
+                        <span className="break-all">{lead.email}</span>
                         <span>·</span>
                         <span>{lead.industry}</span>
                         <span>·</span>
@@ -276,10 +276,10 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 sm:self-center">
+                  <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t border-border/40 sm:border-0 pl-10 sm:pl-0">
                     <span
                       className={cn(
-                        "rounded-full px-2.5 py-0.5 text-[11px] font-medium font-mono",
+                        "rounded-full px-2.5 py-0.5 text-[10px] sm:text-[11px] font-medium font-mono",
                         lead.status === "New" && "bg-accent/15 text-accent border border-accent/30",
                         lead.status === "In Review" && "bg-amber-500/15 text-amber-400 border border-amber-500/30",
                         lead.status === "Quoted" && "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
@@ -289,9 +289,10 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
                     </span>
                     <Link
                       href="/admin/leads"
-                      className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-accent hover:text-foreground"
+                      className="flex size-7 sm:size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-accent hover:text-foreground"
+                      aria-label={`View details for ${lead.name}`}
                     >
-                      <ArrowUpRight className="size-4" aria-hidden="true" />
+                      <ArrowUpRight className="size-3.5 sm:size-4" aria-hidden="true" />
                     </Link>
                   </div>
                 </div>
@@ -361,7 +362,7 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
         {/* Right Column (4 cols): Facility Contacts & Live Settings */}
         <div className="space-y-6 lg:col-span-4">
           {/* Company Contact Snapshot Card */}
-          <div className="rounded-2xl border border-border/80 bg-card/60 p-6 backdrop-blur-sm space-y-4">
+          <div className="rounded-2xl border border-border/80 bg-card/60 p-5 sm:p-6 backdrop-blur-sm space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-foreground">
                 Facility & Contact Channels
@@ -374,15 +375,15 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
             <div className="space-y-3 font-mono text-xs">
               <div className="flex items-start gap-2.5 rounded-xl border border-border/60 bg-background/50 p-3">
                 <Mail className="size-4 text-accent shrink-0 mt-0.5" aria-hidden="true" />
-                <div className="flex flex-col gap-0.5">
+                <div className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-[10px] uppercase text-muted-foreground tracking-wider">Direct Email</span>
-                  <span className="font-semibold text-foreground">superfinish@infini.co.in</span>
+                  <span className="font-semibold text-foreground break-all">superfinish@infini.co.in</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5 rounded-xl border border-border/60 bg-background/50 p-3">
                 <Phone className="size-4 text-accent shrink-0 mt-0.5" aria-hidden="true" />
-                <div className="flex flex-col gap-0.5">
+                <div className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-[10px] uppercase text-muted-foreground tracking-wider">Technical Desk</span>
                   <span className="font-semibold text-foreground">+91 (1792) 234459</span>
                 </div>
@@ -390,7 +391,7 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
 
               <div className="flex items-start gap-2.5 rounded-xl border border-border/60 bg-background/50 p-3">
                 <MapPin className="size-4 text-accent shrink-0 mt-0.5" aria-hidden="true" />
-                <div className="flex flex-col gap-0.5">
+                <div className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-[10px] uppercase text-muted-foreground tracking-wider">MMP Licensed Plant</span>
                   <span className="font-semibold text-foreground">Parwanoo, Himachal Pradesh, India</span>
                 </div>
@@ -399,7 +400,7 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
           </div>
 
           {/* Quick Media Upload Box */}
-          <div className="rounded-2xl border border-dashed border-border bg-card/40 p-6 text-center space-y-3">
+          <div className="rounded-2xl border border-dashed border-border bg-card/40 p-5 sm:p-6 text-center space-y-3">
             <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent">
               <ImageIcon className="size-5" aria-hidden="true" />
             </div>
