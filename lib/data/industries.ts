@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, query, where } from "firebase/firestore";
 import { requireDb } from "./firestore";
 import type { IndustryDoc, WithId } from "@/lib/types";
 
@@ -36,14 +36,19 @@ const DEMO_HERO_IMAGES: Record<string, string> = {
 
 /** All 7 published industries, in display order. */
 async function getPublishedIndustriesUncached(): Promise<WithId<IndustryDoc>[]> {
-  const snap = await getDocs(
-    query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
-  );
-  return snap.docs.map((d) => {
-    const data = d.data() as IndustryDoc;
-    const heroImage = data.hero.image || DEMO_HERO_IMAGES[data.slug] || "";
-    return { id: d.id, ...data, hero: { ...data.hero, image: heroImage } };
-  });
+  try {
+    const snap = await getDocs(
+      query(collection(requireDb(), COLLECTION), where("published", "==", true))
+    );
+    const docs = snap.docs.map((d) => {
+      const data = d.data() as IndustryDoc;
+      const heroImage = data.hero?.image || DEMO_HERO_IMAGES[data.slug] || "";
+      return { id: d.id, ...data, hero: { ...data.hero, image: heroImage } };
+    });
+    return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  } catch {
+    return [];
+  }
 }
 
 /** A single published industry by slug, or null if it doesn't exist / isn't published. */

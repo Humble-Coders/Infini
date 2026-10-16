@@ -60,6 +60,17 @@ export function CompanySettingsManager() {
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const brochureFileInputRef = useRef<HTMLInputElement>(null);
 
+  useState(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.settings) {
+          setSettings((prev) => ({ ...prev, ...data.settings }));
+        }
+      })
+      .catch(() => {});
+  });
+
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -74,9 +85,19 @@ export function CompanySettingsManager() {
     setSettings((prev) => ({ ...prev, brochureUrl: url }));
   };
 
-  function handleSave() {
+  async function handleSave() {
     setSaved(true);
-    setTimeout(() => setSaved(false), 2200);
+    try {
+      await fetch("/api/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+    } catch {
+      alert("Failed to save settings to server.");
+    } finally {
+      setTimeout(() => setSaved(false), 2200);
+    }
   }
 
   return (

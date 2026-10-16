@@ -42,7 +42,7 @@ export async function GET() {
     });
 
     return NextResponse.json({ ok: true, leads });
-  } catch (error) {
+  } catch {
     // In local dev without live Firestore configuration, return empty list gracefully
     return NextResponse.json({ ok: true, leads: [] });
   }

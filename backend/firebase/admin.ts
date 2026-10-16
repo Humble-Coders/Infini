@@ -25,6 +25,22 @@ function createAdminApp(): App {
     });
   }
 
+  // Local/dev file fallback if present
+  try {
+    const fs = require("fs");
+    const path = require("path");
+    const saPath = path.resolve(process.cwd(), "serviceAccountKey.json");
+    if (fs.existsSync(saPath)) {
+      const sa = JSON.parse(fs.readFileSync(saPath, "utf8"));
+      return initializeApp({
+        credential: cert(sa),
+        storageBucket,
+      });
+    }
+  } catch {
+    // Continue to applicationDefault
+  }
+
   // Firebase App Hosting / Cloud Run: Application Default Credentials are
   // provided by the platform, no key material needed or committed.
   return initializeApp({ credential: applicationDefault(), projectId, storageBucket });

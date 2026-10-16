@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   MessageSquareQuote,
   Plus,
@@ -17,6 +17,7 @@ import {
   Save,
   X,
   UploadCloud,
+  Check,
 } from "lucide-react";
 import { AdminSelect } from "@/components/admin/AdminSelect";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
@@ -28,6 +29,19 @@ export function TestimonialsManager() {
   const [filterStatus, setFilterStatus] = useState<"all" | "published" | "draft">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<WithId<TestimonialDoc> | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/testimonials")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+          setTestimonials(data.testimonials);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const logoFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,38 +97,74 @@ export function TestimonialsManager() {
     setIsModalOpen(true);
   };
 
-  const handleTogglePublish = (id: string) => {
+  const handleTogglePublish = async (id: string) => {
+    const item = testimonials.find((t) => t.id === id);
+    if (!item) return;
+    const newStatus = !item.published;
     setTestimonials((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, published: !item.published } : item
-      )
+      prev.map((t) => (t.id === id ? { ...t, published: newStatus } : t))
     );
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to remove this testimonial?")) {
-      setTestimonials((prev) => prev.filter((item) => item.id !== id));
+    try {
+      await fetch("/api/admin/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...item, published: newStatus }),
+      });
+      setSaveMessage(newStatus ? "Published live to site" : "Moved to drafts");
+      setTimeout(() => setSaveMessage(null), 3000);
+    } catch {
+      setTestimonials((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, published: !newStatus } : t))
+      );
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to remove this testimonial?")) return;
+    setTestimonials((prev) => prev.filter((item) => item.id !== id));
+    try {
+      await fetch(`/api/admin/testimonials?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      setSaveMessage("Testimonial removed");
+      setTimeout(() => setSaveMessage(null), 3000);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.personName || !formData.quote || !formData.company) return;
 
-    if (editingItem) {
-      setTestimonials((prev) =>
-        prev.map((item) =>
-          item.id === editingItem.id ? { ...formData, id: editingItem.id } : item
-        )
-      );
-    } else {
-      const newItem: WithId<TestimonialDoc> = {
-        ...formData,
-        id: `testimonial-${Date.now()}`,
-      };
-      setTestimonials((prev) => [...prev, newItem]);
+    setSaving(true);
+    const targetId = editingItem?.id || `testimonial-${Date.now()}`;
+    const payload = { ...formData, id: targetId };
+
+    try {
+      const res = await fetch("/api/admin/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        if (editingItem) {
+          setTestimonials((prev) =>
+            prev.map((item) => (item.id === targetId ? { ...payload, id: targetId } : item))
+          );
+        } else {
+          setTestimonials((prev) => [...prev, { ...payload, id: targetId }]);
+        }
+        setSaveMessage("Saved & published live!");
+        setTimeout(() => setSaveMessage(null), 3000);
+      }
+    } catch {
+      alert("Failed to save. Please try again.");
+    } finally {
+      setSaving(false);
+      setIsModalOpen(false);
     }
-    setIsModalOpen(false);
   };
 
   const publishedCount = testimonials.filter((t) => t.published).length;
@@ -128,6 +178,11 @@ export function TestimonialsManager() {
             <span>Website Content</span>
             <span>/</span>
             <span className="text-foreground">Client Reviews</span>
+            {saveMessage && (
+              <span className="ml-2 inline-flex items-center gap-1 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-[11px] font-sans lowercase">
+                <Check className="size-3" /> {saveMessage}
+              </span>
+            )}
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
             Testimonials & Social Proof

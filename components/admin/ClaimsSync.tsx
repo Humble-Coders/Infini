@@ -50,7 +50,7 @@ export function ClaimsSync({ uid, role }: { uid: string; role: Role }) {
             router.refresh();
           }
         },
-        (_err) => {
+        () => {
           // Suppress permission-denied errors gracefully when rules restrict reads
         }
       );

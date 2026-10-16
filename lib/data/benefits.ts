@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { requireDb } from "./firestore";
 import type { BenefitDoc, WithId } from "@/lib/types";
 
@@ -15,12 +15,8 @@ async function safe<T>(label: string, run: () => Promise<T>, fallback: T): Promi
   try {
     return await run();
   } catch (error) {
-    const code = (error as { code?: string }).code;
-    if (code === "permission-denied" || code === "unavailable") {
-      console.warn(`[${label}] Firestore ${code}. Using fallback.`);
-      return fallback;
-    }
-    throw error;
+    console.warn(`[${label}] Firestore issue:`, (error as Error)?.message || error);
+    return fallback;
   }
 }
 
@@ -28,9 +24,10 @@ async function safe<T>(label: string, run: () => Promise<T>, fallback: T): Promi
 async function getPublishedBenefitsUncached(): Promise<WithId<BenefitDoc>[]> {
   return safe(COLLECTION, async () => {
     const snap = await getDocs(
-      query(collection(requireDb(), COLLECTION), where("published", "==", true), orderBy("order"))
+      query(collection(requireDb(), COLLECTION), where("published", "==", true))
     );
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as BenefitDoc) }));
+    const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as BenefitDoc) }));
+    return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }, []);
 }
 

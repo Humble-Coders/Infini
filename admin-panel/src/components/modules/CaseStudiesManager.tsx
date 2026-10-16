@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   BookOpen,
   Plus,
@@ -83,6 +83,34 @@ export function CaseStudiesManager() {
   const [saved, setSaved] = useState(false);
   const beforeFileInputRef = useRef<HTMLInputElement>(null);
   const afterFileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/case-studies")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && Array.isArray(data.caseStudies) && data.caseStudies.length > 0) {
+          const formatted: CaseStudyItem[] = data.caseStudies.map((cs: any) => ({
+            id: cs.id,
+            slug: cs.slug || cs.id,
+            title: cs.title,
+            industry: cs.industry || (cs.industryId ? cs.industryId.replace(/-/g, " ") : "Aerospace"),
+            challenge: cs.challenge || "",
+            solution: cs.solution || "",
+            beforeRa: cs.beforeRa || (cs.results?.[0]?.value ?? "0.60 µm"),
+            afterRa: cs.afterRa || (cs.results?.[1]?.value ?? "0.02 µm"),
+            toolLifeGain: cs.toolLifeGain || (cs.results?.[2]?.value ?? cs.result ?? "+260%"),
+            beforeImage: cs.beforeImage || "/images/cutting-tool-1.jpg",
+            afterImage: cs.afterImage || "/images/cutting-tool-3.png",
+            material: cs.material || cs.specs?.material || "Steel",
+            published: typeof cs.published === "boolean" ? cs.published : true,
+            sourceUrl: cs.sourceUrl,
+          }));
+          setStudies(formatted);
+          setSelected(formatted[0]);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   function handleImageUpload(type: "before" | "after", e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -228,19 +256,47 @@ export function CaseStudiesManager() {
     setSelected(newStudy);
   }
 
-  function handleDeleteSelected() {
+  async function handleDeleteSelected() {
     if (studies.length <= 1) return;
-    const remaining = studies.filter((s) => s.id !== selected.id);
+    if (!confirm(`Delete case study "${selected.title}"?`)) return;
+    const toDeleteId = selected.id;
+    const remaining = studies.filter((s) => s.id !== toDeleteId);
     setStudies(remaining);
     setSelected(remaining[0]);
+    try {
+      await fetch(`/api/admin/case-studies?id=${encodeURIComponent(toDeleteId)}`, {
+        method: "DELETE",
+      });
+      setSyncMessage("Case study deleted");
+      setTimeout(() => setSyncMessage(null), 3000);
+    } catch {
+      // rollback or ignore
+    }
   }
 
-  function handleSave() {
+  async function handleSave() {
     setSaved(true);
     setStudies((prev) =>
       prev.map((s) => (s.id === selected.id ? selected : s))
     );
-    setTimeout(() => setSaved(false), 2000);
+    try {
+      const res = await fetch("/api/admin/case-studies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selected),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSyncMessage("Saved & published live!");
+      }
+    } catch {
+      alert("Failed to save changes. Please try again.");
+    } finally {
+      setTimeout(() => {
+        setSaved(false);
+        setSyncMessage(null);
+      }, 3000);
+    }
   }
 
   return (

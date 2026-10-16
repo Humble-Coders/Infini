@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CalendarDays,
   Check,
@@ -46,9 +46,30 @@ export function EventBannerManager() {
   const [config, setConfig] = useState<EventBannerConfig>(INITIAL_CONFIG);
   const [saved, setSaved] = useState(false);
 
-  function handleSave() {
+  useEffect(() => {
+    fetch("/api/admin/events")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.config) {
+          setConfig(data.config);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  async function handleSave() {
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    try {
+      await fetch("/api/admin/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config),
+      });
+    } catch {
+      alert("Failed to save banner configuration.");
+    } finally {
+      setTimeout(() => setSaved(false), 2500);
+    }
   }
 
   return (

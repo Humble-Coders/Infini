@@ -21,6 +21,7 @@ import { getPublishedIndustries } from "@/lib/data/industries";
 import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getPublishedTestimonials } from "@/lib/data/testimonials";
+import { getEventBanner } from "@/lib/data/events";
 import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
@@ -54,12 +55,13 @@ export async function homeMetadata(): Promise<Metadata> {
  * Certifications and news are not repeated here; each has its own page.
  */
 export async function HomePage() {
-  const [page, industries, caseStudies, certifications, testimonials] = await Promise.all([
+  const [page, industries, caseStudies, certifications, testimonials, eventBanner] = await Promise.all([
     getPage("home"),
     getPublishedIndustries(),
     getPublishedCaseStudies(),
     getActiveCertifications(),
     getPublishedTestimonials(),
+    getEventBanner(),
   ]);
 
   const hero = getSection<HeroCopy>(page, "hero");
@@ -76,7 +78,16 @@ export async function HomePage() {
   return (
     <MotionProvider>
       <main className="min-h-screen bg-background">
-        <ExhibitionBanner />
+        <ExhibitionBanner
+          title={eventBanner?.title}
+          date={
+            eventBanner?.startDate && eventBanner?.endDate
+              ? `${eventBanner.startDate} - ${eventBanner.endDate}`
+              : undefined
+          }
+          location={eventBanner?.location}
+          isActive={eventBanner ? eventBanner.enabled : true}
+        />
         <HomeHero copy={hero} />
 
         {/* White run straight after the hero: find your industry and the counters,
