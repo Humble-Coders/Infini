@@ -84,27 +84,37 @@ const DEMO_NEWS: WithId<NewsDoc>[] = [
 
 /** All published news posts, newest first. */
 async function getPublishedNewsUncached(): Promise<WithId<NewsDoc>[]> {
-  const snap = await getDocs(
-    query(collection(requireDb(), COLLECTION), where("status", "==", "published"), orderBy("publishedAt", "desc"))
-  );
-  const posts = snap.docs.map((d) => ({ id: d.id, ...(d.data() as NewsDoc) }));
-  return [...DEMO_NEWS, ...posts].sort(
-    (a, b) => b.publishedAt.toDate().getTime() - a.publishedAt.toDate().getTime()
-  );
+  try {
+    const snap = await getDocs(
+      query(collection(requireDb(), COLLECTION), where("status", "==", "published"))
+    );
+    const posts = snap.docs.map((d) => ({ id: d.id, ...(d.data() as NewsDoc) }));
+    const all = posts.length > 0 ? posts : DEMO_NEWS;
+    return all.sort(
+      (a, b) => (b.publishedAt?.toDate ? b.publishedAt.toDate().getTime() : 0) -
+                (a.publishedAt?.toDate ? a.publishedAt.toDate().getTime() : 0)
+    );
+  } catch {
+    return DEMO_NEWS;
+  }
 }
 
 /** A single published news post by slug, or null. */
 async function getNewsBySlugUncached(slug: string): Promise<WithId<NewsDoc> | null> {
-  const snap = await getDocs(
-    query(
-      collection(requireDb(), COLLECTION),
-      where("slug", "==", slug),
-      where("status", "==", "published"),
-      limit(1)
-    )
-  );
-  const found = snap.docs[0];
-  if (found) return { id: found.id, ...(found.data() as NewsDoc) };
+  try {
+    const snap = await getDocs(
+      query(
+        collection(requireDb(), COLLECTION),
+        where("slug", "==", slug),
+        where("status", "==", "published"),
+        limit(1)
+      )
+    );
+    const found = snap.docs[0];
+    if (found) return { id: found.id, ...(found.data() as NewsDoc) };
+  } catch {
+    // fallback
+  }
   return DEMO_NEWS.find((post) => post.slug === slug) ?? null;
 }
 

@@ -34,6 +34,8 @@ const DEMO_HERO_IMAGES: Record<string, string> = {
   "powder-metallurgy": unsplash("photo-1611117775350-ac3950990985"),
 };
 
+import { buildIndustries } from "@/backend/scripts/content";
+
 /** All 7 published industries, in display order. */
 async function getPublishedIndustriesUncached(): Promise<WithId<IndustryDoc>[]> {
   try {
@@ -45,24 +47,49 @@ async function getPublishedIndustriesUncached(): Promise<WithId<IndustryDoc>[]> 
       const heroImage = data.hero?.image || DEMO_HERO_IMAGES[data.slug] || "";
       return { id: d.id, ...data, hero: { ...data.hero, image: heroImage } };
     });
-    return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    if (docs.length > 0) {
+      return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    }
   } catch {
-    return [];
+    // fallback to built-in content
   }
+
+  return buildIndustries().map((ind) => ({
+    id: ind.slug,
+    ...ind,
+    hero: { ...ind.hero, image: ind.hero?.image || DEMO_HERO_IMAGES[ind.slug] || "" },
+  })) as WithId<IndustryDoc>[];
 }
 
 /** A single published industry by slug, or null if it doesn't exist / isn't published. */
 async function getIndustryBySlugUncached(slug: string): Promise<WithId<IndustryDoc> | null> {
-  const snap = await getDocs(
-    query(
-      collection(requireDb(), COLLECTION),
-      where("slug", "==", slug),
-      where("published", "==", true),
-      limit(1)
-    )
-  );
-  const found = snap.docs[0];
-  return found ? { id: found.id, ...(found.data() as IndustryDoc) } : null;
+  try {
+    const snap = await getDocs(
+      query(
+        collection(requireDb(), COLLECTION),
+        where("slug", "==", slug),
+        where("published", "==", true),
+        limit(1)
+      )
+    );
+    const found = snap.docs[0];
+    if (found) {
+      const data = found.data() as IndustryDoc;
+      const heroImage = data.hero?.image || DEMO_HERO_IMAGES[data.slug] || "";
+      return { id: found.id, ...data, hero: { ...data.hero, image: heroImage } };
+    }
+  } catch {
+    // fallback
+  }
+
+  const fallbackList = buildIndustries();
+  const fallback = fallbackList.find((i) => i.slug === slug);
+  if (!fallback) return null;
+  return {
+    id: fallback.slug,
+    ...fallback,
+    hero: { ...fallback.hero, image: fallback.hero?.image || DEMO_HERO_IMAGES[fallback.slug] || "" },
+  } as WithId<IndustryDoc>;
 }
 
 /** All published industry slugs, for generateStaticParams. */

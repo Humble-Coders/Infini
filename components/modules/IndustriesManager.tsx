@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Factory,
   CheckCircle2,
@@ -172,6 +172,18 @@ export function IndustriesManager() {
   const [industries, setIndustries] = useState<IndustryItem[]>(DEFAULT_INDUSTRIES);
   const [selectedSlug, setSelectedSlug] = useState<string>("aerospace");
   const [isSavedNotice, setIsSavedNotice] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/industries")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && Array.isArray(data.industries) && data.industries.length > 0) {
+          setIndustries(data.industries);
+        }
+      })
+      .catch((err) => console.error("Error loading industries:", err));
+  }, []);
 
   const selected = industries.find((i) => i.slug === selectedSlug) || industries[0];
   const heroFileInputRef = useRef<HTMLInputElement>(null);
@@ -189,18 +201,44 @@ export function IndustriesManager() {
     );
   };
 
-  const handleTogglePublish = (slug: string) => {
+  const handleTogglePublish = async (slug: string) => {
+    const target = industries.find((i) => i.slug === slug);
+    if (!target) return;
+    const updated = { ...target, published: !target.published };
     setIndustries((prev) =>
-      prev.map((ind) =>
-        ind.slug === slug ? { ...ind, published: !ind.published } : ind
-      )
+      prev.map((ind) => (ind.slug === slug ? updated : ind))
     );
+    try {
+      await fetch("/api/admin/industries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+    } catch (err) {
+      console.error("Failed to toggle publish status:", err);
+    }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSavedNotice(true);
-    setTimeout(() => setIsSavedNotice(false), 3000);
+    if (!selected) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/admin/industries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selected),
+      });
+      if (res.ok) {
+        setIsSavedNotice(true);
+        setTimeout(() => setIsSavedNotice(false), 3000);
+      }
+    } catch (err) {
+      console.error("Failed to save industry:", err);
+      alert("Failed to save industry to database.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const [newAppInput, setNewAppInput] = useState("");
@@ -258,7 +296,7 @@ export function IndustriesManager() {
         {isSavedNotice && (
           <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-2 text-xs font-medium text-emerald-400 animate-in fade-in">
             <CheckCircle2 className="size-4" />
-            <span>Changes saved to local preview</span>
+            <span>Changes saved & published live!</span>
           </div>
         )}
       </div>
@@ -418,10 +456,11 @@ export function IndustriesManager() {
 
               <button
                 type="submit"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-md shadow-accent/20 hover:bg-accent/90"
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-md shadow-accent/20 hover:bg-accent/90 disabled:opacity-50"
               >
                 <Save className="size-3.5" />
-                <span>Save Sector</span>
+                <span>{saving ? "Saving..." : "Save Sector"}</span>
               </button>
             </div>
           </div>

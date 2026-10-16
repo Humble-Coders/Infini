@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Newspaper,
   Plus,
@@ -106,7 +106,19 @@ export function NewsBlogManager() {
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<NewsArticleItem | null>(null);
+  const [saving, setSaving] = useState(false);
   const coverFileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/news")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && Array.isArray(data.articles) && data.articles.length > 0) {
+          setArticles(data.articles);
+        }
+      })
+      .catch((err) => console.error("Error loading news articles:", err));
+  }, []);
 
   // Form state
   const [formData, setFormData] = useState<NewsArticleItem>({
@@ -165,26 +177,43 @@ export function NewsBlogManager() {
     setIsModalOpen(true);
   };
 
-  const handleToggleStatus = (id: string) => {
+  const handleToggleStatus = async (id: string) => {
+    const target = articles.find((a) => a.id === id);
+    if (!target) return;
+    const newStatus: "published" | "draft" = target.status === "published" ? "draft" : "published";
+    const updated: NewsArticleItem = { ...target, status: newStatus };
     setArticles((prev) =>
-      prev.map((a) =>
-        a.id === id
-          ? { ...a, status: a.status === "published" ? "draft" : "published" }
-          : a
-      )
+      prev.map((a) => (a.id === id ? updated : a))
     );
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this technical article?")) {
-      setArticles((prev) => prev.filter((a) => a.id !== id));
+    try {
+      await fetch("/api/admin/news", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+    } catch (err) {
+      console.error("Failed to toggle status:", err);
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this technical article?")) {
+      setArticles((prev) => prev.filter((a) => a.id !== id));
+      try {
+        await fetch(`/api/admin/news?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+      } catch (err) {
+        console.error("Failed to delete article:", err);
+      }
+    }
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.excerpt) return;
 
+    setSaving(true);
     const generatedSlug =
       formData.slug ||
       formData.title
@@ -192,23 +221,40 @@ export function NewsBlogManager() {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
 
-    if (editingItem) {
-      setArticles((prev) =>
-        prev.map((a) =>
-          a.id === editingItem.id
-            ? { ...formData, id: editingItem.id, slug: generatedSlug }
-            : a
-        )
-      );
-    } else {
-      const newItem: NewsArticleItem = {
-        ...formData,
-        id: `art-${Date.now()}`,
-        slug: generatedSlug,
-      };
-      setArticles((prev) => [newItem, ...prev]);
+    const toSave: NewsArticleItem = {
+      ...formData,
+      id: editingItem ? editingItem.id : generatedSlug,
+      slug: generatedSlug,
+    };
+
+    try {
+      const res = await fetch("/api/admin/news", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toSave),
+      });
+      const data = await res.json();
+      if (data.ok && data.article) {
+        const savedItem: NewsArticleItem = {
+          ...toSave,
+          ...data.article,
+          status: data.article.status === "draft" ? "draft" : "published",
+        };
+        if (editingItem) {
+          setArticles((prev) =>
+            prev.map((a) => (a.id === editingItem.id ? savedItem : a))
+          );
+        } else {
+          setArticles((prev) => [savedItem, ...prev]);
+        }
+        setIsModalOpen(false);
+      }
+    } catch (err) {
+      console.error("Failed to save article:", err);
+      alert("Failed to save article. Please try again.");
+    } finally {
+      setSaving(false);
     }
-    setIsModalOpen(false);
   };
 
   const publishedCount = articles.filter((a) => a.status === "published").length;
@@ -663,10 +709,11 @@ export function NewsBlogManager() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90"
+                  disabled={saving}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90 disabled:opacity-50"
                 >
                   <Save className="size-3.5" />
-                  <span>{editingItem ? "Save Changes" : "Publish Article"}</span>
+                  <span>{saving ? "Saving..." : editingItem ? "Save Changes" : "Publish Article"}</span>
                 </button>
               </div>
             </form>

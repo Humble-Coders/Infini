@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Award,
   CheckCircle2,
@@ -122,7 +122,19 @@ export function CertificationsManager() {
   const [certs, setCerts] = useState<CertificationItem[]>(REAL_CERTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CertificationItem | null>(null);
+  const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/certifications")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && Array.isArray(data.certifications) && data.certifications.length > 0) {
+          setCerts(data.certifications);
+        }
+      })
+      .catch((err) => console.error("Error loading certifications:", err));
+  }, []);
 
   const [formData, setFormData] = useState<CertificationItem>({
     id: "",
@@ -160,15 +172,34 @@ export function CertificationsManager() {
     setIsModalOpen(true);
   };
 
-  const handleTogglePublish = (id: string) => {
+  const handleTogglePublish = async (id: string) => {
+    const target = certs.find((c) => c.id === id);
+    if (!target) return;
+    const updated = { ...target, published: !target.published };
     setCerts((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, published: !c.published } : c))
+      prev.map((c) => (c.id === id ? updated : c))
     );
+    try {
+      await fetch("/api/admin/certifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+    } catch (err) {
+      console.error("Failed to toggle publish status:", err);
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Remove this certificate record?")) {
       setCerts((prev) => prev.filter((c) => c.id !== id));
+      try {
+        await fetch(`/api/admin/certifications?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+      } catch (err) {
+        console.error("Failed to delete certificate:", err);
+      }
     }
   };
 
@@ -199,22 +230,47 @@ export function CertificationsManager() {
     }));
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.certificateNumber) return;
 
-    if (editingItem) {
-      setCerts((prev) =>
-        prev.map((c) => (c.id === editingItem.id ? { ...formData, id: editingItem.id } : c))
-      );
-    } else {
-      const newItem: CertificationItem = {
-        ...formData,
-        id: `cert-${Date.now()}`,
-      };
-      setCerts((prev) => [...prev, newItem]);
+    setSaving(true);
+    const docId = editingItem
+      ? editingItem.id
+      : formData.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+    const toSave: CertificationItem = {
+      ...formData,
+      id: docId,
+    };
+
+    try {
+      const res = await fetch("/api/admin/certifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toSave),
+      });
+      const data = await res.json();
+      if (data.ok && data.certification) {
+        const savedItem = { ...toSave, ...data.certification };
+        if (editingItem) {
+          setCerts((prev) =>
+            prev.map((c) => (c.id === editingItem.id ? savedItem : c))
+          );
+        } else {
+          setCerts((prev) => [...prev, savedItem]);
+        }
+        setIsModalOpen(false);
+      }
+    } catch (err) {
+      console.error("Failed to save certification:", err);
+      alert("Failed to save certificate. Please try again.");
+    } finally {
+      setSaving(false);
     }
-    setIsModalOpen(false);
   };
 
   const totalPublished = certs.filter((c) => c.published).length;
@@ -569,10 +625,11 @@ export function CertificationsManager() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+                  disabled={saving}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm hover:bg-accent/90 disabled:opacity-50"
                 >
                   <Save className="size-3.5" />
-                  <span>{editingItem ? "Update Record" : "Save Record"}</span>
+                  <span>{saving ? "Saving..." : editingItem ? "Update Record" : "Save Record"}</span>
                 </button>
               </div>
             </form>

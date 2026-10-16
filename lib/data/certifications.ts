@@ -17,6 +17,8 @@ import type { CertificationDoc, WithId } from "@/lib/types";
 
 const COLLECTION = "certifications";
 
+import { buildCertifications } from "@/backend/scripts/content";
+
 /** All published certifications, in display order, including expired ones. Used by admin and as the base for public reads. */
 async function getPublishedCertificationsUncached(): Promise<WithId<CertificationDoc>[]> {
   try {
@@ -24,10 +26,21 @@ async function getPublishedCertificationsUncached(): Promise<WithId<Certificatio
       query(collection(requireDb(), COLLECTION), where("published", "==", true))
     );
     const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as CertificationDoc) }));
-    return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    if (docs.length > 0) {
+      return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    }
   } catch {
-    return [];
+    // fallback
   }
+
+  const ts = {
+    fromDate: (date: Date) => ({
+      toDate: () => date,
+      seconds: Math.floor(date.getTime() / 1000),
+      nanoseconds: 0,
+    }),
+  };
+  return buildCertifications(ts) as unknown as WithId<CertificationDoc>[];
 }
 
 /**
@@ -41,7 +54,10 @@ async function getPublishedCertificationsUncached(): Promise<WithId<Certificatio
 async function getActiveCertificationsUncached(): Promise<WithId<CertificationDoc>[]> {
   const published = await getPublishedCertifications();
   const now = Date.now();
-  return published.filter((cert) => cert.validUntil.toDate().getTime() >= now);
+  return published.filter((cert) => {
+    const time = cert.validUntil?.toDate ? cert.validUntil.toDate().getTime() : Infinity;
+    return time >= now;
+  });
 }
 
 /** Active (published + not expired) certifications by document ID, in the order given, for an industry's `relatedCertIds`. */
