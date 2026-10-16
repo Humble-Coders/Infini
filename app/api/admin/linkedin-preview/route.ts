@@ -28,6 +28,25 @@ export async function POST(req: Request) {
     }
 
     const trimmedUrl = url.trim();
+
+    // SSRF Defense: strictly enforce HTTPS protocol and LinkedIn domain
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(trimmedUrl);
+    } catch {
+      return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
+    }
+
+    if (parsedUrl.protocol !== "https:") {
+      return NextResponse.json({ error: "Only HTTPS URLs are permitted" }, { status: 400 });
+    }
+
+    const host = parsedUrl.hostname.toLowerCase();
+    const isLinkedIn = host === "linkedin.com" || host.endsWith(".linkedin.com");
+    if (!isLinkedIn) {
+      return NextResponse.json({ error: "Only official LinkedIn URLs are permitted" }, { status: 400 });
+    }
+
     let ogTitle = "";
     let ogDescription = "";
     let ogImage = "";

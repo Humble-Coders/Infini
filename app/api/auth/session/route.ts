@@ -1,6 +1,7 @@
 import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { adminAuth } from "@/backend/firebase/admin";
 import { SESSION_COOKIE, SESSION_MAX_AGE_MS } from "@/lib/auth/constants";
 import { signHmacSession } from "@/lib/auth/session";
@@ -53,7 +54,10 @@ export async function POST(request: NextRequest) {
     }
 
     const expectedPassword = process.env.ADMIN_PASSWORD || "InfiniSuperAdmin2026!";
-    if (password !== expectedPassword && password !== "InfiniAdmin2026!" && password !== "admin123456") {
+    const inputHash = crypto.createHash("sha256").update(password).digest();
+    const expectedHash = crypto.createHash("sha256").update(expectedPassword).digest();
+
+    if (!crypto.timingSafeEqual(inputHash, expectedHash)) {
       return NextResponse.json({ error: "Incorrect administrator password." }, { status: 401 });
     }
 

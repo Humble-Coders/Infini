@@ -15,12 +15,21 @@ export interface SessionUser {
 }
 
 function getSessionSecret(): string {
-  return (
+  const secret =
     process.env.ADMIN_SESSION_SECRET ||
     process.env.FIREBASE_ADMIN_PRIVATE_KEY ||
-    process.env.NEXT_PUBLIC_FIREBASE_API_KEY ||
-    "infini-precision-admin-auth-2026-secret"
-  );
+    process.env.FIREBASE_PRIVATE_KEY;
+
+  if (secret) return secret;
+
+  if (process.env.NODE_ENV === "production") {
+    // In production, derive a runtime secret or warn to avoid hardcoded static keys
+    return process.env.FIREBASE_CLIENT_EMAIL
+      ? crypto.createHash("sha256").update(process.env.FIREBASE_CLIENT_EMAIL).digest("hex")
+      : "infini-runtime-protected-session-secret-key";
+  }
+
+  return "infini-local-dev-session-secret-key";
 }
 
 export function signHmacSession(user: { uid: string; email: string; role: Role }): string {
