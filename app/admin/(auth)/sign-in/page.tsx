@@ -160,6 +160,7 @@ export default function SignInPage() {
                   type="email"
                   autoComplete="username"
                   required
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="rounded-xl border-border/70 bg-background/60 text-xs h-10 px-3.5 focus-visible:ring-accent"
@@ -292,6 +293,7 @@ export default function SignInPage() {
                     type="email"
                     autoComplete="email"
                     required
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="rounded-xl border-border/70 bg-background/60 text-xs h-10 px-3.5 focus-visible:ring-accent"
@@ -300,7 +302,7 @@ export default function SignInPage() {
 
                 <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-card/40 p-2.5 text-[11px] text-muted-foreground">
                   <Lock className="size-3.5 text-accent shrink-0" />
-                  <span>Restricted to authorized @infini.co.in administrator accounts.</span>
+                  <span>Restricted to authorized administrator accounts.</span>
                 </div>
 
                 <Button

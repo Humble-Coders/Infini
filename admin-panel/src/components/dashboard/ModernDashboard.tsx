@@ -418,27 +418,6 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
               <ArrowRight className="size-3" />
             </Link>
           </div>
-
-          {/* Quality Compliance Pill */}
-          <div className="rounded-2xl border border-border/80 bg-card/60 p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-foreground">Quality Compliance</span>
-              <span className="text-[10px] font-mono text-emerald-400">Current</span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between rounded-lg bg-background/50 px-3 py-2 text-xs">
-                <span className="text-muted-foreground">ISO 9001:2015</span>
-                <span className="font-mono text-foreground">Valid Jan 2027</span>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-background/50 px-3 py-2 text-xs">
-                <span className="text-muted-foreground">ISO 13485:2016</span>
-                <span className="font-mono text-foreground">Valid Mar 2027</span>
-              </div>
-            </div>
-            <Link href="/admin/certifications" className="block text-center text-xs text-accent hover:underline pt-1">
-              Manage ISO Documents
-            </Link>
-          </div>
         </div>
       </div>
     </div>

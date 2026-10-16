@@ -56,11 +56,10 @@ export function verifyHmacSession(cookieValue: string): SessionUser | null {
     if (!payload.exp || Date.now() > payload.exp) return null;
     if (!payload.email || !payload.role) return null;
 
-    // Real admin validation: only registered admin emails
-    const isRealAdmin =
-      payload.email === "admin@infini.co.in" ||
-      payload.email.endsWith("@infini.co.in");
-    if (!isRealAdmin) return null;
+    // Real admin validation: must have valid email
+    const email = String(payload.email || "").toLowerCase();
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!isEmailValid) return null;
 
     return {
       uid: payload.uid || "admin-authenticated",

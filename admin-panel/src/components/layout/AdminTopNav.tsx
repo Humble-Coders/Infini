@@ -10,8 +10,6 @@ import {
   FileText,
   MessageSquareQuote,
   Newspaper,
-  Factory,
-  Award,
   Settings,
   Image as ImageIcon,
   Menu,
@@ -41,8 +39,6 @@ const TOP_NAV_ITEMS: NavItem[] = [
   { label: "Case Studies", href: "/admin/case-studies", icon: FileText, roles: CONTENT_ROLES },
   { label: "Reviews", href: "/admin/testimonials", icon: MessageSquareQuote, roles: CONTENT_ROLES },
   { label: "Articles", href: "/admin/news", icon: Newspaper, roles: CONTENT_ROLES },
-  { label: "Industries", href: "/admin/industries", icon: Factory, roles: CONTENT_ROLES },
-  { label: "Certifications", href: "/admin/certifications", icon: Award, roles: CONTENT_ROLES },
   { label: "Media", href: "/admin/media", icon: ImageIcon, roles: CONTENT_ROLES },
   { label: "Settings", href: "/admin/settings", icon: Settings, roles: ["superAdmin"] },
 ];

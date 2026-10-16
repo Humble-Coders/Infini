@@ -44,15 +44,11 @@ export async function POST(request: NextRequest) {
     const email = String(payload.email || "").trim().toLowerCase();
     const password = String(payload.password || "");
 
-    const adminEmailEnv = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
-    const isRealAdmin =
-      (adminEmailEnv && email === adminEmailEnv) ||
-      email === "admin@infini.co.in" ||
-      email.endsWith("@infini.co.in");
-    if (!isRealAdmin) {
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!isEmailValid) {
       return NextResponse.json(
-        { error: "Access denied. Only authorized @infini.co.in administrator emails may sign in." },
-        { status: 401 }
+        { error: "Please enter a valid administrator email address." },
+        { status: 400 }
       );
     }
 
@@ -131,10 +127,10 @@ export async function POST(request: NextRequest) {
           decodedPayload.exp * 1000 > Date.now()
         ) {
           const email = String(decodedPayload.email || "").toLowerCase();
-          const isRealAdmin = email === "admin@infini.co.in" || email.endsWith("@infini.co.in");
+          const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-          if (!isRealAdmin) {
-            return NextResponse.json({ error: "Access denied. Non-administrator Google account." }, { status: 403 });
+          if (!isEmailValid) {
+            return NextResponse.json({ error: "Access denied. Non-administrator account." }, { status: 403 });
           }
 
           const role = decodedPayload.role || "superAdmin";

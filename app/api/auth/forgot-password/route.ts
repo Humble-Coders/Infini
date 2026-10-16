@@ -37,21 +37,9 @@ export async function POST(request: NextRequest) {
   const payload = await request.json().catch(() => ({}));
   const email = String(payload.email || "").trim().toLowerCase();
 
-  if (!email || !email.includes("@")) {
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!isEmailValid) {
     return NextResponse.json({ error: "Please enter a valid administrator email address." }, { status: 400 });
-  }
-
-  // Security enforcement: Restrict password resets to real INFINI administrators
-  const adminEmailEnv = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
-  const isRealAdmin =
-    (adminEmailEnv && email === adminEmailEnv) ||
-    email === "admin@infini.co.in" ||
-    email.endsWith("@infini.co.in");
-  if (!isRealAdmin) {
-    return NextResponse.json(
-      { error: "Access restricted. Only registered @infini.co.in administrator accounts may request credentials." },
-      { status: 403 }
-    );
   }
 
   try {
