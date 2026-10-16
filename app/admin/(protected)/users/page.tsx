@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { TeamAccessManager } from "@/admin-panel/src/components/modules/TeamAccessManager";
+import { TeamAccessManager } from "@/components/modules/TeamAccessManager";
 
 export const metadata: Metadata = { title: "Team & Role Access | Infini Admin" };
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { MediaLibraryManager } from "@/admin-panel/src/components/modules/MediaLibraryManager";
+import { MediaLibraryManager } from "@/components/modules/MediaLibraryManager";
 
 export const metadata: Metadata = { title: "Media Library | Infini Admin" };
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { IndustriesManager } from "@/admin-panel/src/components/modules/IndustriesManager";
+import { IndustriesManager } from "@/components/modules/IndustriesManager";
 
 export const metadata: Metadata = { title: "Industries & Sectors | Infini Admin" };
 

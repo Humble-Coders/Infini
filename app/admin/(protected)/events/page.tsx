@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { EventBannerManager } from "@/admin-panel/src/components/modules/EventBannerManager";
+import { EventBannerManager } from "@/components/modules/EventBannerManager";
 
 export const metadata: Metadata = { title: "Event & Announcement Banner | Infini Admin" };
 

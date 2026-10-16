@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { TestimonialsManager } from "@/admin-panel/src/components/modules/TestimonialsManager";
+import { TestimonialsManager } from "@/components/modules/TestimonialsManager";
 
 export const metadata: Metadata = { title: "Testimonials & Reviews | Infini Admin" };
 

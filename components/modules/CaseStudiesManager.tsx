@@ -89,7 +89,7 @@ export function CaseStudiesManager() {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok && Array.isArray(data.caseStudies) && data.caseStudies.length > 0) {
-          const formatted: CaseStudyItem[] = data.caseStudies.map((cs: any) => ({
+          const formatted: CaseStudyItem[] = data.caseStudies.map((cs: Partial<CaseStudyItem> & { industryId?: string; result?: string; results?: Array<{ label?: string; value?: string }>; specs?: { material?: string } }) => ({
             id: cs.id,
             slug: cs.slug || cs.id,
             title: cs.title,

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/requireRole";
-import { CertificationsManager } from "@/admin-panel/src/components/modules/CertificationsManager";
+import { CertificationsManager } from "@/components/modules/CertificationsManager";
 
 export const metadata: Metadata = { title: "Certifications & Accreditations | Infini Admin" };
 
