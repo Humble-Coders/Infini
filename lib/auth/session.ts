@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import { adminAuth } from "@/backend/firebase/admin";
@@ -85,7 +86,7 @@ export function verifyHmacSession(cookieValue: string): SessionUser | null {
  * handlers). Accepts both Firebase Admin SDK session cookies and cryptographically
  * signed HMAC admin tokens for resilience across cloud environments.
  */
-export async function verifySession(): Promise<SessionUser | null> {
+async function verifySessionUncached(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get(SESSION_COOKIE)?.value;
   if (!sessionCookie) return null;
@@ -119,3 +120,5 @@ export async function verifySession(): Promise<SessionUser | null> {
     return null;
   }
 }
+
+export const verifySession = cache(verifySessionUncached);

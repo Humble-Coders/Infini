@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -46,11 +47,14 @@ const TOP_NAV_ITEMS: NavItem[] = [
 export function AdminTopNav({ email, role }: { email: string; role: Role }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // Close mobile drawer automatically when navigating to another page
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
+
+  // Close mobile drawer and clear pendingPath automatically when route finishes loading
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (prevPathname !== pathname) {
     setPrevPathname(pathname);
     setMobileMenuOpen(false);
+    setPendingPath(null);
   }
 
   const visibleItems = TOP_NAV_ITEMS.filter((item) => item.roles.includes(role));
@@ -64,20 +68,41 @@ export function AdminTopNav({ email, role }: { email: string; role: Role }) {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-xl">
-        {/* Running red glow light beam along the top edge */}
+        {/* Top edge indicator: idle ambient glow or fast animated pulse during route transition */}
         <div className="absolute top-0 inset-x-0 h-[2px] overflow-hidden pointer-events-none">
-          <div className="h-full w-[200%] -translate-x-1/2 animate-[marquee_6s_linear_infinite] bg-[linear-gradient(90deg,transparent_0%,rgba(242,53,64,0.2)_30%,#f23540_50%,rgba(242,53,64,0.2)_70%,transparent_100%)] shadow-[0_0_12px_rgba(242,53,64,0.8)]" />
+          <div
+            className={cn(
+              "h-full bg-[linear-gradient(90deg,transparent_0%,rgba(242,53,64,0.3)_30%,#f23540_50%,rgba(242,53,64,0.3)_70%,transparent_100%)] shadow-[0_0_12px_rgba(242,53,64,0.8)]",
+              pendingPath
+                ? "w-[150%] animate-[marquee_1s_ease-in-out_infinite]"
+                : "w-[200%] -translate-x-1/2 animate-[marquee_6s_linear_infinite]"
+            )}
+          />
         </div>
 
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 px-3.5 py-2.5 sm:px-6">
           {/* Brand identity on the left */}
           <div className="flex items-center gap-3 shrink-0">
-            <Link href="/admin" className="group flex items-center">
-              <div className="flex flex-col">
-                <span className="font-mono text-sm sm:text-base font-bold tracking-wider text-foreground">
+            <Link
+              href="/admin"
+              onClick={() => {
+                if (pathname !== "/admin") setPendingPath("/admin");
+              }}
+              className="group flex items-center gap-3"
+            >
+              <Image
+                src="/brand/infini-finish-unlimited.png"
+                alt="INFINI"
+                width={120}
+                height={58}
+                className="h-8 w-auto object-contain"
+                priority
+              />
+              <div className="hidden sm:flex flex-col border-l border-border/80 pl-3">
+                <span className="font-mono text-xs sm:text-sm font-bold tracking-wider text-foreground">
                   INFINI
                 </span>
-                <span className="text-[9px] sm:text-[10px] tracking-widest text-muted-foreground uppercase font-mono">
+                <span className="text-[9px] tracking-widest text-muted-foreground uppercase font-mono">
                   Admin Console
                 </span>
               </div>
@@ -92,16 +117,22 @@ export function AdminTopNav({ email, role }: { email: string; role: Role }) {
               className="hidden lg:flex items-center gap-1 rounded-full border border-border/80 bg-card/60 p-1 shadow-inner backdrop-blur-md overflow-x-auto scrollbar-none"
             >
               {visibleItems.map((item) => {
-                const isActive =
+                const isCurrent =
                   pathname === item.href ||
                   (item.href !== "/admin" && pathname?.startsWith(item.href));
+                const isPending = pendingPath === item.href;
+                const isActive = pendingPath ? isPending : isCurrent;
                 const Icon = item.icon;
 
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    aria-current={isActive ? "page" : undefined}
+                    prefetch={true}
+                    onClick={() => {
+                      if (!isCurrent) setPendingPath(item.href);
+                    }}
+                    aria-current={isCurrent ? "page" : undefined}
                     className={cn(
                       "relative flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-150 whitespace-nowrap",
                       isActive
@@ -153,16 +184,22 @@ export function AdminTopNav({ email, role }: { email: string; role: Role }) {
             {/* Navigation links grid */}
             <nav aria-label="Mobile Navigation Drawer" className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               {visibleItems.map((item) => {
-                const isActive =
+                const isCurrent =
                   pathname === item.href ||
                   (item.href !== "/admin" && pathname?.startsWith(item.href));
+                const isPending = pendingPath === item.href;
+                const isActive = pendingPath ? isPending : isCurrent;
                 const Icon = item.icon;
 
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                    prefetch={true}
+                    onClick={() => {
+                      if (!isCurrent) setPendingPath(item.href);
+                      setMobileMenuOpen(false);
+                    }}
                     className={cn(
                       "flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-medium transition-all",
                       isActive

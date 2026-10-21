@@ -1,6 +1,14 @@
 import type { FirestoreTimestamp } from "./common";
 
-export type LeadStatus = "new" | "contacted" | "qualified" | "won" | "lost";
+export type LeadStatus =
+  | "new"
+  | "contacted"
+  | "qualified"
+  | "quoted"
+  | "won"
+  | "completed"
+  | "lost"
+  | "closed";
 
 export interface LeadNote {
   authorId: string;

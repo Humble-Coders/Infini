@@ -30,31 +30,6 @@ export default function SignInPage() {
   const [resetSent, setResetSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const isDev = process.env.NODE_ENV === "development";
-
-  async function handleLocalDevLogin() {
-    setSubmitting(true);
-    setError(null);
-    try {
-      const response = await fetch("/api/auth/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          devLogin: true,
-          email: "admin@infini.co.in",
-          role: "superAdmin",
-        }),
-      });
-      if (!response.ok) throw new Error("Local session exchange failed");
-      router.push("/admin");
-      router.refresh();
-    } catch {
-      setError("Local dev sign-in failed. Please check server.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   async function handleSignIn(event: FormEvent) {
     event.preventDefault();
     setError(null);
@@ -77,8 +52,7 @@ export default function SignInPage() {
       const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        router.push("/admin");
-        router.refresh();
+        window.location.href = "/admin";
         return;
       }
 
@@ -220,19 +194,6 @@ export default function SignInPage() {
                   "Sign in"
                 )}
               </Button>
-
-              {isDev && (
-                <div className="pt-2 border-t border-border/50">
-                  <button
-                    type="button"
-                    onClick={handleLocalDevLogin}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card/60 py-2 text-xs font-mono font-medium text-foreground hover:bg-muted transition-colors shadow-sm"
-                  >
-                    <KeyRound className="size-3.5 text-accent" />
-                    <span>Quick Dev Sign-In (Local Bypass)</span>
-                  </button>
-                </div>
-              )}
             </form>
           </>
         ) : (

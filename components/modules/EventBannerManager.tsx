@@ -2,13 +2,9 @@
 
 import { useState, useEffect } from "react";
 import {
-  CalendarDays,
   Check,
-  Eye,
-  EyeOff,
   Save,
   ArrowRight,
-  Clock,
   MapPin,
   Sparkles,
   Radio,
@@ -101,87 +97,6 @@ export function EventBannerManager() {
             </>
           )}
         </button>
-      </div>
-
-      {/* Metric Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Active Event */}
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Featured Event
-            </span>
-            <span className="flex size-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-accent">
-              <CalendarDays className="size-4" />
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className="text-lg font-bold text-foreground truncate block">
-              {config.title}
-            </span>
-            <span className="text-xs text-muted-foreground">{config.badge}</span>
-          </div>
-        </div>
-
-        {/* Live Banner Status */}
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Banner Status
-            </span>
-            <span className={`flex size-8 items-center justify-center rounded-xl border ${
-              config.enabled
-                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                : "bg-amber-500/10 border-amber-500/20 text-amber-400"
-            }`}>
-              {config.enabled ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className={`text-lg font-bold font-mono ${config.enabled ? "text-emerald-400" : "text-amber-400"}`}>
-              {config.enabled ? "Live on Site" : "Hidden"}
-            </span>
-            <span className="text-xs text-muted-foreground block">
-              {config.enabled ? "Visible to all visitors" : "Draft mode (not visible)"}
-            </span>
-          </div>
-        </div>
-
-        {/* Exhibition Dates */}
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Event Window
-            </span>
-            <span className="flex size-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-accent">
-              <Clock className="size-4" />
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className="text-lg font-bold text-foreground font-mono">
-              18 - 23 Sep 2026
-            </span>
-            <span className="text-xs text-muted-foreground block">EMO Hannover schedule</span>
-          </div>
-        </div>
-
-        {/* Booth Coordinates */}
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Exhibition Booth
-            </span>
-            <span className="flex size-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-accent">
-              <MapPin className="size-4" />
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className="text-lg font-bold text-foreground truncate block">
-              Hall 11, Booth D32
-            </span>
-            <span className="text-xs text-muted-foreground">Hannover, Germany</span>
-          </div>
-        </div>
       </div>
 
       {/* Live Website Preview Box */}

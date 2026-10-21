@@ -72,8 +72,8 @@ export async function HomePage() {
   const caseStudiesTeaser = getSection<TeaserCopy>(page, "caseStudiesTeaser");
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
 
-  // Demo quotes while the testimonials collection is empty; real documents win.
-  const voices = testimonials.length > 0 ? testimonials : DEMO_TESTIMONIALS;
+  // Real documents win; getPublishedTestimonials() handles empty collection fallback
+  const voices = testimonials;
 
   return (
     <MotionProvider>

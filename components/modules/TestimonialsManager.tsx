@@ -6,14 +6,12 @@ import {
   Plus,
   Search,
   Star,
-  CheckCircle2,
   Eye,
   EyeOff,
   Edit3,
   Trash2,
   Building,
   User,
-  ArrowUpDown,
   Save,
   X,
   UploadCloud,
@@ -110,7 +108,7 @@ export function TestimonialsManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...item, published: newStatus }),
       });
-      setSaveMessage(newStatus ? "Published live to site" : "Moved to drafts");
+      setSaveMessage(newStatus ? "Live on website" : "Hidden (saved in panel only)");
       setTimeout(() => setSaveMessage(null), 3000);
     } catch {
       setTestimonials((prev) =>
@@ -167,8 +165,6 @@ export function TestimonialsManager() {
     }
   };
 
-  const publishedCount = testimonials.filter((t) => t.published).length;
-
   return (
     <div className="space-y-6">
       {/* Header bar with breadcrumbs and actions */}
@@ -201,77 +197,6 @@ export function TestimonialsManager() {
         </button>
       </div>
 
-      {/* Top Bento Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Total Reviews
-            </span>
-            <span className="flex size-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-accent">
-              <MessageSquareQuote className="size-4" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-foreground font-mono">
-              {testimonials.length}
-            </span>
-            <span className="text-xs text-muted-foreground">stored quotes</span>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Live on Site
-            </span>
-            <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <Eye className="size-4" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-emerald-400 font-mono">
-              {publishedCount}
-            </span>
-            <span className="text-xs text-muted-foreground">visible live</span>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Quality Score
-            </span>
-            <span className="flex size-8 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
-              <Star className="size-4 fill-amber-400 text-amber-400" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-foreground font-mono">
-              5.0
-            </span>
-            <span className="text-xs text-amber-400 font-mono">Verified OEM</span>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all hover:border-accent/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Industries
-            </span>
-            <span className="flex size-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-accent">
-              <Building className="size-4" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-foreground font-mono">
-              5
-            </span>
-            <span className="text-xs text-muted-foreground">precision sectors</span>
-          </div>
-        </div>
-      </div>
-
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/40 p-3 backdrop-blur-md">
         <div className="relative w-full sm:max-w-xs md:max-w-sm">
@@ -286,17 +211,21 @@ export function TestimonialsManager() {
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 shrink-0 self-start sm:self-auto">
-          {(["all", "published", "draft"] as const).map((status) => (
+          {[
+            { id: "all", label: "All Reviews" },
+            { id: "published", label: "Active on Site" },
+            { id: "draft", label: "Panel Only" },
+          ].map((tab) => (
             <button
-              key={status}
-              onClick={() => setFilterStatus(status)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                filterStatus === status
-                  ? "bg-accent/15 text-accent border border-accent/30"
-                  : "text-muted-foreground hover:bg-card hover:text-foreground"
+              key={tab.id}
+              onClick={() => setFilterStatus(tab.id as "all" | "published" | "draft")}
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors border ${
+                filterStatus === tab.id
+                  ? "bg-accent/15 text-accent border-accent/40"
+                  : "border-transparent text-muted-foreground hover:bg-card hover:text-foreground"
               }`}
             >
-              {status}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -327,28 +256,29 @@ export function TestimonialsManager() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="rounded-full border border-border/60 bg-background/40 px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono text-muted-foreground">
                     #{item.order}
                   </span>
                   <button
+                    type="button"
                     onClick={() => handleTogglePublish(item.id)}
-                    title={item.published ? "Active on site" : "Draft (hidden)"}
-                    className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                    title={item.published ? "Click to hide from website (keep in panel only)" : "Click to show on live website"}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors border ${
                       item.published
-                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                        : "bg-muted/40 text-muted-foreground border border-border"
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                        : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     {item.published ? (
                       <>
-                        <Eye className="size-2.5" />
-                        <span>Live</span>
+                        <Eye className="size-3 text-emerald-400" />
+                        <span>Active on Site</span>
                       </>
                     ) : (
                       <>
-                        <EyeOff className="size-2.5" />
-                        <span>Draft</span>
+                        <EyeOff className="size-3 text-muted-foreground" />
+                        <span>Panel Only (Hidden)</span>
                       </>
                     )}
                   </button>
@@ -612,17 +542,34 @@ export function TestimonialsManager() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="published-toggle"
-                  checked={formData.published}
-                  onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                  className="size-4 rounded border-border text-accent focus:ring-accent"
-                />
-                <label htmlFor="published-toggle" className="text-xs text-foreground select-none">
-                  Publish immediately to homepage review carousel
-                </label>
+              <div className="flex items-center justify-between gap-4 rounded-xl border border-border/70 bg-card/40 p-3 mt-2">
+                <div>
+                  <div className="text-xs font-semibold text-foreground">
+                    Show on Public Website
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {formData.published
+                      ? "Visible to visitors in the customer reviews carousel"
+                      : "Saved in admin panel only (hidden from website)"}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formData.published}
+                  onClick={() => setFormData({ ...formData, published: !formData.published })}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border transition-colors ${
+                    formData.published
+                      ? "border-emerald-500/50 bg-emerald-500"
+                      : "border-border bg-muted/70"
+                  }`}
+                >
+                  <span
+                    className={`inline-block size-4 transform rounded-full bg-white transition duration-200 ${
+                      formData.published ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
               </div>
               </div>
 

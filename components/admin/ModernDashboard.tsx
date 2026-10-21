@@ -17,7 +17,6 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/components/ui/utils";
-import { GlowingBorderCard } from "@/components/ui/glowing-border-card";
 import type { Role } from "@/lib/types";
 
 interface LeadItem {
@@ -28,7 +27,7 @@ interface LeadItem {
   industry: string;
   message: string;
   date: string;
-  status: "New" | "In Review" | "Quoted";
+  status: "New" | "In Review" | "Quoted" | "Completed" | "Closed";
   hasDrawing: boolean;
 }
 
@@ -69,7 +68,7 @@ const SAMPLE_LEADS: LeadItem[] = [
 ];
 
 export function ModernDashboard({ email, role }: { email: string; role: Role }) {
-  const [filter, setFilter] = useState<"All" | "New" | "In Review" | "Quoted">("All");
+  const [filter, setFilter] = useState<"All" | "New" | "In Review" | "Quoted" | "Completed">("All");
   const [bannerActive, setBannerActive] = useState(true);
 
   const filteredLeads =
@@ -79,8 +78,8 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
 
   return (
     <div className="space-y-6">
-      {/* Header Welcome Bar with running red glow border effect */}
-      <GlowingBorderCard className="rounded-2xl" innerClassName="p-4 sm:p-6">
+      {/* Header Welcome Bar */}
+      <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-card/60 p-4 sm:p-6 backdrop-blur-sm shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -117,7 +116,7 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
             </Link>
           </div>
         </div>
-      </GlowingBorderCard>
+      </div>
 
       {/* Top 4 KPI Metrics Row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -219,16 +218,16 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
                 </p>
               </div>
 
-              {/* Filter Pills */}
+              {/* Filter Tabs */}
               <div className="flex items-center gap-1 rounded-full border border-border bg-background/60 p-1">
-                {(["All", "New", "In Review", "Quoted"] as const).map((tab) => (
+                {(["All", "New", "In Review", "Quoted", "Completed"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setFilter(tab)}
                     className={cn(
                       "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                       filter === tab
-                        ? "bg-accent text-accent-foreground"
+                        ? "bg-accent text-accent-foreground font-semibold"
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -239,64 +238,74 @@ export function ModernDashboard({ email, role }: { email: string; role: Role }) 
             </div>
 
             {/* Inquiries List */}
-            <div className="mt-5 divide-y divide-border/60">
-              {filteredLeads.map((lead) => (
-                <div
-                  key={lead.id}
-                  className="flex flex-col gap-3 py-3.5 sm:py-4 transition-colors hover:bg-muted/20 px-2 sm:px-3 rounded-xl"
-                >
-                  <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
-                    <span className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background font-mono text-xs font-semibold text-foreground mt-0.5">
-                      {lead.name.charAt(0)}
-                    </span>
-                    <div className="space-y-1.5 min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="text-xs sm:text-sm font-semibold text-foreground">
-                          {lead.name}
+            <div className="mt-4 divide-y divide-border/50">
+              {filteredLeads.map((lead) => {
+                const leadTargetId =
+                  lead.id === "lead-1" ? "lead-101" : lead.id === "lead-2" ? "lead-102" : "lead-103";
+
+                return (
+                  <div
+                    key={lead.id}
+                    className="flex flex-col gap-1.5 py-2.5 transition-colors hover:bg-muted/20 px-2 sm:px-3 rounded-xl"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-2.5 sm:gap-3 min-w-0 flex-1">
+                        <span className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-background font-mono text-xs font-semibold text-foreground mt-0.5">
+                          {lead.name.charAt(0)}
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          · {lead.company}
-                        </span>
-                        {lead.hasDrawing && (
-                          <span className="inline-flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-[10px] font-mono text-accent shrink-0">
-                            Drawing Attached
-                          </span>
-                        )}
+                        <div className="space-y-0.5 min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                            <span className="text-xs sm:text-sm font-semibold text-foreground">
+                              {lead.name}
+                            </span>
+                            <span className="text-xs text-muted-foreground truncate">
+                              · {lead.company}
+                            </span>
+                            {lead.hasDrawing && (
+                              <span className="inline-flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-1.5 py-0.2 text-[9px] font-mono text-accent shrink-0">
+                                Drawing Attached
+                              </span>
+                            )}
+                          </div>
+                          <p className="line-clamp-1 text-xs text-muted-foreground break-words leading-relaxed">
+                            {lead.message}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-x-2 text-[10px] text-muted-foreground font-mono">
+                            <span className="break-all">{lead.email}</span>
+                            <span>·</span>
+                            <span>{lead.industry}</span>
+                            <span>·</span>
+                            <span>{lead.date}</span>
+                          </div>
+                        </div>
                       </div>
-                      <p className="line-clamp-2 text-xs text-muted-foreground break-words leading-relaxed">
-                        {lead.message}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground font-mono">
-                        <span className="break-all">{lead.email}</span>
-                        <span>·</span>
-                        <span>{lead.industry}</span>
-                        <span>·</span>
-                        <span>{lead.date}</span>
+
+                      {/* Status and Action in Top Right */}
+                      <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
+                        <span
+                          className={cn(
+                            "rounded-md px-2 py-0.5 text-[10px] font-medium font-mono border",
+                            lead.status === "New" && "bg-accent/15 text-accent border-accent/30",
+                            lead.status === "In Review" && "bg-amber-500/15 text-amber-400 border-amber-500/30",
+                            lead.status === "Quoted" && "bg-sky-500/15 text-sky-400 border-sky-500/30",
+                            lead.status === "Completed" && "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+                            lead.status === "Closed" && "bg-muted text-muted-foreground border-border"
+                          )}
+                        >
+                          {lead.status}
+                        </span>
+                        <Link
+                          href={`/admin/leads/${leadTargetId}`}
+                          className="flex size-6 sm:size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-accent hover:text-foreground"
+                          aria-label={`View details for ${lead.name}`}
+                        >
+                          <ArrowUpRight className="size-3 sm:size-3.5" aria-hidden="true" />
+                        </Link>
                       </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t border-border/40 sm:border-0 pl-10 sm:pl-0">
-                    <span
-                      className={cn(
-                        "rounded-full px-2.5 py-0.5 text-[10px] sm:text-[11px] font-medium font-mono",
-                        lead.status === "New" && "bg-accent/15 text-accent border border-accent/30",
-                        lead.status === "In Review" && "bg-amber-500/15 text-amber-400 border border-amber-500/30",
-                        lead.status === "Quoted" && "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                      )}
-                    >
-                      {lead.status}
-                    </span>
-                    <Link
-                      href="/admin/leads"
-                      className="flex size-7 sm:size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-accent hover:text-foreground"
-                      aria-label={`View details for ${lead.name}`}
-                    >
-                      <ArrowUpRight className="size-3.5 sm:size-4" aria-hidden="true" />
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="mt-4 border-t border-border/60 pt-4 text-center">

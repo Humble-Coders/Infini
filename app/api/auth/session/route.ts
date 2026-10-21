@@ -79,24 +79,7 @@ export async function POST(request: NextRequest) {
     return response;
   }
 
-  // 2. Local development fallback for testing without external Firebase network
-  if (process.env.NODE_ENV === "development" && payload.devLogin) {
-    const email = payload.email || "admin@infini.co.in";
-    const role = payload.role || "superAdmin";
-    const sessionCookie = `dev-session:${role}:${email}`;
-
-    const response = NextResponse.json({ ok: true, devMode: true });
-    response.cookies.set(SESSION_COOKIE, sessionCookie, {
-      httpOnly: true,
-      secure: false, // permits local http on localhost:3000
-      sameSite: "lax",
-      maxAge: SESSION_MAX_AGE_MS / 1000,
-      path: "/",
-    });
-    return response;
-  }
-
-  // 3. Firebase ID Token Exchange
+  // 2. Firebase ID Token Exchange
   const { idToken } = payload;
   if (typeof idToken !== "string" || !idToken) {
     return NextResponse.json({ error: "Missing authentication token or credentials" }, { status: 400 });
