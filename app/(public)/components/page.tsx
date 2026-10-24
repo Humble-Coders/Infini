@@ -11,7 +11,7 @@ import { ComponentGallery } from "@/components/sections/home/ComponentGallery";
 import { getPublishedComponentTypes } from "@/lib/data/componentTypes";
 import { getPage, getSection } from "@/lib/data/pages";
 import type { GalleryCopy } from "@/lib/types";
-import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -31,7 +31,6 @@ const COPY = {
 export const metadata: Metadata = {
   title: pageTitle("Components We Treat"),
   description: COPY.body,
-  alternates: { canonical: canonicalUrl("/components") },
   openGraph: { title: ogTitle("Components We Treat"), description: COPY.body, type: "website" },
 };
 

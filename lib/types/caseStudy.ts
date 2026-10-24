@@ -8,7 +8,7 @@ export interface CaseStudySpecs {
   [key: string]: string;
 }
 
-/** One qualitative outcome chip shown in the case study results row. */
+/** One qualitative outcome chip shown in the case-study dossier's results row. */
 export interface CaseStudyResult {
   label: string;
   value: string;
@@ -24,7 +24,7 @@ export interface CaseStudyDoc {
   solution: string;
   process: string;
   result: string;
-  /** Optional 2-3 qualitative outcome chips for the case study UI. Falls back to `result` when absent. */
+  /** Optional 2-3 qualitative outcome chips for the dossier UI. Falls back to `result` when absent. */
   results?: CaseStudyResult[];
   beforeImage: string;
   afterImage: string;

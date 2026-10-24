@@ -4,22 +4,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, Phone, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { cn } from "@/components/ui/utils";
-import { INFINI_CONTACT } from "@/lib/constants/contact";
 import type { NavLink } from "@/lib/types";
 
 const SCROLL_THRESHOLD_PX = 32;
-/*
- * Compositor-friendly header transition. The compact state used to animate the
- * nav's height (h-20 -> h-16) with transition-all, which relaid out the header
- * and everything under it on every frame. The header now keeps one layout
- * height and slides up by the difference instead, with the nav sliding back
- * down by half so the logo stays centred in the visible strip: transform only,
- * plus colour/shadow on the header surface.
- */
-const EASE = "duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]";
+const TRANSITION = "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -39,12 +30,7 @@ function NavLabel({ children, active }: { children: ReactNode; active?: boolean 
   );
 }
 
-/** Digits and a leading + only, the form `tel:` links expect. */
-function telHref(phone: string): string {
-  return `tel:${phone.replace(/[^\d+]/g, "")}`;
-}
-
-export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: NavLink[]; phone?: string }) {
+export function Navbar({ navItems }: { navItems: NavLink[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [expandedMobileSections, setExpandedMobileSections] = useState<Set<string>>(new Set());
@@ -67,9 +53,10 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
 
   // Layout effect, not a plain effect, because it runs before the browser paints,
   // so on reload (page loads already scrolled, per native scroll restoration)
-  // the header commits its compact state before the first frame instead of
-  // visibly sliding into it after load. (The compact state is a transform, so
-  // it no longer shifts the content below either way.)
+  // the header commits its compact height before the first frame instead of
+  // snapping to it a frame later. That snap shifts all sticky-flow content up
+  // by SCROLL_THRESHOLD_PX under a fixed scrollY, which reads as the page
+  // scrolling down on its own.
   useLayoutEffect(() => {
     function handleScroll() {
       setScrolled(window.scrollY > SCROLL_THRESHOLD_PX);
@@ -104,10 +91,7 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
       if (event.key !== "Tab") return;
 
       // Queried live so newly expanded/collapsed accordion sections stay in the trap.
-      // Collapsed submenus are `inert`, so their links are skipped here too.
-      const focusable = panel
-        ? Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((el) => !el.closest("[inert]"))
-        : [];
+      const focusable = panel ? Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) : [];
       if (focusable.length === 0) return;
 
       const first = focusable[0];
@@ -138,7 +122,10 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [openDropdown]);
 
-  const linkClass = "group relative text-sm tracking-wide text-foreground/90 transition-colors duration-300 hover:text-foreground";
+  const linkClass = cn(
+    TRANSITION,
+    "group relative text-sm tracking-wide text-foreground/90 hover:text-foreground"
+  );
 
   function isItemActive(item: NavLink): boolean {
     if (item.href === "/") return pathname === "/";
@@ -149,40 +136,32 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
   return (
     <header
       className={cn(
-        EASE,
-        "sticky top-0 z-50 border-b transition-[transform,background-color,box-shadow]",
+        TRANSITION,
+        "sticky top-0 z-50 border-b",
         scrolled
-          ? "-translate-y-4 border-foreground/10 bg-background/85 backdrop-blur-2xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(var(--color-foreground-rgb),0.07),0_8px_32px_-8px_rgba(var(--color-shadow-rgb),0.65)] sm:-translate-y-8"
-          : "translate-y-0 border-foreground/10 bg-background"
+          ? "border-foreground/10 bg-background/85 backdrop-blur-2xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(var(--color-foreground-rgb),0.07),0_8px_32px_-8px_rgba(var(--color-shadow-rgb),0.65)]"
+          : "border-foreground/10 bg-background"
       )}
     >
       <Container>
           <nav
             aria-label="Primary"
-            className={cn(
-              EASE,
-              "flex h-20 items-center justify-between transition-transform sm:h-24",
-              scrolled ? "translate-y-2 sm:translate-y-4" : "translate-y-0"
-            )}
+            className={cn("flex items-center justify-between", TRANSITION, scrolled ? "h-16" : "h-20 sm:h-24")}
           >
           {/* INFINI + MMP lockup, as the old single-image lockup had it. MMP is the
               licensed process mark and drops away on narrow screens where the
               mobile menu needs the room. */}
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-3 sm:gap-4"
+            className={cn("flex shrink-0 items-center gap-3 sm:gap-4", TRANSITION)}
             aria-label="INFINI home"
           >
-            {/* width/height are the largest rendered size (sm:h-14 = 56px tall at
-                each file's aspect ratio), so the optimizer serves a ~1x/2x logo
-                rather than the 1000px source. Only the wordmark is the LCP
-                candidate; the MMP mark loads normally. */}
             <Image
               src="/brand/infini-finish-unlimited.png"
               data-mono="off"
               alt="INFINI, Finish Unlimited"
-              width={114}
-              height={56}
+              width={1000}
+              height={491}
               className="h-12 w-auto sm:h-14"
               priority
             />
@@ -190,9 +169,10 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
               src="/brand/mmp-technology-light.png"
               data-mono="off"
               alt="MMP Technology"
-              width={73}
-              height={56}
+              width={700}
+              height={538}
               className="h-10 w-auto sm:h-14"
+              priority
             />
           </Link>
 
@@ -245,7 +225,7 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
                     </div>
                   </>
                 ) : (
-                  <Link href={item.href} className={linkClass}>
+                  <Link href={item.href} className={linkClass} prefetch={true}>
                     <NavLabel active={isItemActive(item)}>{item.label}</NavLabel>
                   </Link>
                 )}
@@ -257,7 +237,7 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
             <button
               type="button"
               ref={menuTriggerRef}
-              className="text-foreground -mr-2.5 flex size-11 items-center justify-center"
+              className={cn(TRANSITION, "text-foreground -mr-2.5 flex size-11 items-center justify-center")}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-panel"
@@ -275,9 +255,6 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
-        // Collapsed by grid rows only, so without inert the closed menu's links
-        // stayed in the tab order and the accessibility tree.
-        inert={!mobileOpen}
         className={cn(
           "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out lg:hidden",
           mobileOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
@@ -303,7 +280,7 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
                     <div className="flex items-center">
                       <Link
                         href={item.href}
-                        className="flex min-h-11 flex-1 items-center py-2.5 text-base text-foreground"
+                        className="block flex-1 py-2.5 text-base text-foreground"
                         onClick={closeMobileMenu}
                       >
                         {item.label}
@@ -327,7 +304,6 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
                     {item.children && (
                       <div
                         id={`mobile-submenu-${item.label}`}
-                        inert={!isExpanded}
                         className={cn(
                           "grid transition-[grid-template-rows] duration-200 ease-out",
                           isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
@@ -338,7 +314,8 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
                             <li key={child.href}>
                               <Link
                                 href={child.href}
-                                className="flex min-h-11 items-center py-2 text-sm text-muted-foreground"
+                                className="block py-2 text-sm text-muted-foreground"
+                                tabIndex={isExpanded ? 0 : -1}
                                 onClick={closeMobileMenu}
                               >
                                 {child.label}
@@ -352,17 +329,6 @@ export function Navbar({ navItems, phone = INFINI_CONTACT.phone }: { navItems: N
                 );
               })}
             </ul>
-            {phone && (
-              <a
-                href={telHref(phone)}
-                className="mb-4 flex min-h-12 items-center justify-center gap-2.5 rounded-lg border border-border text-base text-foreground transition-colors hover:border-accent hover:text-accent"
-              >
-                <Phone className="size-4 text-accent" aria-hidden="true" />
-                <span>
-                  Call <span className="tabular-nums">{phone}</span>
-                </span>
-              </a>
-            )}
           </Container>
         </div>
       </div>

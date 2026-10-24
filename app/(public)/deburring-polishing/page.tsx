@@ -3,7 +3,7 @@ import { getPage, getSection, getContentBlocks } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { DeburringPageContent } from "@/components/sections/capability/DeburringPageContent";
 import type { ComparisonCopy, EdgeHoningCopy, GalleryCopy, PageHeroCopy, StatTripletCopy } from "@/lib/types";
-import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -20,7 +20,6 @@ const FALLBACK: Metadata = {
   title: "Deburring & Polishing vs. MMP Technology",
   description:
     "How traditional deburring and polishing compare to MMP surface treatment, less material removal, more consistent results, preserved part geometry.",
-  alternates: { canonical: canonicalUrl("/deburring-polishing") },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,7 +28,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle(page.seo.title),
     description: page.seo.description,
-    alternates: { canonical: canonicalUrl("/deburring-polishing", page.seo.canonical) },
     openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }

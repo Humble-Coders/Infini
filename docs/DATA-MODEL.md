@@ -49,7 +49,7 @@ always fetched with the content it describes and can't drift out of sync.
 
 ## Admin-editable fields
 
-Per project documentation rule 7 ("nothing admin-editable may be hardcoded"), every field
+Per CLAUDE.md rule 7 ("nothing admin-editable may be hardcoded"), every field
 listed in the "Key fields" column of PRD §4.3 is admin-editable through the
 future admin CRUD screens (T10–T15). The exceptions, which stay in code:
 

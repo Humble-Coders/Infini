@@ -10,7 +10,7 @@ import type {
   StatTripletCopy,
   TechnologyCopy,
 } from "@/lib/types";
-import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -25,7 +25,6 @@ const FALLBACK: Metadata = {
   title: "MMP Technology: The Process Behind INFINI's Surface Finishing",
   description:
     "How MMP (Micro Machining Process) technology works: a licensed mechanical-physical-catalyst treatment that removes surface roughness by frequency, preserving part form.",
-  alternates: { canonical: canonicalUrl("/technology") },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -34,7 +33,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle(page.seo.title),
     description: page.seo.description,
-    alternates: { canonical: canonicalUrl("/technology", page.seo.canonical) },
     openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }

@@ -1,19 +1,16 @@
-import { PauseOffscreen } from "@/components/ui/pause-offscreen";
-
 /**
  * A slow, single-line marquee of the industries INFINI serves, separated by the
  * brand's infinity glyph. The track renders the list twice and animates exactly
  * -50% so the loop is seamless; under prefers-reduced-motion the static wrapped
  * list shows instead (no JS). Content comes from the same Firestore industries
- * that drive the index further down the page. The loop pauses while the
- * band is off screen (PauseOffscreen).
+ * that drive the index further down the page.
  */
 export function Ticker({ items }: { items: string[] }) {
   if (items.length === 0) return null;
   const track = [...items, ...items];
 
   return (
-    <PauseOffscreen className="relative overflow-hidden border-y border-border bg-background py-4">
+    <div className="relative overflow-hidden border-y border-border bg-background py-4">
       <ul
         aria-hidden="true"
         className="flex w-max animate-marquee [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] hover:[animation-play-state:paused] motion-reduce:hidden"
@@ -44,6 +41,6 @@ export function Ticker({ items }: { items: string[] }) {
       </ul>
 
       <p className="sr-only">Industries INFINI serves: {items.join(", ")}.</p>
-    </PauseOffscreen>
+    </div>
   );
 }

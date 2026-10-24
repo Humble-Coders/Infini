@@ -9,7 +9,7 @@ import { PhotoHero } from "@/components/sections/shared/PhotoHero";
 import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
 import { TrustSection } from "@/components/sections/home/TrustSection";
 import { getPublishedBenefits } from "@/lib/data/benefits";
-import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -29,7 +29,6 @@ const COPY = {
 export const metadata: Metadata = {
   title: pageTitle("What MMP Changes"),
   description: COPY.body,
-  alternates: { canonical: canonicalUrl("/benefits") },
   openGraph: { title: ogTitle("What MMP Changes"), description: COPY.body, type: "website" },
 };
 

@@ -97,7 +97,7 @@ export function WaveAnalysisSection({ surface = "light" }: WaveAnalysisSectionPr
             {/* Shear Flow */}
             <Reveal delay={0.12}>
               <BrochureSchematicFigure
-                src="/images/brochure/diagrams/shear-flow-mechanism.webp"
+                src="/images/brochure/diagrams/shear-flow-mechanism.png"
                 alt="Microtool aggregate flow removing unevenness through shear fracture"
                 title="Lateral Shear Flow"
                 caption="Device agitation pulls aggregates across the surface in the shear direction, cleaving peaks without digging into valleys."

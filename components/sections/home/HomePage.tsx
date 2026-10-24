@@ -20,12 +20,10 @@ import { getPublishedIndustries } from "@/lib/data/industries";
 import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getPublishedTestimonials } from "@/lib/data/testimonials";
-import { getEventBanner } from "@/lib/data/events";
 import { getSettings } from "@/lib/data/settings";
 import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
-import type { EventBannerData } from "@/lib/data/events";
 import type { GalleryCopy, HeroCopy, StatsCopy, TeaserCopy, TechnologyCopy } from "@/lib/types";
 
 const FALLBACK_TITLE = "INFINI | Precision Surface-Finishing";
@@ -45,31 +43,6 @@ export async function homeMetadata(): Promise<Metadata> {
   };
 }
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-function formatBannerDates(start?: string, end?: string): string | undefined {
-  const parse = (value?: string) => (value && !Number.isNaN(Date.parse(value)) ? new Date(value) : null);
-  const from = parse(start);
-  const to = parse(end);
-  const fmt = (date: Date, opts: Intl.DateTimeFormatOptions) =>
-    date.toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
-  if (from && to) {
-    const sameMonth = from.getUTCMonth() === to.getUTCMonth() && from.getUTCFullYear() === to.getUTCFullYear();
-    return sameMonth
-      ? `${fmt(from, { day: "numeric" })}–${fmt(to, { day: "numeric", month: "short", year: "numeric" })}`
-      : `${fmt(from, { day: "numeric", month: "short" })} – ${fmt(to, { day: "numeric", month: "short", year: "numeric" })}`;
-  }
-  const single = from ?? to;
-  return single ? fmt(single, { day: "numeric", month: "short", year: "numeric" }) : undefined;
-}
-
-/** A banner shows only when enabled, titled, and not yet past its end date (kept up through the end day itself). */
-function isBannerLive(banner: EventBannerData | null): banner is EventBannerData & { title: string } {
-  if (!banner?.enabled || !banner.title?.trim()) return false;
-  const end = banner.endDate ? Date.parse(banner.endDate) : NaN;
-  return Number.isNaN(end) || end + DAY_MS > Date.now();
-}
-
 /**
  * Home. Every section reads its copy from `pages/home` (with an in-code
  * fallback so the page never renders a hole) and its content from the
@@ -81,17 +54,12 @@ function isBannerLive(banner: EventBannerData | null): banner is EventBannerData
  * Certifications and news are not repeated here; each has its own page.
  */
 export async function HomePage() {
-  const [page, industries, caseStudies, certifications, testimonials, eventBanner, settings] = await Promise.all([
-
+  const [page, industries, caseStudies, certifications, testimonials, settings] = await Promise.all([
     getPage("home"),
     getPublishedIndustries(),
     getPublishedCaseStudies(),
     getActiveCertifications(),
     getPublishedTestimonials(),
-    getPublishedTestimonials(),
-    getEventBanner(),
-    getSettings(),
-  ]);
     getSettings(),
   ]);
 
@@ -102,7 +70,6 @@ export async function HomePage() {
   const industriesTeaser = getSection<TeaserCopy>(page, "industriesTeaser");
   const caseStudiesTeaser = getSection<TeaserCopy>(page, "caseStudiesTeaser");
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
-  const testimonialsTeaser = getSection<TeaserCopy>(page, "testimonialsTeaser");
 
   // Dynamic published customer testimonials (from dual-layer cloud/local storage)
   const voices = testimonials;
@@ -110,26 +77,11 @@ export async function HomePage() {
   return (
     <MotionProvider>
       <main className="min-h-screen bg-background">
-        {isBannerLive(eventBanner) && (
-          <ExhibitionBanner
-            badge={eventBanner.badge}
-            title={eventBanner.title}
-            date={formatBannerDates(eventBanner.startDate, eventBanner.endDate)}
-            location={eventBanner.location}
-            ctaText={eventBanner.ctaText}
-            ctaUrl={eventBanner.ctaUrl}
-          />
-        )}
-
         <HomeHero copy={hero} />
 
         {/* White run straight after the hero: find your industry and the counters,
             the joint venture, then the customers who trust the work. */}
-        <SolutionFinder
-          industries={industries}
-          certificationsCount={certifications.length}
-          facts={getSection<{ items: Array<{ value: number; label: string }> }>(page, "finder")?.items}
-        />
+        <SolutionFinder industries={industries} certificationsCount={certifications.length} />
         <PartnershipSection />
         <TrustSection className="pb-28 sm:pb-36" />
 
@@ -144,8 +96,15 @@ export async function HomePage() {
           industriesCount={industries.length}
           showCertifications={false}
         />
-        <ProvenWork copy={caseStudiesTeaser} caseStudies={caseStudies} industries={industries} />
-        <Testimonials copy={testimonialsTeaser} testimonials={testimonials} />
+        {/* Demo studies stand in until the collection is seeded. Their slugs have no
+            Firestore document, so the cards must not link to a detail page. */}
+        <ProvenWork
+          copy={caseStudiesTeaser}
+          caseStudies={caseStudies.length > 0 ? caseStudies : DEMO_CASE_STUDIES}
+          industries={industries}
+          linkToDetail={caseStudies.length > 0}
+        />
+        <Testimonials copy={null} testimonials={voices} />
         <ContactPanel
           copy={contactTeaser}
           contact={settings?.contact ?? INFINI_CONTACT}

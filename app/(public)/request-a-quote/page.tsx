@@ -9,7 +9,5 @@ import ContactPage, { metadata } from "../contact/page";
  */
 export const revalidate = 600;
 
-// Same page as /contact, so the contact metadata (canonical /contact) is
-// reused verbatim and this URL stays out of app/sitemap.ts.
 export { metadata };
 export default ContactPage;

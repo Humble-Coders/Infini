@@ -51,47 +51,6 @@ function createLemniscateTrack(a = 100, cx = 120, cy = 60, numSamples = 2000) {
 
 const track = createLemniscateTrack();
 
-/**
- * Segments of one alpha band are filled as a single path. Drawing each of the
- * ~180 segments as its own path+fill cost ~280 fill calls per frame, which on
- * a throttled phone kept the main thread busy for the whole visit; 16 bands
- * read identically at this size.
- */
-const ALPHA_BANDS = 16;
-
-type SpinePoint = { x: number; y: number; u: number; nx: number; ny: number; angle: number };
-
-function fillTaperedBands(
-  ctx: CanvasRenderingContext2D,
-  spine: SpinePoint[],
-  from: number,
-  width: (u: number) => number,
-  alpha: (midU: number) => number,
-  color: (a: number) => string
-) {
-  const count = spine.length - 1 - from;
-  if (count <= 0) return;
-  const perBand = Math.max(1, Math.ceil(count / ALPHA_BANDS));
-  for (let start = from; start < spine.length - 1; start += perBand) {
-    const end = Math.min(start + perBand, spine.length - 1);
-    ctx.beginPath();
-    for (let i = start; i < end; i++) {
-      const p0 = spine[i];
-      const p1 = spine[i + 1];
-      const w0 = width(p0.u);
-      const w1 = width(p1.u);
-      ctx.moveTo(p0.x + p0.nx * w0, p0.y + p0.ny * w0);
-      ctx.lineTo(p1.x + p1.nx * w1, p1.y + p1.ny * w1);
-      ctx.lineTo(p1.x - p1.nx * w1, p1.y - p1.ny * w1);
-      ctx.lineTo(p0.x - p0.nx * w0, p0.y - p0.ny * w0);
-      ctx.closePath();
-    }
-    const midU = (spine[start].u + spine[end].u) / 2;
-    ctx.fillStyle = color(alpha(midU));
-    ctx.fill();
-  }
-}
-
 export interface InfinityMarkProps {
   className?: string;
   duration?: number;
@@ -116,31 +75,18 @@ export function InfinityMark({
 
     let animId: number = 0;
     let startTime: number | null = null;
-    let lastDraw = 0;
     let isVisible = true;
-
-    // Phones and tablets get a lighter version: fewer samples, ~30fps, no
-    // canvas blur (the costliest operation here). Reduced motion gets one
-    // still frame.
-    const lite = window.matchMedia("(pointer: coarse), (max-width: 767px)").matches;
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const minFrameMs = lite ? 33 : 0;
 
     // Trail configuration: covers 82% of loop length so the infinity figure is clearly visible
     const trailFraction = 0.82;
     const trailDist = track.totalDist * trailFraction;
-    const N = lite ? 96 : 180;
+    const N = 180; // Optimal sampling for silky smooth edges with zero micro-stutter
 
     const render = (time: number) => {
       if (!isVisible && !alwaysActive) {
         animId = 0;
         return;
       }
-      if (minFrameMs && lastDraw && time - lastDraw < minFrameMs) {
-        animId = requestAnimationFrame(render);
-        return;
-      }
-      lastDraw = time;
 
       if (startTime === null) startTime = time;
       const elapsed = time - startTime;
@@ -168,7 +114,7 @@ export function InfinityMark({
       ctx.clearRect(0, 0, 240, 120);
 
       // 1. Sample centerline points and compute continuous normal vectors
-      const spine: SpinePoint[] = [];
+      const spine: { x: number; y: number; u: number; nx: number; ny: number; angle: number }[] = [];
       const delta = 0.5;
 
       for (let i = 0; i <= N; i++) {
@@ -193,7 +139,7 @@ export function InfinityMark({
       // -----------------------------------------------------------------
       // PASS 1: Wide Ambient Red Neon Aura (Single Continuous Polygon Ribbon)
       // -----------------------------------------------------------------
-      ctx.shadowBlur = lite ? 0 : 10;
+      ctx.shadowBlur = 10;
       ctx.shadowColor = "#E31B23";
 
       ctx.beginPath();
@@ -223,17 +169,37 @@ export function InfinityMark({
       // Reset shadowBlur to 0 for instant GPU quad rendering without blur stall
       ctx.shadowBlur = 0;
 
-      fillTaperedBands(
-        ctx,
-        spine,
-        0,
-        (u) => 1.75 * Math.pow(u, 1.35),
-        (midU) => Math.pow(midU, 1.3),
-        (alpha) => `rgba(242, 53, 64, ${alpha})`
-      );
+      for (let i = 0; i < N; i++) {
+        const p0 = spine[i];
+        const p1 = spine[i + 1];
+        const midU = (p0.u + p1.u) / 2;
+
+        const w0 = 1.75 * Math.pow(p0.u, 1.35);
+        const w1 = 1.75 * Math.pow(p1.u, 1.35);
+        const alpha = Math.pow(midU, 1.3);
+
+        const l0x = p0.x + p0.nx * w0;
+        const l0y = p0.y + p0.ny * w0;
+        const r0x = p0.x - p0.nx * w0;
+        const r0y = p0.y - p0.ny * w0;
+
+        const l1x = p1.x + p1.nx * w1;
+        const l1y = p1.y + p1.ny * w1;
+        const r1x = p1.x - p1.nx * w1;
+        const r1y = p1.y - p1.ny * w1;
+
+        ctx.beginPath();
+        ctx.moveTo(l0x, l0y);
+        ctx.lineTo(l1x, l1y);
+        ctx.lineTo(r1x, r1y);
+        ctx.lineTo(r0x, r0y);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(242, 53, 64, ${alpha})`;
+        ctx.fill();
+      }
 
       // Head rounded cap for main body with subtle glow
-      ctx.shadowBlur = lite ? 0 : 6;
+      ctx.shadowBlur = 6;
       ctx.shadowColor = "#F23540";
       ctx.beginPath();
       ctx.arc(head.x, head.y, 1.75, head.angle - Math.PI / 2, head.angle + Math.PI / 2);
@@ -245,17 +211,38 @@ export function InfinityMark({
       // -----------------------------------------------------------------
       ctx.shadowBlur = 0;
       const coreStartIdx = Math.floor(N * 0.45);
-      fillTaperedBands(
-        ctx,
-        spine,
-        coreStartIdx,
-        (u) => 0.75 * Math.pow(Math.max(0, (u - 0.45) / 0.55), 1.4),
-        (midU) => Math.pow(Math.max(0, (midU - 0.45) / 0.55), 1.5) * 0.98,
-        (alpha) => `rgba(255, 248, 248, ${alpha})`
-      );
+      for (let i = coreStartIdx; i < N; i++) {
+        const p0 = spine[i];
+        const p1 = spine[i + 1];
+        const midU = (p0.u + p1.u) / 2;
+        const coreU = (midU - 0.45) / 0.55;
+
+        const w0 = 0.75 * Math.pow((p0.u - 0.45) / 0.55, 1.4);
+        const w1 = 0.75 * Math.pow((p1.u - 0.45) / 0.55, 1.4);
+        const alpha = Math.pow(coreU, 1.5);
+
+        const l0x = p0.x + p0.nx * w0;
+        const l0y = p0.y + p0.ny * w0;
+        const r0x = p0.x - p0.nx * w0;
+        const r0y = p0.y - p0.ny * w0;
+
+        const l1x = p1.x + p1.nx * w1;
+        const l1y = p1.y + p1.ny * w1;
+        const r1x = p1.x - p1.nx * w1;
+        const r1y = p1.y - p1.ny * w1;
+
+        ctx.beginPath();
+        ctx.moveTo(l0x, l0y);
+        ctx.lineTo(l1x, l1y);
+        ctx.lineTo(r1x, r1y);
+        ctx.lineTo(r0x, r0y);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(255, 248, 248, ${alpha * 0.98})`;
+        ctx.fill();
+      }
 
       // Leading white-hot nucleus sphere cap
-      ctx.shadowBlur = lite ? 0 : 6;
+      ctx.shadowBlur = 6;
       ctx.shadowColor = "#FFFFFF";
       ctx.beginPath();
       ctx.arc(head.x, head.y, 0.75, 0, Math.PI * 2);
@@ -263,7 +250,7 @@ export function InfinityMark({
       ctx.fill();
 
       ctx.restore();
-      animId = still ? 0 : requestAnimationFrame(render);
+      animId = requestAnimationFrame(render);
     };
 
     // Pause canvas loop when scrolled off-screen
@@ -281,30 +268,11 @@ export function InfinityMark({
       observer.observe(container);
     }
 
-    // One frame now so the mark is visible at once; the loop itself waits
-    // until the browser is idle, keeping it out of the page's critical load.
     animId = requestAnimationFrame(render);
-    let idleHandle: number | undefined;
-    if (lite && !still && !alwaysActive) {
-      cancelAnimationFrame(animId);
-      animId = 0;
-      render(performance.now());
-      const begin = () => {
-        if (!animId && isVisible) animId = requestAnimationFrame(render);
-      };
-      idleHandle =
-        "requestIdleCallback" in window
-          ? window.requestIdleCallback(begin, { timeout: 2500 })
-          : globalThis.setTimeout(begin, 1500) as unknown as number;
-    }
 
     return () => {
       if (observer) observer.disconnect();
       if (animId) cancelAnimationFrame(animId);
-      if (idleHandle !== undefined) {
-        if ("cancelIdleCallback" in window) window.cancelIdleCallback(idleHandle);
-        else globalThis.clearTimeout(idleHandle);
-      }
     };
   }, [duration, alwaysActive]);
 

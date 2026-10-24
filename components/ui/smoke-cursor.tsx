@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 
 function subscribeFinePointer(callback: () => void) {
@@ -29,10 +30,11 @@ function subscribeMounted(callback: () => void) {
  * every click, drag and text selection passes straight through, and the
  * native cursor stays visible. Renders only on fine-pointer devices (mice,
  * trackpads), touch screens get nothing, and nothing at all under reduced
- * motion. Mount through SmokeCursorLazy (public layout), which keeps this
- * chunk off touch devices and admin entirely.
+ * motion.
  */
 export function SmokeCursor() {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
   const reduce = useReducedMotion();
   // Server snapshot is always false so hydration matches; after hydration
   // the live query takes over (and follows device changes for free).
@@ -55,16 +57,16 @@ export function SmokeCursor() {
   const smokeY = useSpring(y, { stiffness: 90, damping: 18, mass: 0.9 });
 
   useEffect(() => {
-    if (!finePointer) return;
+    if (isAdmin || !finePointer) return;
     const move = (event: MouseEvent) => {
       x.set(event.clientX);
       y.set(event.clientY);
     };
     window.addEventListener("mousemove", move, { passive: true });
     return () => window.removeEventListener("mousemove", move);
-  }, [finePointer, x, y]);
+  }, [isAdmin, finePointer, x, y]);
 
-  if (!mounted || reduce || !finePointer) return null;
+  if (isAdmin || !mounted || reduce || !finePointer) return null;
 
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[80] motion-reduce:hidden overflow-hidden">

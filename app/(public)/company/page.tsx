@@ -7,7 +7,7 @@ import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { CertificationsBlock } from "@/components/certifications/CertificationsBlock";
-import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -35,7 +35,6 @@ const FALLBACK: Metadata = {
   title: "About INFINI: Precision Surface Finishing",
   description:
     "INFINI Precision Pvt. Ltd. applies MMP surface-finishing technology from its treatment facility in Parwanoo, Himachal Pradesh, serving precision manufacturers across seven industries.",
-  alternates: { canonical: canonicalUrl("/company") },
 };
 
 /*
@@ -58,7 +57,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle(page.seo.title),
     description: page.seo.description,
-    alternates: { canonical: canonicalUrl("/company", page.seo.canonical) },
     openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }

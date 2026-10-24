@@ -1,7 +1,4 @@
 import { cache } from "react";
-import { cache } from "react";
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
-import { requireDb } from "./firestore";
 import type { CaseStudyDoc, WithId } from "@/lib/types";
 import {
   getStoredPublishedCaseStudies,
@@ -10,28 +7,12 @@ import {
   getStoredPublishedCaseStudySlugs,
 } from "./caseStudiesStorage";
 
-const COLLECTION = "caseStudies";
-
-function newestFirst(a: CaseStudyDoc, b: CaseStudyDoc) {
-  const time = (doc: CaseStudyDoc) => (doc.publishedAt?.toDate ? doc.publishedAt.toDate().getTime() : 0);
-  return time(b) - time(a);
-}
-
-
 /** All published case studies, newest first. */
 async function getPublishedCaseStudiesUncached(): Promise<WithId<CaseStudyDoc>[]> {
   try {
     return await getStoredPublishedCaseStudies();
   } catch (err) {
     console.error("[getPublishedCaseStudiesUncached] error:", err);
-    try {
-      const snap = await getDocs(query(collection(requireDb(), COLLECTION), where("published", "==", true)));
-      return snap.docs.map((d) => ({ id: d.id, ...(d.data() as CaseStudyDoc) })).sort(newestFirst);
-    } catch (error) {
-      console.warn("[caseStudies] Firestore issue:", (error as Error)?.message || error);
-    }
-  }
-  return [];
     return [];
   }
 }
@@ -42,17 +23,6 @@ async function getCaseStudyBySlugUncached(slug: string): Promise<WithId<CaseStud
     return await getStoredCaseStudyBySlug(slug);
   } catch (err) {
     console.error("[getCaseStudyBySlugUncached] error:", err);
-    try {
-      const snap = await getDocs(
-        query(collection(requireDb(), COLLECTION), where("slug", "==", slug), where("published", "==", true), limit(1))
-      );
-      const found = snap.docs[0];
-      return found ? { id: found.id, ...(found.data() as CaseStudyDoc) } : null;
-    } catch (error) {
-      console.warn("[caseStudies] Firestore issue:", (error as Error)?.message || error);
-    }
-  }
-  return null;
     return null;
   }
 }
@@ -63,10 +33,8 @@ async function getCaseStudiesByIndustryUncached(industryId: string): Promise<Wit
     return await getStoredCaseStudiesByIndustry(industryId);
   } catch (err) {
     console.error("[getCaseStudiesByIndustryUncached] error:", err);
-    const all = await getPublishedCaseStudies();
-    return all.filter((caseStudy) => caseStudy.industryId === industryId);
+    return [];
   }
-}
 }
 
 /** All published case study slugs, for generateStaticParams. */

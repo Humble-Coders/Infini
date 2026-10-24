@@ -2,7 +2,7 @@
 
 Corporate website + admin panel for **INFINI**, a precision surface-finishing company. Next.js (App Router) + TypeScript + Tailwind CSS, on Firebase.
 
-See [`docs/PRD.md`](./docs/PRD.md) for the product specification.
+See [`CLAUDE.md`](./CLAUDE.md) for architecture rules and [`docs/PRD.md`](./docs/PRD.md) for the full product spec.
 
 ## Getting started
 
@@ -103,4 +103,4 @@ lib/            # Browser-safe Firebase client, typed Firestore data accessors, 
 backend/        # Server-only: Admin SDK, Firestore/Storage rules, Cloud Functions
 ```
 
-Architecture decisions and project guidelines are documented in [`docs/`](./docs/).
+Full target layout and the rules behind it live in [`CLAUDE.md`](./CLAUDE.md).

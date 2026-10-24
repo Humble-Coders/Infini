@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, JetBrains_Mono, Manrope } from "next/font/google";
+import Script from "next/script";
 import type { ReactNode } from "react";
 import { RouteCurtain } from "@/components/layout/RouteCurtain";
 import { Toaster } from "sonner";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { SmokeCursor } from "@/components/ui/smoke-cursor";
 import { JsonLd, organizationJsonLd, webSiteJsonLd } from "@/components/seo/JsonLd";
-import { getSettings } from "@/lib/data/settings";
 import { siteUrl } from "@/lib/seo";
 import "./globals.css";
 
@@ -31,41 +33,21 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const SITE_NAME = "INFINI";
-const FALLBACK_TITLE = `${SITE_NAME} | Precision Surface-Finishing`;
-const FALLBACK_DESCRIPTION =
+const SITE_DESCRIPTION =
   "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment, validation through mirror-like finish.";
 
-/**
- * Site-wide defaults from `settings/global.defaultSeo` (admin-editable),
- * which pages override with their own title/description/OG.
- *
- * Deliberately no `alternates.canonical` here: Next inherits it into every
- * route that doesn't set its own, so a root canonical of "/" told search
- * engines that /contact, /industries and the rest were duplicates of the home
- * page. Each page declares its own canonical instead. `defaultSeo.noindex` is
- * not applied site-wide for the same inheritance reason.
- */
-export async function generateMetadata(): Promise<Metadata> {
-  const { defaultSeo } = await getSettings();
-  // Firestore data is untyped at runtime: a blank or missing field falls back.
-  const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
-  const title = text(defaultSeo.title) || FALLBACK_TITLE;
-  const description = text(defaultSeo.description) || FALLBACK_DESCRIPTION;
-  const ogImage = text(defaultSeo.ogImage);
-
-  return {
-    metadataBase: new URL(siteUrl()),
-    title: { default: title, template: `%s | ${SITE_NAME}` },
-    description,
-    openGraph: {
-      siteName: SITE_NAME,
-      title: text(defaultSeo.ogTitle) || title,
-      description: text(defaultSeo.ogDescription) || description,
-      type: "website",
-      ...(ogImage ? { images: [ogImage] } : {}),
-    },
-  };
-}
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
+  title: { default: `${SITE_NAME} | Precision Surface-Finishing`, template: `%s | ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | Precision Surface-Finishing`,
+    description: SITE_DESCRIPTION,
+    type: "website",
+  },
+};
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -80,6 +62,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <JsonLd data={organizationJsonLd(siteUrl())} />
         <JsonLd data={webSiteJsonLd(siteUrl())} />
+        <ScrollProgress />
+        <SmokeCursor />
+        {/*
+          The industries section pins scroll while it hijacks wheel input
+          (IndustriesSectionScroll), so a browser-restored mid-interaction
+          scroll position lands somewhere with no context, it reads as
+          "reload dropped me at the end of the industries section" rather
+          than a scroll restoration you'd ever want. beforeInteractive runs
+          before the browser's own auto-restore takes effect, so it wins.
+        */}
+        <Script id="disable-scroll-restoration" strategy="beforeInteractive">
+          {`try { if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } window.scrollTo(0, 0); } catch (e) {}`}
+        </Script>
         {/* Lightweight subtle noise texture with zero SVG filter GPU/CPU overhead */}
         <div
           aria-hidden="true"

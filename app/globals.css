@@ -218,47 +218,9 @@
 
 
 
-/* Section entrance (components/ui/reveal.tsx): hidden until the shared
-   IntersectionObserver marks it revealed, then a compositor-only fade + rise.
-   Visible straight away when scripting is off, and fade-only under reduced motion. */
-.reveal {
-  opacity: 0;
-  transform: translate3d(0, var(--reveal-y, 24px), 0);
-  transition:
-    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
-}
-.reveal[data-revealed="true"] {
-  opacity: 1;
-  transform: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    transform: none;
-  }
-}
-@media (scripting: none) {
-  .reveal {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 /* Staggered entrance for hero copy, pair with an inline animation-delay. */
 .hero-reveal {
   animation: fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-/* Hero h1 entrance: transform only, never transparent, so the headline is in
-   the first paint of the server HTML (and counts for LCP) with or without JS. */
-.hero-rise {
-  animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes hero-rise {
-  from {
-    transform: translateY(0.18em);
-  }
 }
 
 @keyframes marquee {
@@ -546,10 +508,8 @@
 /*
  * Route curtain: the glowing neon infinity animation, centered on black.
  *
- * Instant paint: the element only exists while a navigation is playing, so it
- * paints solid on its first frame. The lift is a short opacity transition
- * driven by `data-state`; 120ms matches FADE_MS in RouteCurtain.tsx, after
- * which the component unmounts.
+ * Instant paint: the browser paints #000 on its first frame, preventing any
+ * unstyled flicker. The lift is a smooth opacity transition driven by `data-state`.
  */
 .route-curtain {
   position: fixed;
@@ -560,25 +520,37 @@
   justify-content: center;
   overflow: hidden;
   pointer-events: none;
-  background: var(--color-background);
+  background: #000000;
   opacity: 1;
-  transition: opacity 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: visible;
+  transition:
+    opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0s;
 }
 
 .route-curtain[data-state="done"] {
   opacity: 0;
-}
-
-/* Set by components/ui/pause-offscreen while the wrapper is out of view:
-   infinite decorative loops stop compositing once scrolled past. */
-[data-offscreen="true"],
-[data-offscreen="true"] * {
-  animation-play-state: paused !important;
+  visibility: hidden;
+  transition:
+    opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 320ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .route-curtain {
     display: none;
+  }
+}
+
+/*
+ * Entrance blur is paint-expensive on phone GPUs (a full-layer blur repaints
+ * every frame of every Reveal on the page). Inline styles set by framer-motion
+ * lose to `!important`, so on small screens entrances keep their fade + rise
+ * and simply skip the de-blur pass. Desktop is untouched.
+ */
+@media (max-width: 640px) {
+  [data-reveal] {
+    filter: none !important;
   }
 }
 

@@ -4,8 +4,7 @@ import { getIndustryBySlug, getPublishedIndustries, getPublishedIndustrySlugs } 
 import { IndustryPageContent } from "@/components/sections/industry/IndustryPageContent";
 import { getCaseStudiesByIndustry } from "@/lib/data/caseStudies";
 import { getCertificationsByIds } from "@/lib/data/certifications";
-import { JsonLd, breadcrumbJsonLd } from "@/components/seo/JsonLd";
-import { ogTitle, pageTitle, canonicalUrl, siteUrl } from "@/lib/seo";
+import { ogTitle, pageTitle, canonicalUrl } from "@/lib/seo";
 
 
 /*
@@ -30,7 +29,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: pageTitle(industry.seo.title),
     description: industry.seo.description,
     alternates: { canonical: canonicalUrl(`/industries/${slug}`, industry.seo.canonical) },
-    ...(industry.seo.noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: ogTitle(industry.seo.title),
       description: industry.seo.description,
@@ -51,20 +49,11 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
   ]);
 
   return (
-    <>
-      <JsonLd
-        data={breadcrumbJsonLd(siteUrl(), [
-          { name: "Home", path: "/" },
-          { name: "Industries", path: "/industries" },
-          { name: industry.name, path: `/industries/${industry.slug}` },
-        ])}
-      />
-      <IndustryPageContent
-        industry={industry}
-        certifications={certifications}
-        caseStudies={caseStudies}
-        siblings={allIndustries.filter((sibling) => sibling.slug !== industry.slug)}
-      />
-    </>
+    <IndustryPageContent
+      industry={industry}
+      certifications={certifications}
+      caseStudies={caseStudies}
+      siblings={allIndustries.filter((sibling) => sibling.slug !== industry.slug)}
+    />
   );
 }

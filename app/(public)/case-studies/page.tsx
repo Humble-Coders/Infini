@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { canonicalUrl } from "@/lib/seo";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
@@ -103,8 +102,6 @@ export const metadata: Metadata = {
   title: "Case Studies",
   description: COPY.body,
   openGraph: { title: "Case Studies | INFINI", description: COPY.body, type: "website" },
-  // ?industry= filtered views are the same list narrowed, so they all point here.
-  alternates: { canonical: canonicalUrl("/case-studies") },
 };
 
 export default async function CaseStudiesIndexPage({

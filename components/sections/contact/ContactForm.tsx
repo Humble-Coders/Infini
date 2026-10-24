@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { trackEvent } from "@/components/layout/CookieConsent";
 import dynamic from "next/dynamic";
 import { ArrowRight, CheckCircle2, Lock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,17 +64,7 @@ const FIELD_CLASS =
 
 const LABEL_CLASS = "text-xs font-medium text-foreground";
 
-export function ContactForm({
-  industries,
-  className,
-  headingLevel = "h3",
-}: {
-  industries: WithId<IndustryDoc>[];
-  className?: string;
-  /** One level below the surrounding section heading, so the outline never skips a level. */
-  headingLevel?: "h2" | "h3";
-}) {
-  const FormHeading = headingLevel;
+export function ContactForm({ industries, className }: { industries: WithId<IndustryDoc>[]; className?: string }) {
   const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -86,11 +75,8 @@ export function ContactForm({
   // server's fill-time trap. Both ride along in the POST body.
   const [honeypot, setHoneypot] = useState("");
   const startedAtRef = useRef<number>(0);
-  // One ID per filled-in form: a double click or a retried request can't create a second lead.
-  const submissionIdRef = useRef<string>("");
   useEffect(() => {
     startedAtRef.current = Date.now();
-    submissionIdRef.current = crypto.randomUUID();
   }, []);
 
   function updateField<K extends keyof ContactFormValues>(field: K, value: ContactFormValues[K]) {
@@ -118,7 +104,6 @@ export function ContactForm({
       formData.append("message", values.message.trim());
       formData.append("website", honeypot);
       formData.append("startedAt", String(startedAtRef.current));
-      formData.append("submissionId", submissionIdRef.current);
       
       const fileInput = document.getElementById("contact-image") as HTMLInputElement;
       if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -137,7 +122,6 @@ export function ContactForm({
       } | null;
 
       if (response.ok && data?.ok) {
-        trackEvent("generate_lead", { form: "contact", industry: values.industry || "unspecified" });
         setSubmitted(true);
         return;
       }
@@ -176,7 +160,6 @@ export function ContactForm({
             setFormError(null);
             setHoneypot("");
             startedAtRef.current = Date.now();
-            submissionIdRef.current = crypto.randomUUID();
             setSubmitted(false);
           }}
           className="rounded-[10px] border border-border bg-card text-foreground hover:bg-background hover:opacity-100"
@@ -196,7 +179,7 @@ export function ContactForm({
           <Send className="size-4.5" strokeWidth={1.75} aria-hidden="true" />
         </span>
         <div className="flex flex-col gap-1">
-          <FormHeading className="text-[22px] font-medium text-foreground sm:text-[25px]">Send us your requirements</FormHeading>
+          <h3 className="text-[22px] font-medium text-foreground sm:text-[25px]">Send us your requirements</h3>
           <p className="text-sm text-muted-foreground sm:text-[15px]">We&apos;ll respond with a tailored recommendation.</p>
         </div>
       </div>
@@ -354,7 +337,7 @@ export function ContactForm({
               ) : (
                 <>
                   <p className="text-sm font-medium text-foreground">Click to upload a photo</p>
-                  <p className="text-xs text-muted-foreground">PNG, JPG or WebP, up to 4 MB</p>
+                  <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
                 </>
               )}
             </div>

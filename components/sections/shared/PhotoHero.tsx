@@ -72,12 +72,11 @@ export function PhotoHero({
             <Reveal>
               <Eyebrow>{eyebrow}</Eyebrow>
             </Reveal>
-            {/* Not in a Reveal: that starts at opacity 0 until hydration, which
-                left every inner page's h1 (and LCP text) blank on a slow
-                phone. hero-rise is a transform-only CSS entrance instead. */}
-            <h1 className="hero-rise max-w-2xl text-[clamp(2.25rem,5.4vw,4.25rem)] leading-[1.0] font-semibold tracking-[-0.045em] text-balance text-foreground">
-              {heading}
-            </h1>
+            <Reveal delay={0.08}>
+              <h1 className="max-w-2xl text-[clamp(2.25rem,5.4vw,4.25rem)] leading-[1.0] font-semibold tracking-[-0.045em] text-balance text-foreground">
+                {heading}
+              </h1>
+            </Reveal>
             {body && (
               <Reveal delay={0.16}>
                 <p className="max-w-lg text-base leading-relaxed text-pretty text-muted-foreground sm:text-lg">

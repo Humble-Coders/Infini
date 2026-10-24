@@ -8,14 +8,11 @@ import {
   IconBrandYoutube,
 } from "@tabler/icons-react";
 import { Container } from "@/components/ui/container";
-import { CookieSettingsLink } from "@/components/layout/CookieConsent";
 import type { NavLink, SettingsContact, SettingsSocial } from "@/lib/types";
 
 function contactDetailsFrom(contact: SettingsContact | null) {
   if (!contact) return [];
-function contactDetailsFrom(contact: SettingsContact | null) {
-  if (!contact) return [];
-  const list = [] as Array<{ label: string; value: string; href?: string }>;
+  const list = [];
   if (contact.email) {
     list.push({ label: "Email", value: contact.email, href: `mailto:${contact.email}` });
   }
@@ -34,13 +31,6 @@ function contactDetailsFrom(contact: SettingsContact | null) {
       href: `tel:${contact.technicalPhone.replace(/[^\d+]/g, "")}`,
     });
   }
-  if (contact.secondaryPhone && contact.secondaryPhone !== mainPhone) {
-    list.push({
-      label: "Phone",
-      value: contact.secondaryPhone,
-      href: `tel:${contact.secondaryPhone.replace(/[^\d+]/g, "")}`,
-    });
-  }
   if (contact.address) {
     list.push({
       label: "Facility",
@@ -49,7 +39,6 @@ function contactDetailsFrom(contact: SettingsContact | null) {
     });
   }
   return list;
-}
 }
 
 /**
@@ -86,14 +75,11 @@ export function Footer({
   legalLinks,
   contact,
   social,
-  brochureUrl,
 }: {
   navItems: NavLink[];
   legalLinks: NavLink[];
   contact: SettingsContact | null;
   social: SettingsSocial | null;
-  /** Capability brochure PDF, set in the admin's Settings; the link only renders when there is one. */
-  brochureUrl?: string;
 }) {
   const year = new Date().getFullYear();
   const contactDetails = contactDetailsFrom(contact);
@@ -149,7 +135,7 @@ export function Footer({
             <h2 className={COLUMN_HEADING}>Contact</h2>
             <ul className="flex flex-col gap-3">
               {contactDetails.map((detail) => (
-                <li key={`${detail.label}-${detail.value}`}>
+                <li key={detail.label}>
                   {detail.href ? (
                     <a href={detail.href} className={COLUMN_LINK}>
                       {detail.value}
@@ -159,13 +145,6 @@ export function Footer({
                   )}
                 </li>
               ))}
-              {brochureUrl && (
-                <li>
-                  <a href={brochureUrl} target="_blank" rel="noopener" className={COLUMN_LINK}>
-                    Download the capability brochure (PDF)
-                  </a>
-                </li>
-              )}
             </ul>
           </div>
 
@@ -176,7 +155,6 @@ export function Footer({
                 {link.label}
               </Link>
             ))}
-            <CookieSettingsLink className={`${COLUMN_LINK} text-left`} />
           </div>
         </div>
 
@@ -222,13 +200,9 @@ export function Footer({
 
       {/* Oversized wordmark, cropped by the footer's bottom edge, a brand sign-off, not content. */}
       <div aria-hidden="true" className="pointer-events-none -mb-[3vw] select-none">
-        {/* Decorative watermark, drawn from CSS so it isn't page text: no
-            screen-reader noise, and contrast audits rightly ignore it. */}
-        <div
-          aria-hidden="true"
-          data-wordmark="INFINI"
-          className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06] select-none after:content-[attr(data-wordmark)]"
-        />
+        <p className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06]">
+          INFINI
+        </p>
       </div>
     </footer>
   );

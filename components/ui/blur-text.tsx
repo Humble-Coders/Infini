@@ -19,14 +19,10 @@ type BlurTextProps = {
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 /**
- * Word-by-word fade-and-rise entrance (React Bits BlurText-style, minus the
- * blur: animating `filter` repaints every word every frame on phone GPUs),
- * fired once when scrolled into view. Inherits type styling, wrap it in the
- * real heading element so SEO and heading order are untouched. Under reduced
- * motion it renders as a plain opacity fade with no rise.
- *
- * Words start at opacity 0 until hydration, so never use this for an
- * above-the-fold h1; that text must be visible in the server HTML.
+ * Word-by-word blur-and-rise entrance (React Bits BlurText-style), fired once
+ * when scrolled into view. Inherits type styling, wrap it in the real
+ * heading element so SEO and heading order are untouched. Under reduced
+ * motion it renders as a plain opacity fade with no blur or rise.
  */
 export function BlurText({ text, className, delay = 0, stagger = 0.04, accentLast = false }: BlurTextProps) {
   const reduce = useReducedMotion();
@@ -37,19 +33,18 @@ export function BlurText({ text, className, delay = 0, stagger = 0.04, accentLas
   );
 
   return (
-    <span className={className}>
-      <span className="sr-only">{text}</span>
+    <span className={className} aria-label={text}>
       {items.map((item, index) => (
         <Fragment key={`${item.word}-${index}`}>
           {item.breakBefore && <br />}
           <motion.span
             aria-hidden="true"
             className={cn(
-              "inline-block will-change-[transform,opacity]",
+              "inline-block will-change-[filter,transform,opacity]",
               accentLast && index === total - 1 && "font-serif font-normal italic text-accent",
             )}
-            initial={{ opacity: 0, y: reduce ? 0 : 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: reduce ? 0 : 10, filter: reduce ? "blur(0px)" : "blur(8px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55, delay: delay + index * stagger, ease: EASE }}
           >

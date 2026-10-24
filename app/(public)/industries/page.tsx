@@ -9,7 +9,7 @@ import { PhotoHero } from "@/components/sections/shared/PhotoHero";
 import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
 import { IndustriesBentoGrid } from "@/components/sections/industries/IndustriesBentoGrid";
 import { getPublishedIndustries } from "@/lib/data/industries";
-import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -29,7 +29,6 @@ const COPY = {
 export const metadata: Metadata = {
   title: pageTitle("Industries We Serve"),
   description: COPY.body,
-  alternates: { canonical: canonicalUrl("/industries") },
   openGraph: { title: ogTitle("Industries We Serve"), description: COPY.body, type: "website" },
 };
 

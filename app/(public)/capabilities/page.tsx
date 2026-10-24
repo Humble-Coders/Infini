@@ -12,7 +12,7 @@ import { CertificationsBlock } from "@/components/certifications/CertificationsB
 import { getPage, getSection } from "@/lib/data/pages";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getSettings } from "@/lib/data/settings";
-import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
+import { ogTitle, pageTitle } from "@/lib/seo";
 import type { PassageGuidelinesCopy, SuitabilityCopy } from "@/lib/types";
 
 
@@ -41,7 +41,6 @@ const FALLBACK: Metadata = {
   title: "Capabilities: MMP Surface Finishing Process",
   description:
     "INFINI's treatment capabilities: MMP surface finishing from controlled roughness to mirror-like brilliance, with measured, traceable batch validation.",
-  alternates: { canonical: canonicalUrl("/capabilities") },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -50,7 +49,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle(page.seo.title),
     description: page.seo.description,
-    alternates: { canonical: canonicalUrl("/capabilities", page.seo.canonical) },
     openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }

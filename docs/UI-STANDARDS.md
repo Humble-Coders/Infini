@@ -39,7 +39,7 @@ Every UI-facing ticket on this project must satisfy these. Tickets link here rat
 - [ ] Touch targets ≥ **44px**. Colour contrast meets **WCAG AA** — check red-on-black early, it is the most likely place this palette fails.
 - [ ] Every image has meaningful `alt`. Use **`next/image`** everywhere; no raw `<img>`.
 - [ ] No hardcoded user-facing strings scattered through components — centralise shell/chrome copy. *(English-only for v1; a full i18n layer is out of scope, but don't make one impossible.)*
-- [ ] Content that is admin-editable comes from Firestore, never hardcoded. See project documentation.
+- [ ] Content that is admin-editable comes from Firestore, never hardcoded. See `CLAUDE.md`.
 
 ## Verification
 - [ ] Verify at **375px, 768px, 1280px, 1920px**, at increased browser font size, and in **Chrome + Safari** before marking the ticket done.

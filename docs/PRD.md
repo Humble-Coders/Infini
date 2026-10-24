@@ -328,4 +328,4 @@ Locked decisions. Changing any of these requires an explicit new decision record
 - Current site: `https://infini.co.in` (WordPress, being replaced)
 - Quality benchmark: `https://mmptechnology.com/` — global MMP sibling brand; calibrate against, do not copy
 - Process pipeline: [`docs/PROCESS.md`](./PROCESS.md)
-- Architecture rules for developers: project documentation (repo root)
+- Architecture rules for developers: `CLAUDE.md` (repo root)

@@ -308,7 +308,6 @@ export function CaseStudiesRail({
                 <button
                   key={i}
                   type="button"
-                  tabIndex={-1}
                   onClick={() => {
                     scrollToIndex(i);
                     resetAutoScroll();
