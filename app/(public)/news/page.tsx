@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/seo";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { PhotoHero } from "@/components/sections/shared/PhotoHero";
@@ -52,11 +53,23 @@ const SUBJECTS = [
   },
 ];
 
-export const metadata: Metadata = {
-  title: "News",
-  description: COPY.body,
-  openGraph: { title: "News | INFINI", description: COPY.body, type: "website" },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  // Each archive page is distinct content, so ?page=N is its own canonical
+  // (pointing every page at /news would drop older posts from discovery).
+  const { page } = await searchParams;
+  const pageNumber = Number(page);
+  const path = Number.isInteger(pageNumber) && pageNumber > 1 ? `/news?page=${pageNumber}` : "/news";
+  return {
+    title: "News",
+    description: COPY.body,
+    openGraph: { title: "News | INFINI", description: COPY.body, type: "website" },
+    alternates: { canonical: canonicalUrl(path) },
+  };
+}
 
 function formatDate(timestamp: FirestoreTimestamp): string {
   return timestamp.toDate().toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });

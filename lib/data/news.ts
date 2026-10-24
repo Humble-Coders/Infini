@@ -1,86 +1,9 @@
 import { cache } from "react";
-import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { requireDb } from "./firestore";
-import type { FirestoreTimestamp, NewsDoc, WithId } from "@/lib/types";
+import type { NewsDoc, WithId } from "@/lib/types";
 
 const COLLECTION = "news";
-
-function demoTimestamp(iso: string): FirestoreTimestamp {
-  const date = new Date(iso);
-  return { toDate: () => date, seconds: Math.floor(date.getTime() / 1000), nanoseconds: 0 };
-}
-
-// TEMP DEMO, sample articles so the client can review the News section
-// with real-looking cards before actual posts are written. Delete this
-// array and its use below, once real news content is seeded.
-const DEMO_NEWS: WithId<NewsDoc>[] = [
-  {
-    id: "demo-mmp-vs-traditional-polishing",
-    slug: "demo-mmp-vs-traditional-polishing",
-    title: "Why MMP treatment outperforms traditional polishing on complex geometry",
-    excerpt:
-      "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for complex shapes, fine features and edges.",
-    body: "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that's actually a problem, here's what that means for complex shapes, fine features and edges that manual polishing struggles to finish evenly, and where a flow-based process has limits of its own.",
-    coverImage: "/images/placeholders/process-01-bevel-pinion.jpg",
-    tags: ["technology", "MMP"],
-    status: "published",
-    publishedAt: demoTimestamp("2026-06-02"),
-    authorId: "demo-content",
-    seo: {
-      title: "Why MMP treatment outperforms traditional polishing",
-      description: "How MMP's frequency-based, selective material removal compares to traditional abrasive polishing on complex geometry.",
-      ogTitle: "Why MMP treatment outperforms traditional polishing",
-      ogDescription: "How MMP's frequency-based, selective material removal compares to traditional abrasive polishing on complex geometry.",
-      ogImage: "",
-      canonical: "",
-      noindex: false,
-    },
-  },
-  {
-    id: "demo-medical-implant-surface-finishing",
-    slug: "demo-medical-implant-surface-finishing",
-    title: "Surface finishing for medical implants: what ISO 13485-aligned control actually looks like",
-    excerpt:
-      "Implant surfaces need finishes verified to a measurable standard, not judged by eye. A look at the traceability and process controls behind medical-grade treatment.",
-    body: "Implant surfaces need finishes verified to a measurable standard, not judged by eye. A look at the traceability, batch documentation, and contamination control behind medical-grade surface treatment for orthopedic and spinal hardware.",
-    coverImage: "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
-    tags: ["medical", "quality"],
-    status: "published",
-    publishedAt: demoTimestamp("2026-05-18"),
-    authorId: "demo-content",
-    seo: {
-      title: "Surface finishing for medical implants",
-      description: "What ISO 13485-aligned process control looks like for medical-grade surface finishing.",
-      ogTitle: "Surface finishing for medical implants",
-      ogDescription: "What ISO 13485-aligned process control looks like for medical-grade surface finishing.",
-      ogImage: "",
-      canonical: "",
-      noindex: false,
-    },
-  },
-  {
-    id: "demo-additive-manufacturing-post-processing",
-    slug: "demo-additive-manufacturing-post-processing",
-    title: "The finishing step 3D-printed metal parts still need",
-    excerpt:
-      "As-built AM parts carry layer lines and loosely sintered particles. Here's how that roughness comes down, and which internal channels a flow-based process can and can't treat.",
-    body: "As-built AM parts carry layer lines and loosely sintered particles. Here's how that as-built roughness gets brought down to a verified target without losing the geometry that made additive worth using in the first place, and why internal channels need to be straight or gently curved, and wide enough for their roughness, before they can be treated.",
-    coverImage: "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
-    tags: ["additive manufacturing"],
-    status: "published",
-    publishedAt: demoTimestamp("2026-04-30"),
-    authorId: "demo-content",
-    seo: {
-      title: "The finishing step 3D-printed metal parts still need",
-      description: "How MMP treatment reduces as-built roughness on printed parts, and the channel sizes it needs to reach inside.",
-      ogTitle: "The finishing step 3D-printed metal parts still need",
-      ogDescription: "How MMP treatment reduces as-built roughness on printed parts, and the channel sizes it needs to reach inside.",
-      ogImage: "",
-      canonical: "",
-      noindex: false,
-    },
-  },
-];
 
 /** All published news posts, newest first. */
 async function getPublishedNewsUncached(): Promise<WithId<NewsDoc>[]> {
@@ -89,13 +12,13 @@ async function getPublishedNewsUncached(): Promise<WithId<NewsDoc>[]> {
       query(collection(requireDb(), COLLECTION), where("status", "==", "published"))
     );
     const posts = snap.docs.map((d) => ({ id: d.id, ...(d.data() as NewsDoc) }));
-    const all = posts.length > 0 ? posts : DEMO_NEWS;
-    return all.sort(
+    return posts.sort(
       (a, b) => (b.publishedAt?.toDate ? b.publishedAt.toDate().getTime() : 0) -
                 (a.publishedAt?.toDate ? a.publishedAt.toDate().getTime() : 0)
     );
-  } catch {
-    return DEMO_NEWS;
+  } catch (error) {
+    console.warn("[news] Firestore issue:", (error as Error)?.message || error);
+    return [];
   }
 }
 
@@ -112,10 +35,10 @@ async function getNewsBySlugUncached(slug: string): Promise<WithId<NewsDoc> | nu
     );
     const found = snap.docs[0];
     if (found) return { id: found.id, ...(found.data() as NewsDoc) };
-  } catch {
-    // fallback
+  } catch (error) {
+    console.warn("[news] Firestore issue:", (error as Error)?.message || error);
   }
-  return DEMO_NEWS.find((post) => post.slug === slug) ?? null;
+  return null;
 }
 
 /** All published news slugs, for generateStaticParams. */

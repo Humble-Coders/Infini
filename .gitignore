@@ -55,3 +55,6 @@ temp_pptx/
 .claude/
 
 
+
+# Admin dashboard: its own repo (i-shubham24/Infini-Dashboard), cloned here for local work.
+/admin/

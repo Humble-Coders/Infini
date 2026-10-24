@@ -15,6 +15,9 @@ function contactDetailsFrom(contact: SettingsContact | null) {
   return [
     { label: "Email", value: contact.email, href: `mailto:${contact.email}` },
     { label: "Phone", value: contact.phone, href: `tel:${contact.phone.replace(/[^\d+]/g, "")}` },
+    ...(contact.secondaryPhone
+      ? [{ label: "Phone", value: contact.secondaryPhone, href: `tel:${contact.secondaryPhone.replace(/[^\d+]/g, "")}` }]
+      : []),
     { label: "Facility", value: contact.address, href: undefined },
   ];
 }
@@ -53,11 +56,14 @@ export function Footer({
   legalLinks,
   contact,
   social,
+  brochureUrl,
 }: {
   navItems: NavLink[];
   legalLinks: NavLink[];
   contact: SettingsContact | null;
   social: SettingsSocial | null;
+  /** Capability brochure PDF, set in the admin's Settings; the link only renders when there is one. */
+  brochureUrl?: string;
 }) {
   const year = new Date().getFullYear();
   const contactDetails = contactDetailsFrom(contact);
@@ -113,7 +119,7 @@ export function Footer({
             <h2 className={COLUMN_HEADING}>Contact</h2>
             <ul className="flex flex-col gap-3">
               {contactDetails.map((detail) => (
-                <li key={detail.label}>
+                <li key={`${detail.label}-${detail.value}`}>
                   {detail.href ? (
                     <a href={detail.href} className={COLUMN_LINK}>
                       {detail.value}
@@ -123,6 +129,13 @@ export function Footer({
                   )}
                 </li>
               ))}
+              {brochureUrl && (
+                <li>
+                  <a href={brochureUrl} target="_blank" rel="noopener" className={COLUMN_LINK}>
+                    Download the capability brochure (PDF)
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
 

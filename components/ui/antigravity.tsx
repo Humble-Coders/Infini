@@ -2,7 +2,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 const AntigravityInner = ({
@@ -176,9 +176,31 @@ const AntigravityInner = ({
 };
 
 export const Antigravity = (props: any) => {
+  // The field is decorative and sits mid-page: render only while it is on
+  // screen. "never" halts the r3f loop entirely, so a scrolled-past section
+  // costs zero GPU frames instead of 60/s for the rest of the visit.
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [onScreen, setOnScreen] = useState(false);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setOnScreen(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting), {
+      rootMargin: '100px',
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <Canvas camera={{ position: [0, 0, 50], fov: 35 }}>
-      <AntigravityInner {...props} />
-    </Canvas>
+    <div ref={wrapperRef} className="h-full w-full">
+      {/* dpr capped at 1.5: a 3x phone/retina backing store is 4x the fill cost for particles nobody inspects. */}
+      <Canvas dpr={[1, 1.5]} frameloop={onScreen ? 'always' : 'never'} camera={{ position: [0, 0, 50], fov: 35 }}>
+        <AntigravityInner {...props} />
+      </Canvas>
+    </div>
   );
 };

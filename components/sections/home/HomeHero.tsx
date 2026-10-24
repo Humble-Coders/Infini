@@ -1,7 +1,7 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { Aurora } from "@/components/ui/aurora";
-import { BlurText } from "@/components/ui/blur-text";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Spotlight } from "@/components/ui/spotlight";
@@ -22,6 +22,29 @@ const STAGGER = [0, 90, 200, 290, 360, 420] as const;
 
 function reveal(step: number) {
   return { animationDelay: `${STAGGER[step]}ms` };
+}
+
+/**
+ * The headline as static server HTML: "\n" line breaks kept, final word in the
+ * serif italic accent (what BlurText's accentLast did). BlurText started every
+ * word at opacity 0 until hydration, so the page's h1 and LCP text was blank
+ * on a slow phone; this paints on the first frame.
+ */
+function HeroHeading({ text }: { text: string }) {
+  const trimmed = text.trim();
+  const cut = trimmed.search(/\S+$/);
+  const lines = trimmed.slice(0, cut).split("\n");
+  return (
+    <>
+      {lines.map((line, index) => (
+        <Fragment key={index}>
+          {index > 0 && <br />}
+          {line}
+        </Fragment>
+      ))}
+      <span className="font-serif font-normal italic text-accent">{trimmed.slice(cut)}</span>
+    </>
+  );
 }
 
 export function HomeHero({ copy }: { copy: HeroCopy | null }) {
@@ -50,8 +73,9 @@ export function HomeHero({ copy }: { copy: HeroCopy | null }) {
             {eyebrow}
           </p>
 
-          <h1 className="text-[clamp(2.5rem,13vw,8rem)] leading-[0.95] font-semibold tracking-[-0.045em] text-balance text-foreground">
-            <BlurText text={heading} accentLast delay={0.45} stagger={0.07} />
+          {/* hero-rise is a transform-only CSS entrance: never transparent, no JS. */}
+          <h1 className="hero-rise text-[clamp(2.5rem,13vw,8rem)] leading-[0.95] font-semibold tracking-[-0.045em] text-balance text-foreground">
+            <HeroHeading text={heading} />
           </h1>
 
           <p

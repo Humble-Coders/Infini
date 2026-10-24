@@ -3,7 +3,7 @@ import { getPage, getSection, getContentBlocks } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { ValidationPageContent } from "@/components/sections/capability/ValidationPageContent";
 import type { PageHeroCopy, SpecTableCopy, StageSequenceCopy, StatTripletCopy } from "@/lib/types";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -20,6 +20,7 @@ const FALLBACK: Metadata = {
   title: "Validation Process: How INFINI Verifies Surface Finishing Results",
   description:
     "INFINI's three-stage validation process for MMP surface treatment: technical, industrial, and production validation, each measured and customer-verified.",
+  alternates: { canonical: canonicalUrl("/validation") },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle(page.seo.title),
     description: page.seo.description,
+    alternates: { canonical: canonicalUrl("/validation", page.seo.canonical) },
     openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }

@@ -1,21 +1,16 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 /**
  * Thin red scroll-progress bar pinned to the very top of the viewport.
  * Spring-smoothed so it glides rather than jittering with the scroll.
- * Decorative (aria-hidden); zero layout cost, fixed positioning.
+ * Decorative (aria-hidden); zero layout cost, fixed positioning. Mounted by
+ * the public layout only, so admin never loads it.
  */
 export function ScrollProgress() {
-  const pathname = usePathname();
-  const isAdmin = pathname?.startsWith("/admin");
-
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 130, damping: 28, mass: 0.4 });
-
-  if (isAdmin) return null;
 
   return (
     <motion.div

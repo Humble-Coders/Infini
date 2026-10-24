@@ -1,73 +1,69 @@
 import { cache } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { requireDb } from "./firestore";
-import type { SettingsDoc } from "@/lib/types";
+import { INFINI_CONTACT } from "@/lib/constants/contact";
+import type { SettingsContact, SettingsDoc } from "@/lib/types";
 
 const COLLECTION = "settings";
 const GLOBAL_DOC_ID = "global";
 
-/** Global site settings, contact info, social links, nav, default SEO, cookie banner copy. */
-async function getSettingsUncached(): Promise<SettingsDoc | null> {
-  const snap = await getDoc(doc(requireDb(), COLLECTION, GLOBAL_DOC_ID));
-  
-  let data: SettingsDoc;
-  if (!snap.exists()) {
-    data = {} as SettingsDoc;
-  } else {
-    data = snap.data() as SettingsDoc;
+const DEFAULT_SEO: SettingsDoc["defaultSeo"] = {
+  title: "INFINI | Precision Surface-Finishing",
+  description:
+    "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment.",
+  ogTitle: "INFINI | Precision Surface-Finishing",
+  ogDescription:
+    "INFINI is a precision surface-finishing partner to manufacturers, applying ISO 9001-certified MMP treatment.",
+  ogImage: "",
+  canonical: "",
+  noindex: false,
+};
+
+/** Seeded placeholder values ("+91 XX XXXX XXXX") are treated as unset, so they never reach the public site. */
+function isReal(value: string | undefined): value is string {
+  return Boolean(value && value.trim() && !/X{2,}[\s-]+X{2,}/.test(value));
+}
+
+/**
+ * Admin-saved contact details win field by field; anything still empty or a
+ * seeded placeholder falls back to the real published details in
+ * lib/constants/contact.ts.
+ */
+function resolveContact(stored: Partial<SettingsContact> | undefined): SettingsContact {
+  return {
+    phone: isReal(stored?.phone) ? stored.phone : INFINI_CONTACT.phone,
+    email: isReal(stored?.email) ? stored.email : INFINI_CONTACT.email,
+    address: isReal(stored?.address) ? stored.address : INFINI_CONTACT.address,
+    secondaryPhone: isReal(stored?.secondaryPhone) ? stored.secondaryPhone : undefined,
+    googleMapsUrl: isReal(stored?.googleMapsUrl) ? stored.googleMapsUrl : undefined,
+  };
+}
+
+/** Global site settings, contact info, social links, nav, default SEO, cookie banner copy. Never throws. */
+async function getSettingsUncached(): Promise<SettingsDoc> {
+  let data: Partial<SettingsDoc> = {};
+  try {
+    const snap = await getDoc(doc(requireDb(), COLLECTION, GLOBAL_DOC_ID));
+    if (snap.exists()) data = snap.data() as Partial<SettingsDoc>;
+  } catch (error) {
+    console.warn("[settings] Firestore issue:", (error as Error)?.message || error);
   }
 
-  // FALLBACK: Ensure contact details exist so UI doesn't break
-  if (!data.contact || !data.contact.phone || !data.contact.email) {
-    data.contact = {
-      email: "superfinish@infini.co.in",
-      phone: "+91 1792 233216",
-      address: "Parwanoo, Himachal Pradesh, India",
-    };
-  } else {
-    // HARDCODED OVERRIDE: Ensure the contact email matches the latest brochure
-    data.contact.email = "superfinish@infini.co.in";
-  }
-
-  if (!data.social) {
-    data.social = {
-      linkedin: "https://www.linkedin.com/in/infini-precision-private-limited-73b19921b/",
-      x: "https://x.com/preision",
-      instagram: "https://www.instagram.com/infiniprecisionpvt.ltd/?hl=en",
-      facebook: "https://www.facebook.com/profile.php?id=100064548354724",
-      youtube: "https://youtu.be/YKcmtDuxXks?si=btPyU3ZyS3xiqF5D"
-    };
-  }
-
-  if (!data.nav) {
-    data.nav = [];
-  }
-
-  if (!data.footerLegalLinks) {
-    data.footerLegalLinks = [];
-  }
-
-  if (!data.defaultSeo) {
-    data.defaultSeo = {
-      title: "INFINI | Precision Surface-Finishing",
-      description: "Super Precision Surface Finishing",
-      ogTitle: "INFINI | Precision Surface-Finishing",
-      ogDescription: "Super Precision Surface Finishing",
-      ogImage: "",
-      canonical: "",
-      noindex: false,
-    };
-  }
-
-  if (!data.cookieBanner) {
-    data.cookieBanner = {
-      enabled: false,
-      message: "",
-      policyUrl: "",
-    };
-  }
-
-  return data;
+  return {
+    contact: resolveContact(data.contact),
+    social: data.social ?? { linkedin: "", instagram: "", youtube: "" },
+    nav: data.nav ?? [],
+    footerLegalLinks: data.footerLegalLinks ?? [],
+    // Field by field, so a blank admin field falls back instead of blanking the default.
+    defaultSeo: Object.fromEntries(
+      Object.entries(DEFAULT_SEO).map(([key, fallback]) => {
+        const value = (data.defaultSeo as Record<string, unknown> | undefined)?.[key];
+        return [key, value === "" || value === undefined || value === null ? fallback : value];
+      })
+    ) as SettingsDoc["defaultSeo"],
+    cookieBanner: data.cookieBanner ?? { enabled: false, message: "", policyUrl: "" },
+    branding: data.branding ?? {},
+  };
 }
 
 /*

@@ -4,8 +4,8 @@ import { ContactPanel } from "@/components/sections/home/ContactPanel";
 import { Container } from "@/components/ui/container";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
-import { INFINI_CONTACT } from "@/lib/constants/contact";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { getSettings } from "@/lib/data/settings";
+import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
 import type { TeaserCopy } from "@/lib/types";
 
 
@@ -28,12 +28,19 @@ export const metadata: Metadata = {
   // Without its own openGraph block this page inherited the root layout's,
   // so sharing /contact or /request-a-quote surfaced the home page's title.
   openGraph: { title: ogTitle(COPY.title), description: COPY.description, type: "website" },
+  // Also re-exported by /request-a-quote, which is the same page: both declare
+  // /contact as canonical so search engines index one URL, not two.
+  alternates: { canonical: canonicalUrl("/contact") },
 };
 
+const DEFAULT_MAP_URL =
+  "https://maps.google.com/maps?q=1%20Taksal%20Road%2C%20Parwanoo%2C%20Himachal%20Pradesh%20173220&z=14&output=embed";
+
 export default async function ContactPage() {
-  const [page, industries] = await Promise.all([
+  const [page, industries, settings] = await Promise.all([
     getPage("home"), // Reusing home page content for the contact teaser
     getPublishedIndustries(),
+    getSettings(),
   ]);
 
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
@@ -42,7 +49,7 @@ export default async function ContactPage() {
     <main className="min-h-screen bg-background">
       <ContactPanel
         copy={contactTeaser}
-        contact={INFINI_CONTACT}
+        contact={settings.contact}
         industries={industries}
         headingLevel="h1"
         compact
@@ -53,8 +60,8 @@ export default async function ContactPage() {
         <Container>
           <div className="overflow-hidden rounded-3xl border border-border">
             <iframe
-              title="INFINI facility, 1 Taksal Road, Parwanoo, Himachal Pradesh, India"
-              src="https://maps.google.com/maps?q=1%20Taksal%20Road%2C%20Parwanoo%2C%20Himachal%20Pradesh%20173220&z=14&output=embed"
+              title={`INFINI facility on the map: ${settings.contact.address}`}
+              src={settings.contact.googleMapsUrl ?? DEFAULT_MAP_URL}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="block h-[380px] w-full border-0 sm:h-[460px]"

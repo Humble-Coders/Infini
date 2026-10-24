@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { Calendar, MapPin, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Calendar, MapPin, X } from "lucide-react";
 import { Container } from "@/components/ui/container";
 
 interface ExhibitionBannerProps {
-  title?: string;
+  badge?: string;
+  title: string;
   date?: string;
   location?: string;
-  booth?: string;
-  isActive?: boolean;
+  ctaText?: string;
+  ctaUrl?: string;
 }
 
 /** Dismissal is remembered per event, so the next exhibition shows again. */
@@ -40,14 +42,13 @@ function subscribeMounted(callback: () => void) {
   return () => {};
 }
 
-export function ExhibitionBanner({
-  title = "Upcoming Exhibition: EMO Hannover",
-  date = "September 18-23, 2026",
-  location = "Hannover, Germany",
-  booth = "Hall 11, Booth D32",
-  isActive = true,
-}: ExhibitionBannerProps) {
-  const key = storageKey(title, date);
+/**
+ * Announcement strip above the home hero. Rendered only when the admin has
+ * enabled a banner whose end date hasn't passed (HomePage decides that), so
+ * there are no in-code defaults: a stale exhibition can never show by accident.
+ */
+export function ExhibitionBanner({ badge = "Meet us", title, date, location, ctaText, ctaUrl }: ExhibitionBannerProps) {
+  const key = storageKey(title, date ?? "");
   // Server render and hydration assume "not dismissed"; the stored choice
   // applies right after. Without the mounted gate, a return visitor who
   // dismissed the banner renders null on the first client pass where the
@@ -58,7 +59,7 @@ export function ExhibitionBanner({
   const dismissedEarlier = storedDismissed && mounted;
   const [dismissedNow, setDismissedNow] = useState(false);
 
-  if (!isActive || dismissedEarlier || dismissedNow) return null;
+  if (dismissedEarlier || dismissedNow) return null;
 
   function dismiss() {
     setDismissedNow(true);
@@ -75,19 +76,31 @@ export function ExhibitionBanner({
         <div className="flex flex-col items-center justify-center gap-1 text-center sm:gap-3 sm:text-base">
           <div className="flex flex-row flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center sm:gap-6 sm:text-left">
             <strong className="font-semibold tracking-wide uppercase text-[10px] sm:text-sm bg-background/20 px-2 py-1 rounded">
-              Meet Us
+              {badge}
             </strong>
             <span className="font-medium text-xs sm:text-base">{title}</span>
             <div className="flex flex-row flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-primary-foreground/80 text-[11px] sm:gap-4 sm:text-sm text-center">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="size-3.5" aria-hidden="true" />
-                {date}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <MapPin className="size-3.5" aria-hidden="true" />
-                {location}
-                <span className="hidden sm:inline">({booth})</span>
-              </span>
+              {date && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="size-3.5" aria-hidden="true" />
+                  {date}
+                </span>
+              )}
+              {location && (
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="size-3.5" aria-hidden="true" />
+                  {location}
+                </span>
+              )}
+              {ctaText && ctaUrl && (
+                <Link
+                  href={ctaUrl}
+                  className="inline-flex min-h-8 items-center gap-1 font-semibold text-primary-foreground underline-offset-4 hover:underline"
+                >
+                  {ctaText}
+                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                </Link>
+              )}
             </div>
           </div>
         </div>

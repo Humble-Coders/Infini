@@ -15,10 +15,11 @@ type RevealProps = {
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 /**
- * The standard section entrance: fade + rise + de-blur, fired once when
- * scrolled into view. Use this instead of hand-rolling motion.divs so every
- * section enters the same way. Under reduced motion it is a plain opacity
- * fade (MotionProvider already strips transforms; blur is disabled here too).
+ * The standard section entrance: fade + rise, fired once when scrolled into
+ * view. Use this instead of hand-rolling motion.divs so every section enters
+ * the same way. Opacity and transform only, both compositor properties; the
+ * old de-blur pass repainted a full-layer filter every frame. Under reduced
+ * motion it is a plain opacity fade (MotionProvider already strips transforms).
  */
 export function Reveal({ children, className, delay = 0, y = 24 }: RevealProps) {
   const reduce = useReducedMotion();
@@ -26,11 +27,8 @@ export function Reveal({ children, className, delay = 0, y = 24 }: RevealProps) 
   return (
     <motion.div
       className={className}
-      // data-reveal lets CSS strip the blur pass on phones (see globals.css):
-      // animating filter blur is paint-expensive on mobile GPUs.
-      data-reveal=""
-      initial={{ opacity: 0, y: reduce || y === 0 ? 0 : y, filter: reduce ? "blur(0px)" : "blur(6px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={{ opacity: 0, y: reduce || y === 0 ? 0 : y }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, delay, ease: EASE }}
     >

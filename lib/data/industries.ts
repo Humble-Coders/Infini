@@ -47,11 +47,12 @@ async function getPublishedIndustriesUncached(): Promise<WithId<IndustryDoc>[]> 
       const heroImage = data.hero?.image || DEMO_HERO_IMAGES[data.slug] || "";
       return { id: d.id, ...data, hero: { ...data.hero, image: heroImage } };
     });
-    if (docs.length > 0) {
-      return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    }
-  } catch {
-    // fallback to built-in content
+    return docs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  } catch (error) {
+    // Only an unreachable Firestore falls back to the built-in content. An
+    // empty or all-unpublished collection is respected, so unpublishing in the
+    // admin actually hides an industry.
+    console.warn("[industries] Firestore issue:", (error as Error)?.message || error);
   }
 
   return buildIndustries().map((ind) => ({
@@ -78,8 +79,9 @@ async function getIndustryBySlugUncached(slug: string): Promise<WithId<IndustryD
       const heroImage = data.hero?.image || DEMO_HERO_IMAGES[data.slug] || "";
       return { id: found.id, ...data, hero: { ...data.hero, image: heroImage } };
     }
-  } catch {
-    // fallback
+    return null;
+  } catch (error) {
+    console.warn("[industries] Firestore issue:", (error as Error)?.message || error);
   }
 
   const fallbackList = buildIndustries();
