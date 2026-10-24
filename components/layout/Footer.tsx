@@ -8,6 +8,7 @@ import {
   IconBrandYoutube,
 } from "@tabler/icons-react";
 import { Container } from "@/components/ui/container";
+import { CookieSettingsLink } from "@/components/layout/CookieConsent";
 import type { NavLink, SettingsContact, SettingsSocial } from "@/lib/types";
 
 function contactDetailsFrom(contact: SettingsContact | null) {
@@ -146,6 +147,7 @@ export function Footer({
                 {link.label}
               </Link>
             ))}
+            <CookieSettingsLink className={`${COLUMN_LINK} text-left`} />
           </div>
         </div>
 
@@ -191,9 +193,13 @@ export function Footer({
 
       {/* Oversized wordmark, cropped by the footer's bottom edge, a brand sign-off, not content. */}
       <div aria-hidden="true" className="pointer-events-none -mb-[3vw] select-none">
-        <p className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06]">
-          INFINI
-        </p>
+        {/* Decorative watermark, drawn from CSS so it isn't page text: no
+            screen-reader noise, and contrast audits rightly ignore it. */}
+        <div
+          aria-hidden="true"
+          data-wordmark="INFINI"
+          className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06] select-none after:content-[attr(data-wordmark)]"
+        />
       </div>
     </footer>
   );

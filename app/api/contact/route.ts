@@ -73,7 +73,7 @@ function isAllowedOrigin(request: NextRequest): boolean {
 /**
  * Contact / enquiry submission endpoint.
  *
- * Data flow (per CLAUDE.md rule 5: Firestore is the system of record, the
+ * Data flow (Firestore is the system of record, the
  * browser never touches `leads` directly — Firestore rules deny all client
  * writes, and this route is the sole writer via the Admin SDK):
  *

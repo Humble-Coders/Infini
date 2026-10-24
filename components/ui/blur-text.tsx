@@ -37,7 +37,8 @@ export function BlurText({ text, className, delay = 0, stagger = 0.04, accentLas
   );
 
   return (
-    <span className={className} aria-label={text}>
+    <span className={className}>
+      <span className="sr-only">{text}</span>
       {items.map((item, index) => (
         <Fragment key={`${item.word}-${index}`}>
           {item.breakBefore && <br />}

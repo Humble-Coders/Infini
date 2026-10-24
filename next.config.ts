@@ -41,6 +41,8 @@ const nextConfig: NextConfig = {
       ["/plastic-injection-molds", "/industries/plastic-injection-molds"],
       ["/cutting-tools", "/industries/cutting-tools"],
       ["/transmissions", "/industries/gears-transmission"],
+      // WordPress's own alias for the front page; old links and bookmarks still use it.
+      ["/home", "/"],
     ];
     // The admin panel is its own deployment (i-shubham24/Infini-Dashboard).
     // Old /admin bookmarks on the public domain are sent there.
@@ -57,15 +59,6 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    // The route curtain's clip is a fixed, versionless asset that every page
-    // load and reload asks for. Without an explicit header, /public files are
-    // revalidated on each visit, which puts a round trip in front of an
-    // animation whose whole job is to start instantly. It is immutable in
-    // practice: replacing it means shipping a new file.
-    const assetCaching = {
-      source: "/infinity_animation.mp4",
-      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-    };
 
     // Content-Security-Policy. Inline scripts stay allowed because Next.js and
     // the theme bootstrap emit them (a nonce-based policy needs middleware and
@@ -75,12 +68,12 @@ const nextConfig: NextConfig = {
     const isDev = process.env.NODE_ENV !== "production";
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+      `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
-      `img-src 'self' data: blob: https://firebasestorage.googleapis.com https://*.firebasestorage.app https://images.unsplash.com${isDev ? " http://127.0.0.1:9199 http://localhost:9199" : ""}`,
+      `img-src 'self' data: blob: https://firebasestorage.googleapis.com https://*.firebasestorage.app https://images.unsplash.com https://*.google-analytics.com https://www.googletagmanager.com${isDev ? " http://127.0.0.1:9199 http://localhost:9199" : ""}`,
       "font-src 'self' data:",
       "media-src 'self'",
-      `connect-src 'self'${isDev ? " ws: http://127.0.0.1:8080 http://localhost:8080" : ""}`,
+      `connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com${isDev ? " ws: http://127.0.0.1:8080 http://localhost:8080" : ""}`,
       "frame-src https://maps.google.com https://www.google.com",
       "worker-src 'self' blob:",
       "object-src 'none'",
@@ -119,9 +112,8 @@ const nextConfig: NextConfig = {
       headers: [{ key: "Cross-Origin-Resource-Policy", value: "cross-origin" }],
     }));
 
-    if (isProduction) return [assetCaching, globalSecurity, ...crossOriginAssets];
+    if (isProduction) return [globalSecurity, ...crossOriginAssets];
     return [
-      assetCaching,
       globalSecurity,
       ...crossOriginAssets,
       {

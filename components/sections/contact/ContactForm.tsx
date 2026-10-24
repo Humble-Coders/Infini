@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { trackEvent } from "@/components/layout/CookieConsent";
 import dynamic from "next/dynamic";
 import { ArrowRight, CheckCircle2, Lock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,17 @@ const FIELD_CLASS =
 
 const LABEL_CLASS = "text-xs font-medium text-foreground";
 
-export function ContactForm({ industries, className }: { industries: WithId<IndustryDoc>[]; className?: string }) {
+export function ContactForm({
+  industries,
+  className,
+  headingLevel = "h3",
+}: {
+  industries: WithId<IndustryDoc>[];
+  className?: string;
+  /** One level below the surrounding section heading, so the outline never skips a level. */
+  headingLevel?: "h2" | "h3";
+}) {
+  const FormHeading = headingLevel;
   const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -126,6 +137,7 @@ export function ContactForm({ industries, className }: { industries: WithId<Indu
       } | null;
 
       if (response.ok && data?.ok) {
+        trackEvent("generate_lead", { form: "contact", industry: values.industry || "unspecified" });
         setSubmitted(true);
         return;
       }
@@ -184,7 +196,7 @@ export function ContactForm({ industries, className }: { industries: WithId<Indu
           <Send className="size-4.5" strokeWidth={1.75} aria-hidden="true" />
         </span>
         <div className="flex flex-col gap-1">
-          <h3 className="text-[22px] font-medium text-foreground sm:text-[25px]">Send us your requirements</h3>
+          <FormHeading className="text-[22px] font-medium text-foreground sm:text-[25px]">Send us your requirements</FormHeading>
           <p className="text-sm text-muted-foreground sm:text-[15px]">We&apos;ll respond with a tailored recommendation.</p>
         </div>
       </div>

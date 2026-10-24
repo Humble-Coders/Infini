@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 
 /**
  * "New enquiry" email to the INFINI team. Runs only after the lead is safely
- * in Firestore (CLAUDE.md rule 5): the outcome is recorded on the lead and
+ * in Firestore: the outcome is recorded on the lead and
  * surfaced in the admin dashboard, so a silent SMTP outage is visible instead
  * of losing enquiries.
  *

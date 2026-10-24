@@ -34,6 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/news", priority: 0.7 },
     { path: "/events", priority: 0.6 },
     { path: "/contact", priority: 0.7 },
+    { path: "/privacy", priority: 0.2 },
+    { path: "/terms", priority: 0.2 },
   ];
 
   type Entry = { slug: string; publishedAt?: { toDate(): Date }; seo?: { noindex?: boolean } };

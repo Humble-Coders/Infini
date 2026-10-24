@@ -256,6 +256,89 @@ async function media() {
   }
 }
 
+/* --- Home page: counters and customer logos, previously hardcoded in components --- */
+const TRUST_LOGOS = [
+  { name: "Axis", src: "/logos/axis-logo.png" },
+  { name: "Cummins", src: "/logos/255px-Cummins_logo.svg.png" },
+  { name: "GKN", src: "/logos/2560px-GKN.svg-1600x339.png" },
+  { name: "Honeywell", src: "/logos/2560px-Honeywell_logo.svg-1600x283.png" },
+  { name: "Boeing", src: "/logos/Boeing_full_logo.svg-1600x372.png" },
+  { name: "GE Aerospace", src: "/logos/GE-Aerospace-Logo-1600x376.png" },
+  { name: "Siemens", src: "/logos/Siemens-logo.svg-1600x381.png" },
+  { name: "Blue Origin", src: "/logos/blue-origin.png" },
+  { name: "A3TS", src: "/logos/a3ts_logo.png" },
+  { name: "MAN", src: "/logos/man.png" },
+  { name: "HP", src: "/logos/2048px-HP_logo_2012.svg-1600x1600.png" },
+  { name: "Baker Hughes", src: "/logos/Baker_Hughes_logo.svg-1600x274.png" },
+  { name: "Bentley", src: "/logos/bentley-logo-1700x950-1-1600x894.png" },
+  { name: "Carbilly", src: "/logos/Carbilly-1600x508.png" },
+  { name: "CSI", src: "/logos/CSI-Logo_Gray_Landscape-1024x439-1.png" },
+  { name: "Aerospace Cluster", src: "/logos/csm_Bloc_signature_Aerospace_Cluster_ARA_b4c2a2c976.png" },
+  { name: "DEVCOM ARL", src: "/logos/DEVCOM_ARL_LOGO.png" },
+  { name: "Endress", src: "/logos/EndressLogo-1170x555-1-e1685535320955.png" },
+  { name: "EOS", src: "/logos/EOS_GmbH_Logo_till_October_2022.png" },
+  { name: "HAM", src: "/logos/HAMblue-01-1600x1600.png" },
+  { name: "Hutchinson", src: "/logos/Hutchinson_Unternehmen_logo.svg.png" },
+  { name: "Kimber", src: "/logos/Kimber-Logo-Native-300x162-1.png" },
+  { name: "Lockheed Martin", src: "/logos/Lockheed_Martin_logo.svg-1600x264.png" },
+  { name: "Dassault Aviation", src: "/logos/Logo_Dassault_Aviation_2020.svg-1600x446.png" },
+  { name: "Pole Europeen de la Ceramique", src: "/logos/LOGO_POLE_EUROPEEN_DE_LA_CERAMIQUE-1024x450-1.png" },
+  { name: "Mercedes Benz", src: "/logos/mercedes-logo-world-car-mercedes-benz-class-cdi-1.png" },
+  { name: "Procter Gamble", src: "/logos/Procter__Gamble_2013_logo-1600x1600.png" },
+  { name: "Rolls Royce", src: "/logos/Rolls-Royce-Logo-1600x905.png" },
+  { name: "Rosswag", src: "/logos/Rosswag-Logo.png" },
+  { name: "Safran", src: "/logos/Safran-logo-1600x900.png" },
+  { name: "Sikorsky Aircraft", src: "/logos/Sikorsky_Aircraft_Logo-1600x593.png" },
+  { name: "SLB", src: "/logos/SLB_Logo_2022.svg.png" },
+  { name: "Stellantis", src: "/logos/Stellantis.svg-1600x339.png" },
+  { name: "United Launch Alliance", src: "/logos/United-Launch-Alliance-Logo-1600x900.png" },
+  { name: "Velo", src: "/logos/Velo-logo-web.png" },
+  { name: "Aerojet Rocketdyne", src: "/logos/Aerojet_Rocketdyne_Logo-1600x409.png" },
+  { name: "B Big", src: "/logos/B_BIG-38f9cdbd.png" },
+];
+
+async function homeSections() {
+  const ref = db.collection("pages").doc("home");
+  const page = (await ref.get()).data();
+  if (!page) {
+    log.push("skip   pages/home (missing)");
+    return;
+  }
+  const sections = Array.isArray(page.sections) ? [...page.sections] : [];
+  const has = (type: string) => sections.some((section: { type: string }) => section.type === type);
+  const added: string[] = [];
+  if (!has("finder")) {
+    sections.splice(1, 0, {
+      type: "finder",
+      fields: {
+        items: [
+          { value: 6, label: "Plants worldwide" },
+          { value: 2002, label: "Process since" },
+        ],
+      },
+    });
+    added.push("finder");
+  }
+  if (!has("trust")) {
+    sections.splice(2, 0, {
+      type: "trust",
+      fields: {
+        eyebrow: "Trusted worldwide",
+        heading: "They Trust Us",
+        body: "Delivering precision to global industry leaders.",
+        logos: TRUST_LOGOS,
+      },
+    });
+    added.push("trust");
+  }
+  if (added.length === 0) {
+    log.push("skip   pages/home sections (finder, trust already present)");
+    return;
+  }
+  log.push(`update pages/home: add sections ${added.join(", ")}`);
+  if (WRITE) await ref.update({ sections });
+}
+
 async function main() {
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "(from credentials)";
   const target = process.env.FIRESTORE_EMULATOR_HOST ? `emulator ${process.env.FIRESTORE_EMULATOR_HOST}` : `project ${projectId}`;
@@ -265,6 +348,7 @@ async function main() {
   await eventBanner();
   await settings();
   await media();
+  await homeSections();
   console.log(log.join("\n"));
   if (!WRITE) console.log("\nNothing written. Re-run with --write to apply.");
 }

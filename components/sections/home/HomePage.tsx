@@ -116,7 +116,11 @@ export async function HomePage() {
 
         {/* White run straight after the hero: find your industry and the counters,
             the joint venture, then the customers who trust the work. */}
-        <SolutionFinder industries={industries} certificationsCount={certifications.length} />
+        <SolutionFinder
+          industries={industries}
+          certificationsCount={certifications.length}
+          facts={getSection<{ items: Array<{ value: number; label: string }> }>(page, "finder")?.items}
+        />
         <PartnershipSection />
         <TrustSection className="pb-28 sm:pb-36" />
 

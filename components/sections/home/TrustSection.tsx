@@ -3,11 +3,24 @@ import { Reveal } from "@/components/ui/reveal";
 import { ThemeSection } from "@/components/sections/shared/ThemeSection";
 import { cn } from "@/components/ui/utils";
 import { EmphasisHeading } from "./EmphasisHeading";
+import { getPage, getSection } from "@/lib/data/pages";
 
 type TrustLogo = {
   name: string;
   file: string;
 };
+
+/** A logo as stored in `pages/home` (section "trust"): any site path or uploaded URL. */
+export type TrustLogoEntry = { name: string; src: string };
+
+export interface TrustCopy {
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+  logos?: TrustLogoEntry[];
+}
+
+type RowLogo = { name: string; src: string };
 
 /**
  * TrustSection, the dark credibility break between the light bands. Two
@@ -60,9 +73,6 @@ const ROW_B: TrustLogo[] = [
   { name: "Velo", file: "Velo-logo-web.png" },
   { name: "Aerojet Rocketdyne", file: "Aerojet_Rocketdyne_Logo-1600x409.png" },
   { name: "B Big", file: "B_BIG-38f9cdbd.png" },
-  { name: "Endress", file: "EndressLogo-1170x555-1-e1685535320955 (1).png" },
-  { name: "Sikorsky Aircraft", file: "Sikorsky_Aircraft_Logo-1600x593 (1).png" },
-  { name: "SLB", file: "SLB_Logo_2022.svg (1).png" },
 ];
 
 const LOGO_IMG_CLASSES =
@@ -73,7 +83,9 @@ function logoSrc(file: string) {
   return `/logos/${encodeURIComponent(file)}`;
 }
 
-function LogoRow({ logos, reverse = false }: { logos: TrustLogo[]; reverse?: boolean }) {
+const toRow = (logos: TrustLogo[]): RowLogo[] => logos.map((logo) => ({ name: logo.name, src: logoSrc(logo.file) }));
+
+function LogoRow({ logos, reverse = false }: { logos: RowLogo[]; reverse?: boolean }) {
   const track = [...logos, ...logos];
 
   return (
@@ -86,9 +98,9 @@ function LogoRow({ logos, reverse = false }: { logos: TrustLogo[]; reverse?: boo
         )}
       >
         {track.map((logo, index) => (
-          <li key={`${logo.file}-${index}`} className="flex shrink-0 items-center justify-center">
+          <li key={`${logo.src}-${index}`} className="flex shrink-0 items-center justify-center">
             <Image
-              src={logoSrc(logo.file)}
+              src={logo.src}
               alt={`${logo.name} logo`}
               width={220}
               height={90}
@@ -104,9 +116,9 @@ function LogoRow({ logos, reverse = false }: { logos: TrustLogo[]; reverse?: boo
       {/* Static fallback when reduced motion is preferred (no JS). */}
       <ul aria-hidden="true" className="hidden flex-wrap items-center justify-center gap-x-12 gap-y-6 motion-reduce:flex">
         {logos.map((logo) => (
-          <li key={logo.file} className="flex shrink-0 items-center justify-center">
+          <li key={logo.src} className="flex shrink-0 items-center justify-center">
             <Image
-              src={logoSrc(logo.file)}
+              src={logo.src}
               alt={`${logo.name} logo`}
               width={220}
               height={90}
@@ -130,7 +142,7 @@ function LogoRow({ logos, reverse = false }: { logos: TrustLogo[]; reverse?: boo
  * to take the token cream instead, or two nearly-identical whites meet and the
  * join reads as an unintended seam rather than as one continuous movement.
  */
-export function TrustSection({
+export async function TrustSection({
   tone = "white",
   className,
 }: {
@@ -138,7 +150,19 @@ export function TrustSection({
   /** Spacing overrides for the band, e.g. the home page's deeper run-out below the logos. */
   className?: string;
 }) {
-  const all = [...ROW_A, ...ROW_B];
+  // Admin-edited heading and logos (Pages → Home page → Trust); every page
+  // showing this band uses them. The built-in set stands in until it exists.
+  const copy = getSection<TrustCopy>(await getPage("home"), "trust");
+  const editedLogos = (copy?.logos ?? []).filter((logo) => logo.src && logo.name);
+  // Edited logos are dealt alternately into the two counter-moving rows.
+  const [rowA, rowB] =
+    editedLogos.length > 1
+      ? [editedLogos.filter((_, i) => i % 2 === 0), editedLogos.filter((_, i) => i % 2 === 1)]
+      : [toRow(ROW_A), toRow(ROW_B)];
+  const all = [...rowA, ...rowB];
+  const eyebrow = copy?.eyebrow || "Trusted worldwide";
+  const heading = copy?.heading || "They Trust Us";
+  const intro = copy?.body || "Delivering precision to global industry leaders.";
 
   // neutral-500 clears AA on the pure white of the home band (4.74:1) but not on
   // the warmer token cream (4.24:1), so the muted text takes the surface's own
@@ -149,19 +173,19 @@ export function TrustSection({
     <div className="relative flex flex-col items-center gap-8 py-4 sm:gap-10 sm:py-6">
         <Reveal className="flex flex-col items-center gap-4 text-center">
           <p className={cn("font-mono text-[11px] tracking-[0.24em] uppercase", muted)}>
-            Trusted worldwide
+            {eyebrow}
           </p>
           <h2 className="font-sans text-[clamp(2.5rem,6vw,4.25rem)] leading-[0.98] font-semibold tracking-[-0.04em] text-balance">
-            <EmphasisHeading text="They Trust Us" />
+            <EmphasisHeading text={heading} />
           </h2>
           <p className={cn("max-w-md font-sans text-sm leading-relaxed sm:text-base", muted)}>
-            Delivering precision to global industry leaders.
+            {intro}
           </p>
         </Reveal>
 
         <div className="flex w-full flex-col gap-8 sm:gap-10">
-          <LogoRow logos={ROW_A} />
-          <LogoRow logos={ROW_B} reverse />
+          <LogoRow logos={rowA} />
+          <LogoRow logos={rowB} reverse />
         </div>
 
       <p className="sr-only">Trusted by {all.map((logo) => logo.name).join(", ")}.</p>

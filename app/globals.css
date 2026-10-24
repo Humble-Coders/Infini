@@ -218,6 +218,32 @@
 
 
 
+/* Section entrance (components/ui/reveal.tsx): hidden until the shared
+   IntersectionObserver marks it revealed, then a compositor-only fade + rise.
+   Visible straight away when scripting is off, and fade-only under reduced motion. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-y, 24px), 0);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
+}
+.reveal[data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+  }
+}
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Staggered entrance for hero copy, pair with an inline animation-delay. */
 .hero-reveal {
   animation: fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) both;
