@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "lucide-react";
@@ -100,6 +101,7 @@ export const metadata: Metadata = {
   title: "Events",
   description: COPY.body,
   openGraph: { title: "Events | INFINI", description: COPY.body, type: "website" },
+  alternates: { canonical: canonicalUrl("/events") },
 };
 
 /** Range without a dash: "12 to 15 March 2026", or a single date when it is one day. */

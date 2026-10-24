@@ -1,7 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 
 type RevealProps = {
   children: ReactNode;
@@ -12,29 +11,60 @@ type RevealProps = {
   y?: number;
 };
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+/*
+ * One IntersectionObserver shared by every Reveal on the page. Each element
+ * is shown once and then unobserved.
+ */
+let sharedObserver: IntersectionObserver | null = null;
+
+function observe(element: Element) {
+  if (!sharedObserver) {
+    sharedObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).dataset.revealed = "true";
+          sharedObserver?.unobserve(entry.target);
+        }
+      },
+      { rootMargin: "0px 0px -80px 0px" }
+    );
+  }
+  sharedObserver.observe(element);
+  return () => sharedObserver?.unobserve(element);
+}
 
 /**
- * The standard section entrance: fade + rise + de-blur, fired once when
- * scrolled into view. Use this instead of hand-rolling motion.divs so every
- * section enters the same way. Under reduced motion it is a plain opacity
- * fade (MotionProvider already strips transforms; blur is disabled here too).
+ * The standard section entrance: fade + rise, fired once when scrolled into
+ * view. Use this instead of hand-rolling animations so every section enters
+ * the same way.
+ *
+ * Plain CSS transitions on opacity and transform (compositor-only), driven by
+ * a single shared IntersectionObserver. This used to be a framer-motion
+ * component per section, which pulled ~130 KB of animation runtime onto
+ * every page and cost noticeable main-thread time on phones. Reduced motion
+ * is handled in globals.css (`.reveal`).
  */
 export function Reveal({ children, className, delay = 0, y = 24 }: RevealProps) {
-  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    if (typeof IntersectionObserver === "undefined") {
+      element.dataset.revealed = "true";
+      return;
+    }
+    return observe(element);
+  }, []);
 
   return (
-    <motion.div
-      className={className}
-      // data-reveal lets CSS strip the blur pass on phones (see globals.css):
-      // animating filter blur is paint-expensive on mobile GPUs.
-      data-reveal=""
-      initial={{ opacity: 0, y: reduce || y === 0 ? 0 : y, filter: reduce ? "blur(0px)" : "blur(6px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: EASE }}
+    <div
+      ref={ref}
+      className={className ? `reveal ${className}` : "reveal"}
+      style={{ "--reveal-y": `${y}px`, "--reveal-delay": `${delay}s` } as CSSProperties}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

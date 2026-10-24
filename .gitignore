@@ -37,8 +37,7 @@ next-env.d.ts
 # repo root is otherwise not ignored and gets picked up by `git add .`.
 /env
 
-# Stray Claude Code settings written into the project root; these carry an
-# ANTHROPIC_AUTH_TOKEN and must never be committed.
+# Local tooling and configs
 *.claudesettings.json
 
 # Firebase service account keys — never committed (see docs/INFRA.md)
@@ -55,3 +54,6 @@ temp_pptx/
 .claude/
 
 
+
+# Admin dashboard: its own repo (i-shubham24/Infini-Dashboard), cloned here for local work.
+/admin/

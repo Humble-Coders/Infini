@@ -1,9 +1,11 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { connectFirestoreEmulator, getFirestore, type Firestore } from "firebase/firestore";
-import { getAuth, type Auth } from "firebase/auth";
-import { getFunctions, type Functions } from "firebase/functions";
-import { getStorage, type FirebaseStorage } from "firebase/storage";
 
+/*
+ * The public site only reads published content from Firestore (server-side,
+ * through lib/data/*). Auth, Functions and Storage clients were removed with
+ * the in-site admin: they added bundle weight and attack surface for nothing.
+ */
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -28,9 +30,6 @@ const emulatorHost =
 
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
-let auth: Auth | null = null;
-let functions: Functions | null = null;
-let storage: FirebaseStorage | null = null;
 
 if (configured) {
   app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
@@ -40,9 +39,6 @@ if (configured) {
     // Idempotent for an identical host/port, so HMR re-evaluating this module is safe.
     connectFirestoreEmulator(db, host, Number(port));
   }
-  auth = getAuth(app);
-  functions = getFunctions(app);
-  storage = getStorage(app);
 } else if (process.env.NODE_ENV === "development") {
   console.warn(
     "Infini: Firebase is not configured. Copy .env.example to .env and add your Firebase web app keys."
@@ -70,4 +66,4 @@ export async function initAnalytics() {
   return getAnalytics(app);
 }
 
-export { app, db, auth, functions, storage };
+export { app, db };

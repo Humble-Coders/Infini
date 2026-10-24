@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { PauseOffscreen } from "@/components/ui/pause-offscreen";
 
 /**
  * Oversized repeating wordmark band.
@@ -14,7 +15,8 @@ import { ArrowRight } from "lucide-react";
  * punctuates.
  *
  * The track renders the sequence twice and animates exactly -50%, so the loop is
- * seamless; under reduced motion the static row shows instead.
+ * seamless; under reduced motion the static row shows instead, and it pauses
+ * while off screen.
  */
 export function MarqueeBand({ text, repeat = 2 }: { text: string | string[]; repeat?: number }) {
   const phrases = Array.isArray(text) ? text : [text];
@@ -25,7 +27,7 @@ export function MarqueeBand({ text, repeat = 2 }: { text: string | string[]; rep
 
   return (
     <section aria-hidden="true" className="overflow-hidden border-y border-border bg-background py-10 sm:py-14">
-      <div className="flex w-max animate-marquee items-center hover:[animation-play-state:paused] motion-reduce:animate-none">
+      <PauseOffscreen className="flex w-max animate-marquee items-center hover:[animation-play-state:paused] motion-reduce:animate-none">
         {items.map((phrase, i) => (
           <span key={`${phrase}-${i}`} className="flex items-center gap-8 pr-8">
             <span className="text-[clamp(2.5rem,7vw,5.5rem)] leading-none font-semibold tracking-[-0.05em] whitespace-nowrap text-foreground">
@@ -34,7 +36,7 @@ export function MarqueeBand({ text, repeat = 2 }: { text: string | string[]; rep
             <ArrowRight className="size-[clamp(1.5rem,4vw,3rem)] shrink-0 text-accent" strokeWidth={1.5} />
           </span>
         ))}
-      </div>
+      </PauseOffscreen>
     </section>
   );
 }

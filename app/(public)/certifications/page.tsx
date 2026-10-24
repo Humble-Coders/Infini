@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/seo";
 import Link from "next/link";
 import { Download, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
     description: COPY.body,
     type: "website",
   },
+  alternates: { canonical: canonicalUrl("/certifications") },
 };
 
 function formatDate(timestamp: { toDate(): Date }): string {

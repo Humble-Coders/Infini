@@ -2,24 +2,28 @@
 
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ArrowRight, Calendar, MapPin, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Calendar, MapPin, X } from "lucide-react";
+import Link from "next/link";
+import { useState, useSyncExternalStore } from "react";
 import { Container } from "@/components/ui/container";
 import type { EventBannerData } from "@/lib/data/events";
 
 export interface ExhibitionBannerProps {
   banner?: EventBannerData | null;
-  title?: string;
   badge?: string;
-  subtitle?: string;
+  title?: string;
+  date?: string;
   location?: string;
   booth?: string;
-  date?: string;
-  startDate?: string;
-  endDate?: string;
+  subtitle?: string;
   ctaText?: string;
   ctaUrl?: string;
+  startDate?: string;
+  endDate?: string;
   theme?: "red" | "dark" | "gold";
   isActive?: boolean;
+}
+
 }
 
 function formatBannerDate(startDate?: string, endDate?: string, fallbackDate?: string): string {
@@ -81,7 +85,6 @@ function subscribeMounted(callback: () => void) {
 export function ExhibitionBanner(props: ExhibitionBannerProps) {
   const { banner } = props;
 
-  // Resolve values prioritizing banner object, falling back to individual props or defaults
   const isActive = banner ? (banner.enabled ?? true) : (props.isActive ?? true);
   const badge = banner?.badge || props.badge || "Upcoming Exhibition";
   const title = banner?.title || props.title || "EMO Hannover 2026";
@@ -99,9 +102,15 @@ export function ExhibitionBanner(props: ExhibitionBannerProps) {
   const storedDismissed = useSyncExternalStore(subscribe, () => readDismissed(key), () => false);
   const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false);
   const dismissedEarlier = storedDismissed && mounted;
+
+  if (!isActive || dismissedEarlier) return null;
+
+  const storedDismissed = useSyncExternalStore(subscribe, () => readDismissed(key), () => false);
+  const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false);
+  const dismissedEarlier = storedDismissed && mounted;
   const [dismissedNow, setDismissedNow] = useState(false);
 
-  if (!isActive || dismissedEarlier || dismissedNow) return null;
+  if (dismissedEarlier || dismissedNow) return null;
 
   function dismiss() {
     setDismissedNow(true);
@@ -144,9 +153,7 @@ export function ExhibitionBanner(props: ExhibitionBannerProps) {
     >
       <Container className="px-4 py-2 sm:py-2.5 pr-12 sm:pr-14">
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-          {/* Main content row */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1.5 text-center md:text-left">
-            {/* Pulsing Category Badge */}
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium shrink-0 border ${themeStyles.badge}`}
             >
@@ -154,22 +161,15 @@ export function ExhibitionBanner(props: ExhibitionBannerProps) {
               {badge}
             </span>
 
-            {/* Headline Title */}
-            <span className="font-bold text-foreground text-xs sm:text-sm tracking-tight shrink-0">
-              {title}
-            </span>
+            <span className="font-bold text-foreground text-xs sm:text-sm tracking-tight shrink-0">{title}</span>
 
-            {/* Subtitle / Details */}
             {subtitle ? (
               <>
                 <span className="text-muted-foreground/50 hidden lg:inline">•</span>
-                <span className="text-muted-foreground text-xs line-clamp-1 max-w-xl hidden sm:inline">
-                  {subtitle}
-                </span>
+                <span className="text-muted-foreground text-xs line-clamp-1 max-w-xl hidden sm:inline">{subtitle}</span>
               </>
             ) : null}
 
-            {/* Date and Location coordinates */}
             {(formattedDate || location) && (
               <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-muted-foreground text-[11px] sm:text-xs">
                 {formattedDate && (
@@ -182,13 +182,34 @@ export function ExhibitionBanner(props: ExhibitionBannerProps) {
                   <span className="inline-flex items-center gap-1 shrink-0">
                     <MapPin className="size-3 text-muted-foreground/80" aria-hidden="true" />
                     <span>{location}</span>
-                    {booth && !location.includes(booth) && (
-                      <span className="hidden sm:inline">({booth})</span>
-                    )}
+                    {booth && !location.includes(booth) && <span className="hidden sm:inline">({booth})</span>}
                   </span>
                 )}
               </div>
             )}
+          </div>
+
+          {ctaText && ctaUrl && (
+            <Link
+              href={ctaUrl}
+              className="inline-flex items-center gap-1 font-semibold text-foreground underline-offset-4 hover:underline"
+            >
+              {ctaText}
+              <ArrowUpRight className="size-3.5" aria-hidden="true" />
+            </Link>
+          )}
+        </div>
+      </Container>
+
+      <button
+        type="button"
+        onClick={dismiss}
+        aria-label="Dismiss announcement"
+        className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex size-8 items-center justify-center rounded-full text-muted-foreground/80 transition hover:bg-background/10 hover:text-foreground sm:right-4"
+      >
+        <X className="size-3.5" aria-hidden="true" />
+      </button>
+    </aside>
           </div>
 
           {/* Action CTA Button */}

@@ -15,7 +15,7 @@ const BRAND_AT_EDGE = new RegExp(String.raw`(^${SITE_NAME}\s*[|·–-]|[|·–-]
  * A page title for `metadata.title`.
  *
  * The root layout sets `template: "%s | INFINI"`, so Next appends the brand to
- * whatever a page returns. Titles are admin-editable (CLAUDE.md §7) and staff
+ * whatever a page returns. Titles are admin-editable and staff
  * naturally type the brand in themselves, which rendered as
  * "Contact Us | INFINI | INFINI". A title that already carries the brand is
  * returned as `absolute` so it opts out of the template rather than being

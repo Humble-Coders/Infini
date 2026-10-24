@@ -115,6 +115,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Server-only collections, written and read exclusively by the admin
+    // dashboard through the Admin SDK (which bypasses rules). No client may
+    // ever touch them: two-factor secrets and sign-in rate-limit counters.
+    match /userSecrets/{docId} {
+      allow read, write: if false;
+    }
+    match /rateLimits/{docId} {
+      allow read, write: if false;
+    }
+
     // Everything else stays deny-all by default.
     match /{document=**} {
       allow read, write: if false;

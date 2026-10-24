@@ -146,7 +146,7 @@ export function ContactPanel({
             <Meteors numberOfMeteors={30} className="opacity-60" />
           </div>
           <div className="h-full">
-            <ContactForm industries={industries} className="h-full" />
+            <ContactForm industries={industries} className="h-full" headingLevel={headingLevel === "h1" ? "h2" : "h3"} />
           </div>
         </div>
       </Container>

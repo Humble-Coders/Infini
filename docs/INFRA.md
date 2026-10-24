@@ -1,6 +1,6 @@
 # INFRA — Firebase project setup
 
-This is the console-only settings log for T4. Per `CLAUDE.md` / PRD decision
+This is the console-only settings log for T4. Per project documentation / PRD decision
 **D5**, this file must stay complete enough that a different developer could
 rebuild the whole Firebase project from scratch without asking anyone.
 Fill in each `TODO` **as you create the thing**, not from memory afterward.

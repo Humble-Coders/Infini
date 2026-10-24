@@ -35,6 +35,12 @@ const OUTCOMES = [
 /** Radix Select reserves the empty string for "no value", so the "All" choices need a value of their own. */
 const ALL = "all";
 
+/** Counters shown until the admin edits them (Pages → Home page → Finder). */
+const DEFAULT_FACTS = [
+  { value: 6, label: "Plants worldwide" },
+  { value: 2002, label: "Process since" },
+];
+
 /**
  * "Solution Finder": a guided step on the homepage that helps visitors
  * identify the right MMP application for their use case, with the headline
@@ -47,9 +53,12 @@ const ALL = "all";
 export function SolutionFinder({
   industries,
   certificationsCount,
+  facts,
 }: {
   industries: IndustryOption[];
   certificationsCount: number;
+  /** Admin-edited counters (pages/home, section "finder"); industries and certifications are always counted live. */
+  facts?: Array<{ value: number; label: string }> | null;
 }) {
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [selectedOutcome, setSelectedOutcome] = useState("");
@@ -57,10 +66,10 @@ export function SolutionFinder({
   const isReady = selectedIndustry !== "" && selectedIndustry !== ALL;
   const targetSlug = isReady ? `/industries/${selectedIndustry}` : "/industries";
 
+  const editable = facts && facts.length > 0 ? facts : DEFAULT_FACTS;
   const counters = [
     { value: industries.length, label: "Industries" },
-    { value: 6, label: "Plants worldwide" },
-    { value: 2002, label: "Process since" },
+    ...editable.map((fact) => ({ value: Number(fact.value) || 0, label: fact.label })),
     { value: certificationsCount, label: "Certifications" },
   ];
 
