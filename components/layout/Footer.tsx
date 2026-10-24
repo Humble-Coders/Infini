@@ -12,11 +12,33 @@ import type { NavLink, SettingsContact, SettingsSocial } from "@/lib/types";
 
 function contactDetailsFrom(contact: SettingsContact | null) {
   if (!contact) return [];
-  return [
-    { label: "Email", value: contact.email, href: `mailto:${contact.email}` },
-    { label: "Phone", value: contact.phone, href: `tel:${contact.phone.replace(/[^\d+]/g, "")}` },
-    { label: "Facility", value: contact.address, href: undefined },
-  ];
+  const list = [];
+  if (contact.email) {
+    list.push({ label: "Email", value: contact.email, href: `mailto:${contact.email}` });
+  }
+  const mainPhone = contact.dispatchPhone || contact.phone;
+  if (mainPhone) {
+    list.push({
+      label: contact.technicalPhone ? "Dispatch" : "Phone",
+      value: mainPhone,
+      href: `tel:${mainPhone.replace(/[^\d+]/g, "")}`,
+    });
+  }
+  if (contact.technicalPhone && contact.technicalPhone !== mainPhone) {
+    list.push({
+      label: "Technical",
+      value: contact.technicalPhone,
+      href: `tel:${contact.technicalPhone.replace(/[^\d+]/g, "")}`,
+    });
+  }
+  if (contact.address) {
+    list.push({
+      label: "Facility",
+      value: contact.address,
+      href: contact.googleMapsUrl || undefined,
+    });
+  }
+  return list;
 }
 
 /**

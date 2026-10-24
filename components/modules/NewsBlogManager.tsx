@@ -17,6 +17,7 @@ import {
   X,
   ExternalLink,
   UploadCloud,
+  Check,
 } from "lucide-react";
 import { AdminSelect } from "@/components/admin/AdminSelect";
 
@@ -107,13 +108,14 @@ export function NewsBlogManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<NewsArticleItem | null>(null);
   const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const coverFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/admin/news")
       .then((res) => res.json())
       .then((data) => {
-        if (data.ok && Array.isArray(data.articles) && data.articles.length > 0) {
+        if (data.ok && Array.isArray(data.articles)) {
           setArticles(data.articles);
         }
       })
@@ -191,6 +193,8 @@ export function NewsBlogManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
       });
+      setSaveMessage(newStatus === "published" ? "Article published live!" : "Moved to drafts");
+      setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
       console.error("Failed to toggle status:", err);
     }
@@ -203,6 +207,8 @@ export function NewsBlogManager() {
         await fetch(`/api/admin/news?id=${encodeURIComponent(id)}`, {
           method: "DELETE",
         });
+        setSaveMessage("Article removed from repository");
+        setTimeout(() => setSaveMessage(null), 3000);
       } catch (err) {
         console.error("Failed to delete article:", err);
       }
@@ -247,6 +253,8 @@ export function NewsBlogManager() {
         } else {
           setArticles((prev) => [savedItem, ...prev]);
         }
+        setSaveMessage(editingItem ? "Article updated & published live!" : "New article published live!");
+        setTimeout(() => setSaveMessage(null), 3500);
         setIsModalOpen(false);
       }
     } catch (err) {
@@ -269,6 +277,11 @@ export function NewsBlogManager() {
             <span>Website Content</span>
             <span>/</span>
             <span className="text-foreground">Technical Articles & News</span>
+            {saveMessage && (
+              <span className="ml-2 inline-flex items-center gap-1 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-[11px] font-sans lowercase">
+                <Check className="size-3" /> {saveMessage}
+              </span>
+            )}
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
             News & Engineering Insights
@@ -278,13 +291,25 @@ export function NewsBlogManager() {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90"
-        >
-          <Plus className="size-4" />
-          <span>Write New Article</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href="/news"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border/80 bg-background/50 px-3.5 py-2.5 text-xs font-mono text-muted-foreground hover:bg-card hover:text-foreground transition-all"
+          >
+            <ExternalLink className="size-3.5" />
+            <span>View Live Articles</span>
+          </a>
+
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90"
+          >
+            <Plus className="size-4" />
+            <span>Write New Article</span>
+          </button>
+        </div>
       </div>
 
       {/* Bento Metric Cards */}
@@ -590,7 +615,14 @@ export function NewsBlogManager() {
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      setFormData((prev) => ({ ...prev, coverImage: URL.createObjectURL(file) }));
+                      const reader = new FileReader();
+                      reader.onload = (uploadEvent) => {
+                        const result = uploadEvent.target?.result as string;
+                        if (result) {
+                          setFormData((prev) => ({ ...prev, coverImage: result }));
+                        }
+                      };
+                      reader.readAsDataURL(file);
                     }
                   }}
                   className="hidden"

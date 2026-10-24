@@ -5,13 +5,16 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 
-/** Minimal review shape: the carousel needs words and attribution, nothing else. */
+/** Review shape for carousel display. */
 export interface CarouselTestimonial {
   id: string;
   quote: string;
   personName: string;
   designation: string;
   company: string;
+  logoUrl?: string;
+  industry?: string;
+  rating?: number;
 }
 
 /** One full autoplay rotation per testimonial. */
@@ -170,8 +173,8 @@ export function TestimonialCarousel({ items }: { items: CarouselTestimonial[] })
                   &rdquo;
                 </span>
 
-                <div aria-label="Rated 5 out of 5" className="relative flex justify-center gap-1">
-                  {Array.from({ length: 5 }).map((_, star) => (
+                <div aria-label={`Rated ${item.rating ?? 5} out of 5`} className="relative flex justify-center gap-1">
+                  {Array.from({ length: Math.round(item.rating ?? 5) }).map((_, star) => (
                     <Star key={star} aria-hidden="true" className="size-3.5 fill-accent text-accent" />
                   ))}
                 </div>
@@ -181,12 +184,23 @@ export function TestimonialCarousel({ items }: { items: CarouselTestimonial[] })
                 </blockquote>
 
                 <div className="relative flex items-center gap-3 border-t border-white/10 pt-4">
-                  <span
-                    aria-hidden="true"
-                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/15 text-sm font-semibold tracking-tight text-accent"
-                  >
-                    {initials(item.personName)}
-                  </span>
+                  {item.logoUrl ? (
+                    <div className="relative size-11 shrink-0 overflow-hidden rounded-full border border-white/20 bg-black/40">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.logoUrl}
+                        alt={item.company}
+                        className="size-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/15 text-sm font-semibold tracking-tight text-accent"
+                    >
+                      {initials(item.personName)}
+                    </span>
+                  )}
                   <span className="flex min-w-0 flex-col gap-0.5 text-left">
                     <span className="truncate text-sm font-semibold text-white">{item.personName}</span>
                     <span className="truncate font-mono text-[10px] tracking-[0.14em] text-white/50 uppercase">

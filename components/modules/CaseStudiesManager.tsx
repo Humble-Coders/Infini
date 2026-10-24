@@ -115,11 +115,17 @@ export function CaseStudiesManager() {
   function handleImageUpload(type: "before" | "after", e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setSelected((prev) => ({
-      ...prev,
-      [type === "before" ? "beforeImage" : "afterImage"]: url,
-    }));
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      const result = uploadEvent.target?.result as string;
+      if (result) {
+        setSelected((prev) => ({
+          ...prev,
+          [type === "before" ? "beforeImage" : "afterImage"]: result,
+        }));
+      }
+    };
+    reader.readAsDataURL(file);
   }
 
   function parseSlugFromUrl(urlStr: string): { title: string; industry: string; material: string } {
@@ -313,6 +319,16 @@ export function CaseStudiesManager() {
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
+          <a
+            href="/case-studies"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border/80 bg-background/50 px-3.5 py-2 text-xs font-mono text-muted-foreground hover:bg-card hover:text-foreground transition-all"
+          >
+            <ExternalLink className="size-3.5" />
+            <span>View Live Site</span>
+          </a>
+
           <button
             type="button"
             onClick={handleCreateNew}

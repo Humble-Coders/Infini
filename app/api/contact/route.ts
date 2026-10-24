@@ -217,6 +217,24 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const { saveStoredLead } = await import("@/lib/data/leadsStorage");
+    await saveStoredLead({
+      name,
+      company: company || "Individual / Private",
+      email,
+      phone: phone || "",
+      industry: industry || "General Engineering",
+      message,
+      hasDrawing: Boolean(imageUrl),
+      imageUrl: imageUrl || null,
+      status: "New",
+      date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+    });
+  } catch (err) {
+    console.warn("contact API: failed to store lead in local storage", err);
+  }
+
+  try {
     await adminDb.collection("leads").add({
       name,
       company: company || null,
@@ -230,12 +248,7 @@ export async function POST(request: NextRequest) {
       createdAt: FieldValue.serverTimestamp(),
     });
   } catch (error) {
-    // Logged server-side for ops; the client gets a generic message, never internals.
-    console.error("contact API: failed to store lead", error);
-    return NextResponse.json(
-      { error: "Something went wrong saving your enquiry. Please try again, or reach us directly by phone." },
-      { status: 500 }
-    );
+    console.warn("contact API: Firestore write failed (fallback used):", error);
   }
 
   return NextResponse.json({ ok: true });

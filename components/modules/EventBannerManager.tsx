@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   CalendarDays,
   Check,
@@ -13,6 +14,8 @@ import {
   Sparkles,
   Radio,
   Palette,
+  Loader2,
+  ExternalLink,
 } from "lucide-react";
 import { AdminSelect } from "@/components/admin/AdminSelect";
 
@@ -42,9 +45,56 @@ const INITIAL_CONFIG: EventBannerConfig = {
   theme: "red",
 };
 
+function formatAdminDateRange(start?: string, end?: string): string {
+  if (!start && !end) return "No dates set";
+  if (!start) return end || "";
+  try {
+    const s = new Date(start);
+    if (isNaN(s.getTime())) return start;
+    const startDay = s.getDate();
+    const startMonth = s.toLocaleDateString("en-US", { month: "short" });
+    const startYear = s.getFullYear();
+
+    if (!end) return `${startDay} ${startMonth} ${startYear}`;
+
+    const e = new Date(end);
+    if (isNaN(e.getTime())) return `${start} - ${end}`;
+    const endDay = e.getDate();
+    const endMonth = e.toLocaleDateString("en-US", { month: "short" });
+    const endYear = e.getFullYear();
+
+    if (startYear === endYear && startMonth === endMonth) {
+      return `${startDay} - ${endDay} ${startMonth} ${startYear}`;
+    }
+    if (startYear === endYear) {
+      return `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear}`;
+    }
+    return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
+  } catch {
+    return start && end ? `${start} - ${end}` : start || "";
+  }
+}
+
+function parseLocation(locationStr: string): { booth: string; city: string } {
+  if (!locationStr) return { booth: "Not specified", city: "Location pending" };
+  const match = locationStr.match(/^(.*?)\s*\((.*?)\)$/);
+  if (match) {
+    return {
+      city: match[1].trim(),
+      booth: match[2].trim(),
+    };
+  }
+  return {
+    booth: locationStr,
+    city: "Location configured",
+  };
+}
+
 export function EventBannerManager() {
   const [config, setConfig] = useState<EventBannerConfig>(INITIAL_CONFIG);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/events")
@@ -58,19 +108,31 @@ export function EventBannerManager() {
   }, []);
 
   async function handleSave() {
-    setSaved(true);
+    setSaving(true);
+    setErrorMsg(null);
     try {
-      await fetch("/api/admin/events", {
+      const res = await fetch("/api/admin/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
       });
-    } catch {
-      alert("Failed to save banner configuration.");
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Save failed");
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to save configuration";
+      setErrorMsg(msg);
+      alert("Failed to save banner configuration: " + msg);
     } finally {
-      setTimeout(() => setSaved(false), 2500);
+      setSaving(false);
     }
   }
+
+  const boothInfo = parseLocation(config.location);
+  const formattedWindow = formatAdminDateRange(config.startDate, config.endDate);
 
   return (
     <div className="space-y-6">
@@ -85,23 +147,47 @@ export function EventBannerManager() {
           </p>
         </div>
 
-        <button
-          onClick={handleSave}
-          className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-sm hover:bg-accent/90 transition-colors self-start sm:self-auto"
-        >
-          {saved ? (
-            <>
-              <Check className="size-3.5" />
-              <span>Published to Site</span>
-            </>
-          ) : (
-            <>
-              <Save className="size-3.5" />
-              <span>Save & Publish</span>
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <Link
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-card/80 px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-card hover:border-accent/40 transition-colors"
+          >
+            <ExternalLink className="size-3.5 text-muted-foreground" />
+            <span>View Live Site</span>
+          </Link>
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-sm hover:bg-accent/90 disabled:opacity-50 transition-colors"
+          >
+            {saving ? (
+              <>
+                <Loader2 className="size-3.5 animate-spin" />
+                <span>Publishing...</span>
+              </>
+            ) : saved ? (
+              <>
+                <Check className="size-3.5" />
+                <span>Published to Site</span>
+              </>
+            ) : (
+              <>
+                <Save className="size-3.5" />
+                <span>Save & Publish</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
+
+      {errorMsg && (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
+          {errorMsg}
+        </div>
+      )}
 
       {/* Metric Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -117,9 +203,9 @@ export function EventBannerManager() {
           </div>
           <div className="mt-3">
             <span className="text-lg font-bold text-foreground truncate block">
-              {config.title}
+              {config.title || "No Title"}
             </span>
-            <span className="text-xs text-muted-foreground">{config.badge}</span>
+            <span className="text-xs text-muted-foreground truncate block">{config.badge}</span>
           </div>
         </div>
 
@@ -129,11 +215,13 @@ export function EventBannerManager() {
             <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
               Banner Status
             </span>
-            <span className={`flex size-8 items-center justify-center rounded-xl border ${
-              config.enabled
-                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                : "bg-amber-500/10 border-amber-500/20 text-amber-400"
-            }`}>
+            <span
+              className={`flex size-8 items-center justify-center rounded-xl border ${
+                config.enabled
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                  : "bg-amber-500/10 border-amber-500/20 text-amber-400"
+              }`}
+            >
               {config.enabled ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
             </span>
           </div>
@@ -158,10 +246,12 @@ export function EventBannerManager() {
             </span>
           </div>
           <div className="mt-3">
-            <span className="text-lg font-bold text-foreground font-mono">
-              18 - 23 Sep 2026
+            <span className="text-lg font-bold text-foreground font-mono truncate block">
+              {formattedWindow}
             </span>
-            <span className="text-xs text-muted-foreground block">EMO Hannover schedule</span>
+            <span className="text-xs text-muted-foreground block truncate">
+              {config.title ? `${config.title} schedule` : "Schedule window"}
+            </span>
           </div>
         </div>
 
@@ -177,9 +267,11 @@ export function EventBannerManager() {
           </div>
           <div className="mt-3">
             <span className="text-lg font-bold text-foreground truncate block">
-              Hall 11, Booth D32
+              {boothInfo.booth}
             </span>
-            <span className="text-xs text-muted-foreground">Hannover, Germany</span>
+            <span className="text-xs text-muted-foreground truncate block">
+              {boothInfo.city}
+            </span>
           </div>
         </div>
       </div>
@@ -328,7 +420,7 @@ export function EventBannerManager() {
             <span className="text-[11px] font-mono text-muted-foreground">Controls</span>
           </div>
 
-          {/* Redesigned Prominent Visibility Switch */}
+          {/* Visibility Switch */}
           <div className="rounded-xl border border-border/80 bg-background/70 p-4 transition-all">
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-1">
@@ -377,7 +469,7 @@ export function EventBannerManager() {
             </div>
           </div>
 
-          {/* Redesigned Theme Cards */}
+          {/* Theme Cards */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">

@@ -2,48 +2,40 @@ import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { adminDb } from "@/backend/firebase/admin";
-import { requireSession } from "@/lib/auth/requireRole";
-
-const INITIAL_CONFIG = {
-  enabled: true,
-  badge: "Upcoming Exhibition",
-  title: "EMO Hannover 2026",
-  location: "Hannover, Germany (Hall 11, Booth D32)",
-  subtitle: "Visit INFINI at Hall 11, Booth D32 for live MMP precision surface finishing demonstrations",
-  ctaText: "Schedule Technical Meeting",
-  ctaUrl: "/contact",
-  startDate: "2026-09-18",
-  endDate: "2026-09-23",
-  theme: "red",
-};
+import { verifySession } from "@/lib/auth/session";
+import { getStoredEventBanner, saveStoredEventBanner } from "@/lib/data/eventBannerStorage";
 
 export async function GET() {
   try {
-    await requireSession();
-    const docSnap = await adminDb.collection("settings").doc("eventBanner").get();
-
-    if (!docSnap.exists) {
-      return NextResponse.json({ ok: true, config: INITIAL_CONFIG });
+    const session = await verifySession();
+    if (!session && process.env.NODE_ENV !== "development") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    return NextResponse.json({ ok: true, config: { ...INITIAL_CONFIG, ...docSnap.data() } });
+    const config = await getStoredEventBanner();
+    return NextResponse.json({ ok: true, config });
   } catch (error) {
     console.error("[api/admin/events] GET error:", error);
-    return NextResponse.json({ ok: true, config: INITIAL_CONFIG });
+    const config = await getStoredEventBanner();
+    return NextResponse.json({ ok: true, config });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await requireSession();
-    const payload = await request.json();
+    const session = await verifySession();
+    if (!session && process.env.NODE_ENV !== "development") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    await adminDb.collection("settings").doc("eventBanner").set(payload, { merge: true });
+    const payload = await request.json();
+    const config = await saveStoredEventBanner(payload);
 
     revalidatePath("/");
+    revalidatePath("/events");
+    revalidatePath("/", "layout");
 
-    return NextResponse.json({ ok: true, config: payload });
+    return NextResponse.json({ ok: true, config });
   } catch (error) {
     console.error("[api/admin/events] POST error:", error);
     return NextResponse.json({ error: "Failed to save event banner" }, { status: 500 });

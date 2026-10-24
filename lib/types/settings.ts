@@ -4,6 +4,9 @@ export interface SettingsContact {
   phone: string;
   email: string;
   address: string;
+  technicalPhone?: string;
+  dispatchPhone?: string;
+  googleMapsUrl?: string;
 }
 
 export interface SettingsSocial {

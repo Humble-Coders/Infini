@@ -18,6 +18,7 @@ import {
   X,
   UploadCloud,
   Check,
+  ExternalLink,
 } from "lucide-react";
 import { AdminSelect } from "@/components/admin/AdminSelect";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
@@ -36,7 +37,7 @@ export function TestimonialsManager() {
     fetch("/api/admin/testimonials")
       .then((res) => res.json())
       .then((data) => {
-        if (data.ok && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+        if (data.ok && Array.isArray(data.testimonials)) {
           setTestimonials(data.testimonials);
         }
       })
@@ -48,8 +49,14 @@ export function TestimonialsManager() {
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setFormData((prev) => ({ ...prev, logoUrl: url }));
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      const result = uploadEvent.target?.result as string;
+      if (result) {
+        setFormData((prev) => ({ ...prev, logoUrl: result }));
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   // Form State for create/edit
@@ -168,6 +175,16 @@ export function TestimonialsManager() {
   };
 
   const publishedCount = testimonials.filter((t) => t.published).length;
+  const avgRating =
+    testimonials.length > 0
+      ? (
+          testimonials.reduce((sum, t) => sum + (t.rating ?? 5.0), 0) /
+          testimonials.length
+        ).toFixed(1)
+      : "5.0";
+  const uniqueIndustriesCount =
+    new Set(testimonials.map((t) => t.industry).filter(Boolean)).size ||
+    (testimonials.length > 0 ? 1 : 0);
 
   return (
     <div className="space-y-6">
@@ -192,13 +209,25 @@ export function TestimonialsManager() {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90"
-        >
-          <Plus className="size-4" />
-          <span>Add New Review</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href="/#reviews"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border/80 bg-background/50 px-3.5 py-2.5 text-xs font-mono text-muted-foreground hover:bg-card hover:text-foreground transition-all"
+          >
+            <ExternalLink className="size-3.5" />
+            <span>View Live Site</span>
+          </a>
+
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90"
+          >
+            <Plus className="size-4" />
+            <span>Add New Review</span>
+          </button>
+        </div>
       </div>
 
       {/* Top Bento Metrics */}
@@ -248,7 +277,7 @@ export function TestimonialsManager() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-bold text-foreground font-mono">
-              5.0
+              {avgRating}
             </span>
             <span className="text-xs text-amber-400 font-mono">Verified OEM</span>
           </div>
@@ -265,7 +294,7 @@ export function TestimonialsManager() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-bold text-foreground font-mono">
-              5
+              {uniqueIndustriesCount}
             </span>
             <span className="text-xs text-muted-foreground">precision sectors</span>
           </div>

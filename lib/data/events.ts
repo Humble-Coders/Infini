@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { requireDb } from "./firestore";
 import type { EventDoc, WithId } from "@/lib/types";
 
@@ -16,6 +16,7 @@ export interface EventBannerData {
   ctaUrl?: string;
   startDate?: string;
   endDate?: string;
+  theme?: "red" | "dark" | "gold";
 }
 
 /** All published events, soonest first. */
@@ -30,17 +31,14 @@ async function getPublishedEventsUncached(): Promise<WithId<EventDoc>[]> {
   }
 }
 
-/** Configured event/announcement banner from settings/eventBanner */
+/** Configured event/announcement banner from persistent storage with Firestore fallback */
 async function getEventBannerUncached(): Promise<EventBannerData | null> {
   try {
-    const snap = await getDoc(doc(requireDb(), "settings", "eventBanner"));
-    if (snap.exists()) {
-      return snap.data() as EventBannerData;
-    }
+    const { getStoredEventBanner } = await import("./eventBannerStorage");
+    return (await getStoredEventBanner()) as EventBannerData;
   } catch {
-    // Return null to allow ExhibitionBanner to fallback gracefully
+    return null;
   }
-  return null;
 }
 
 export const getPublishedEvents = cache(getPublishedEventsUncached);

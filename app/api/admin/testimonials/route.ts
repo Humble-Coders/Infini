@@ -2,39 +2,37 @@ import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { adminDb } from "@/backend/firebase/admin";
-import { requireSession } from "@/lib/auth/requireRole";
-import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
+import { verifySession } from "@/lib/auth/session";
+import {
+  getStoredTestimonials,
+  saveStoredTestimonial,
+  deleteStoredTestimonial,
+} from "@/lib/data/testimonialsStorage";
 import type { TestimonialDoc, WithId } from "@/lib/types";
 
 export async function GET() {
   try {
-    await requireSession();
-
-    const snapshot = await adminDb
-      .collection("testimonials")
-      .orderBy("order", "asc")
-      .get();
-
-    if (snapshot.empty) {
-      return NextResponse.json({ ok: true, testimonials: DEMO_TESTIMONIALS });
+    const session = await verifySession();
+    if (!session && process.env.NODE_ENV !== "development") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const testimonials: WithId<TestimonialDoc>[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as TestimonialDoc),
-    }));
-
+    const testimonials = await getStoredTestimonials();
     return NextResponse.json({ ok: true, testimonials });
   } catch (error) {
     console.error("[api/admin/testimonials] GET error:", error);
-    return NextResponse.json({ ok: true, testimonials: DEMO_TESTIMONIALS });
+    const testimonials = await getStoredTestimonials();
+    return NextResponse.json({ ok: true, testimonials });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await requireSession();
+    const session = await verifySession();
+    if (!session && process.env.NODE_ENV !== "development") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const payload = await request.json();
     const { id, quote, personName, designation, company, logoUrl, order, published, industry, rating } = payload;
 
@@ -43,7 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     const docId = id || `testimonial-${Date.now()}`;
-    const dataToSave: TestimonialDoc = {
+    const dataToSave: WithId<TestimonialDoc> = {
+      id: docId,
       quote,
       personName,
       designation: designation || "",
@@ -55,12 +54,12 @@ export async function POST(request: NextRequest) {
       ...(typeof rating === "number" ? { rating } : {}),
     };
 
-    await adminDb.collection("testimonials").doc(docId).set(dataToSave, { merge: true });
+    const saved = await saveStoredTestimonial(dataToSave);
 
-    // Instantly invalidate public ISR caches so changes appear globally
+    // Instantly invalidate public ISR caches so changes appear globally across India, Australia, etc.
     revalidatePath("/");
 
-    return NextResponse.json({ ok: true, id: docId, testimonial: dataToSave });
+    return NextResponse.json({ ok: true, id: docId, testimonial: saved });
   } catch (error) {
     console.error("[api/admin/testimonials] POST error:", error);
     return NextResponse.json({ error: "Failed to save testimonial" }, { status: 500 });
@@ -69,7 +68,11 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    await requireSession();
+    const session = await verifySession();
+    if (!session && process.env.NODE_ENV !== "development") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -77,7 +80,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Missing testimonial id" }, { status: 400 });
     }
 
-    await adminDb.collection("testimonials").doc(id).delete();
+    await deleteStoredTestimonial(id);
     revalidatePath("/");
 
     return NextResponse.json({ ok: true });

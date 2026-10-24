@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ExhibitionBanner } from "@/components/sections/home/ExhibitionBanner";
 import { ComponentGallery } from "@/components/sections/home/ComponentGallery";
 import { PartnershipSection } from "@/components/sections/home/PartnershipSection";
 import { HomeHero } from "@/components/sections/home/HomeHero";
@@ -21,7 +20,7 @@ import { getPublishedIndustries } from "@/lib/data/industries";
 import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getPublishedTestimonials } from "@/lib/data/testimonials";
-import { getEventBanner } from "@/lib/data/events";
+import { getSettings } from "@/lib/data/settings";
 import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
@@ -55,13 +54,13 @@ export async function homeMetadata(): Promise<Metadata> {
  * Certifications and news are not repeated here; each has its own page.
  */
 export async function HomePage() {
-  const [page, industries, caseStudies, certifications, testimonials, eventBanner] = await Promise.all([
+  const [page, industries, caseStudies, certifications, testimonials, settings] = await Promise.all([
     getPage("home"),
     getPublishedIndustries(),
     getPublishedCaseStudies(),
     getActiveCertifications(),
     getPublishedTestimonials(),
-    getEventBanner(),
+    getSettings(),
   ]);
 
   const hero = getSection<HeroCopy>(page, "hero");
@@ -72,22 +71,12 @@ export async function HomePage() {
   const caseStudiesTeaser = getSection<TeaserCopy>(page, "caseStudiesTeaser");
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
 
-  // Demo quotes while the testimonials collection is empty; real documents win.
-  const voices = testimonials.length > 0 ? testimonials : DEMO_TESTIMONIALS;
+  // Dynamic published customer testimonials (from dual-layer cloud/local storage)
+  const voices = testimonials;
 
   return (
     <MotionProvider>
       <main className="min-h-screen bg-background">
-        <ExhibitionBanner
-          title={eventBanner?.title}
-          date={
-            eventBanner?.startDate && eventBanner?.endDate
-              ? `${eventBanner.startDate} - ${eventBanner.endDate}`
-              : undefined
-          }
-          location={eventBanner?.location}
-          isActive={eventBanner ? eventBanner.enabled : true}
-        />
         <HomeHero copy={hero} />
 
         {/* White run straight after the hero: find your industry and the counters,
@@ -118,7 +107,7 @@ export async function HomePage() {
         <Testimonials copy={null} testimonials={voices} />
         <ContactPanel
           copy={contactTeaser}
-          contact={INFINI_CONTACT}
+          contact={settings?.contact ?? INFINI_CONTACT}
           industries={industries}
         />
         <BackToTop />

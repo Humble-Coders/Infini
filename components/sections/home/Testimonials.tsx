@@ -19,7 +19,7 @@ export function Testimonials({ copy, testimonials }: { copy: TeaserCopy | null; 
   const { eyebrow, heading } = { ...FALLBACK, ...(copy ?? {}) };
 
   return (
-    <section data-surface="light" className="overflow-x-clip bg-background pt-10 sm:pt-14 pb-24 sm:pb-32">
+    <section id="reviews" data-surface="light" className="overflow-x-clip bg-background pt-10 sm:pt-14 pb-24 sm:pb-32">
       <Container className="flex flex-col items-center gap-12 text-center lg:gap-14">
         <div className="flex max-w-3xl flex-col items-center gap-6">
           <MonoLabel>{eyebrow}</MonoLabel>

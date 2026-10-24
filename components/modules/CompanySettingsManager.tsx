@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Settings,
   Mail,
@@ -14,7 +14,9 @@ import {
   Building,
   UploadCloud,
   FileText,
+  ExternalLink,
 } from "lucide-react";
+import { toast } from "sonner";
 import { TeamAccessManager } from "./TeamAccessManager";
 
 export interface CompanySettings {
@@ -57,10 +59,11 @@ export function CompanySettingsManager() {
   const [activeTab, setActiveTab] = useState<"company" | "team">("company");
   const [settings, setSettings] = useState<CompanySettings>(DEFAULT_SETTINGS);
   const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const brochureFileInputRef = useRef<HTMLInputElement>(null);
 
-  useState(() => {
+  useEffect(() => {
     fetch("/api/admin/settings")
       .then((res) => res.json())
       .then((data) => {
@@ -68,35 +71,59 @@ export function CompanySettingsManager() {
           setSettings((prev) => ({ ...prev, ...data.settings }));
         }
       })
-      .catch(() => {});
-  });
+      .catch((err) => {
+        console.error("Failed to load settings:", err);
+      });
+  }, []);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setSettings((prev) => ({ ...prev, logoUrl: url }));
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setSettings((prev) => ({ ...prev, logoUrl: result }));
+        toast.success("Logo uploaded. Click 'Save Settings' to apply live.");
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleBrochureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setSettings((prev) => ({ ...prev, brochureUrl: url }));
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setSettings((prev) => ({ ...prev, brochureUrl: result }));
+        toast.success("Brochure uploaded. Click 'Save Settings' to apply live.");
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   async function handleSave() {
-    setSaved(true);
+    setIsSaving(true);
     try {
-      await fetch("/api/admin/settings", {
+      const res = await fetch("/api/admin/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
       });
+      const data = await res.json();
+      if (data.ok) {
+        setSaved(true);
+        toast.success("Settings saved & synchronized live across all pages!");
+        setTimeout(() => setSaved(false), 2500);
+      } else {
+        toast.error("Failed to save settings: " + (data.error || "Unknown error"));
+      }
     } catch {
-      alert("Failed to save settings to server.");
+      toast.error("Network error saving settings to server.");
     } finally {
-      setTimeout(() => setSaved(false), 2200);
+      setIsSaving(false);
     }
   }
 
@@ -119,13 +146,38 @@ export function CompanySettingsManager() {
         </div>
 
         {activeTab === "company" && (
-          <button
-            onClick={handleSave}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-accent-foreground shadow-sm transition-all hover:bg-accent/90"
-          >
-            {saved ? <Check className="size-4" /> : <Settings className="size-4" />}
-            <span>{saved ? "Saved Changes" : "Save Settings"}</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href="/contact"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-card/60 px-3 py-2 text-xs font-mono text-muted-foreground hover:text-foreground transition-all hover:border-accent/40"
+            >
+              <ExternalLink className="size-3.5" />
+              <span>Preview /contact</span>
+            </a>
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-card/60 px-3 py-2 text-xs font-mono text-muted-foreground hover:text-foreground transition-all hover:border-accent/40"
+            >
+              <ExternalLink className="size-3.5" />
+              <span>Preview Live Footer</span>
+            </a>
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold shadow-sm transition-all ${
+                saved
+                  ? "bg-emerald-600 text-white"
+                  : "bg-accent text-accent-foreground hover:bg-accent/90"
+              }`}
+            >
+              {saved ? <Check className="size-4" /> : <Settings className={`size-4 ${isSaving ? "animate-spin" : ""}`} />}
+              <span>{saved ? "Published & Live!" : isSaving ? "Saving..." : "Save Settings"}</span>
+            </button>
+          </div>
         )}
       </div>
 

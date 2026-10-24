@@ -1,13 +1,13 @@
-// Facility label comes from INFINI_CONTACT (Treatment & validation labs).
+// Facility label comes from INFINI_CONTACT (Treatment & validation labs) or live settings.
 import type { Metadata } from "next";
 import { ContactPanel } from "@/components/sections/home/ContactPanel";
 import { Container } from "@/components/ui/container";
 import { getPage, getSection } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
+import { getSettings } from "@/lib/data/settings";
 import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { ogTitle, pageTitle } from "@/lib/seo";
 import type { TeaserCopy } from "@/lib/types";
-
 
 /*
  * ISR window. Without this the route re-renders and re-reads Firestore on
@@ -31,18 +31,23 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const [page, industries] = await Promise.all([
+  const [page, industries, settings] = await Promise.all([
     getPage("home"), // Reusing home page content for the contact teaser
     getPublishedIndustries(),
+    getSettings(),
   ]);
 
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
+  const contact = settings?.contact ?? INFINI_CONTACT;
+  const mapSrc =
+    contact?.googleMapsUrl ||
+    "https://maps.google.com/maps?q=1%20Taksal%20Road%2C%20Parwanoo%2C%20Himachal%20Pradesh%20173220&z=14&output=embed";
 
   return (
     <main className="min-h-screen bg-background">
       <ContactPanel
         copy={contactTeaser}
-        contact={INFINI_CONTACT}
+        contact={contact}
         industries={industries}
         headingLevel="h1"
         compact
@@ -53,8 +58,8 @@ export default async function ContactPage() {
         <Container>
           <div className="overflow-hidden rounded-3xl border border-border">
             <iframe
-              title="INFINI facility, 1 Taksal Road, Parwanoo, Himachal Pradesh, India"
-              src="https://maps.google.com/maps?q=1%20Taksal%20Road%2C%20Parwanoo%2C%20Himachal%20Pradesh%20173220&z=14&output=embed"
+              title={`INFINI facility, ${contact?.address || "1 Taksal Road, Parwanoo, Himachal Pradesh, India"}`}
+              src={mapSrc}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="block h-[380px] w-full border-0 sm:h-[460px]"

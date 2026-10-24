@@ -1,0 +1,248 @@
+[
+  {
+    "id": "cs-1",
+    "slug": "turbine-blisk-internal-passages",
+    "title": "Turbine Blisk Internal Passages Superfinishing",
+    "industry": "Aerospace",
+    "industryId": "aerospace",
+    "challenge": "Complex internal aerofoil cooling passages suffered from micro-scratches and recast layer following EDM, creating stress concentrations.",
+    "solution": "Multi-axis selective MMP formulation filtered high-frequency surface wave-lengths without eroding leading edge tolerances.",
+    "process": "Passage roughness sampled by replica casting before and after, aerofoil profile scanned on a CMM, and wall thickness re-confirmed at thinnest sections.",
+    "result": "Internal cooling passage roughness fell from Ra 0.80 µm to Ra 0.03 µm with no dimensional deviation, extending fatigue life by +280%.",
+    "results": [
+      {
+        "label": "Surface Roughness",
+        "value": "Ra 0.80 -> 0.03 µm",
+        "direction": "down"
+      },
+      {
+        "label": "Fatigue Life",
+        "value": "+280% Extension",
+        "direction": "up"
+      },
+      {
+        "label": "Aerofoil Profile",
+        "value": "Zero Deviation",
+        "direction": "check"
+      }
+    ],
+    "beforeRa": "0.80 µm",
+    "afterRa": "0.03 µm",
+    "toolLifeGain": "+280% Fatigue Life",
+    "beforeImage": "/images/cutting-tool-1.jpg",
+    "afterImage": "/images/cutting-tool-3.png",
+    "material": "Inconel 718",
+    "specs": {
+      "material": "Inconel 718",
+      "process": "Multi-axis MMP Whole-Component Treatment",
+      "duration": "9 hours per batch"
+    },
+    "published": true,
+    "createdAt": "2026-03-04T10:00:00.000Z"
+  },
+  {
+    "id": "cs-2",
+    "slug": "carbide-gun-drills-edge-honing",
+    "title": "Solid Carbide Gun Drills Edge Honing",
+    "industry": "Cutting Tools",
+    "industryId": "cutting-tools",
+    "challenge": "Micro-chipping on cutting edges led to premature tool failure during deep hole automotive crankshaft drilling.",
+    "solution": "Controlled MMP micro-edge honing imparted an exact 15 µm symmetric edge radius while polishing flutes to mirror brilliance.",
+    "process": "Sub-micron aggregate formulation tuned to remove micro-serrations along the cutting line while polishing flute valleys for laminar chip evacuation.",
+    "result": "Edge chipping completely eliminated and tool life extended by +320% across 50,000 hole cycles.",
+    "results": [
+      {
+        "label": "Flute Roughness",
+        "value": "Ra 0.45 -> 0.02 µm",
+        "direction": "down"
+      },
+      {
+        "label": "Tool Life",
+        "value": "+320% Increase",
+        "direction": "up"
+      },
+      {
+        "label": "Edge Radius",
+        "value": "15 µm Symmetric",
+        "direction": "check"
+      }
+    ],
+    "beforeRa": "0.45 µm",
+    "afterRa": "0.02 µm",
+    "toolLifeGain": "+320% Tool Life",
+    "beforeImage": "/images/cutting-tool-2.png",
+    "afterImage": "/images/cutting-tool-3.png",
+    "material": "Tungsten Carbide",
+    "specs": {
+      "material": "Sub-micron Grain Tungsten Carbide",
+      "process": "MMP Edge Honing & Flute Polish",
+      "duration": "Production Batch"
+    },
+    "published": true,
+    "createdAt": "2026-02-18T14:00:00.000Z"
+  },
+  {
+    "id": "cs-3",
+    "slug": "femoral-knee-component-mirror-finish",
+    "title": "Femoral Knee Component Mirror Finish Without Edge Rounding",
+    "industry": "Medical Implants",
+    "industryId": "medical-implants",
+    "challenge": "Hand polishing reached mirror finish on the bearing surface but rounded transition edges inconsistently from operator to operator.",
+    "solution": "Replaced manual buffing with an automated MMP cycle that treats the whole bearing surface uniformly without rounding critical blend radii.",
+    "process": "Five-point profilometry verification per component with shadowgraph edge inspection against the CAD master.",
+    "result": "Consistent Ra 0.02 µm achieved across 100% of implants with zero batch rejection.",
+    "results": [
+      {
+        "label": "Bearing Ra",
+        "value": "0.02 µm Verified",
+        "direction": "down"
+      },
+      {
+        "label": "Edge Geometry",
+        "value": "Matches Master",
+        "direction": "check"
+      },
+      {
+        "label": "Batch Variance",
+        "value": "Inside ISO Limit",
+        "direction": "check"
+      }
+    ],
+    "beforeRa": "0.62 µm",
+    "afterRa": "0.02 µm",
+    "toolLifeGain": "100% Batch Consistency",
+    "beforeImage": "/images/placeholders/process-01-bevel-pinion.jpg",
+    "afterImage": "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
+    "material": "CoCrMo, Forged",
+    "specs": {
+      "material": "CoCrMo Medical Grade",
+      "process": "MMP Controlled Bearing Superfinish",
+      "duration": "Cleanroom Validated"
+    },
+    "published": true,
+    "createdAt": "2026-01-20T09:00:00.000Z"
+  },
+  {
+    "id": "cs-4",
+    "slug": "helical-gear-set-contact-fatigue",
+    "title": "Helical Gear Set, Micropitting Under Sustained Torque",
+    "industry": "Gears & Transmission",
+    "industryId": "gears-transmission",
+    "challenge": "Ground helical gears showed micropitting on the flanks after endurance running due to directional peak stresses breaking the oil film.",
+    "solution": "MMP treatment selectively removed directional grinding peaks while preserving gear tooth profile and tip relief intact.",
+    "process": "Flank roughness traced before and after across multiple teeth on a Klingelnberg gear analyzer.",
+    "result": "Flank roughness reduced from Ra 0.62 µm to Ra 0.11 µm with zero micropitting after full endurance load testing.",
+    "results": [
+      {
+        "label": "Flank Ra",
+        "value": "0.62 -> 0.11 µm",
+        "direction": "down"
+      },
+      {
+        "label": "Profile Deviation",
+        "value": "In Drawing Tolerance",
+        "direction": "check"
+      },
+      {
+        "label": "Micropitting",
+        "value": "Zero After 10M Cycles",
+        "direction": "check"
+      }
+    ],
+    "beforeRa": "0.62 µm",
+    "afterRa": "0.11 µm",
+    "toolLifeGain": "Zero Micropitting",
+    "beforeImage": "/images/placeholders/process-01-bevel-pinion.jpg",
+    "afterImage": "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
+    "material": "18CrNiMo7-6 Case-Hardened",
+    "specs": {
+      "material": "18CrNiMo7-6 Steel",
+      "process": "MMP Flank Superfinishing",
+      "duration": "6 hours per batch"
+    },
+    "published": true,
+    "createdAt": "2026-02-11T12:00:00.000Z"
+  },
+  {
+    "id": "cs-5",
+    "slug": "laser-fused-bracket-as-built-roughness",
+    "title": "Laser-Fused Bracket, As-Built Roughness on a Flight Part",
+    "industry": "Additive Manufacturing",
+    "industryId": "additive-manufacturing",
+    "challenge": "Sintered powder particles on 3D printed aerospace brackets created high friction and fatigue crack initiation sites.",
+    "solution": "MMP treatment polished internal contours and lattices without thinning critical thin-wall features.",
+    "process": "Volumetric flow-based MMP formulation penetrating interior voids and external mounting faces simultaneously.",
+    "result": "As-printed roughness dropped from Ra 18 µm to Ra 2.4 µm with full dimensional compliance.",
+    "results": [
+      {
+        "label": "Surface Ra",
+        "value": "18 -> 2.4 µm",
+        "direction": "down"
+      },
+      {
+        "label": "Dimensional Loss",
+        "value": "< 0.005 mm",
+        "direction": "check"
+      },
+      {
+        "label": "Fatigue Life",
+        "value": "+190% Improvement",
+        "direction": "up"
+      }
+    ],
+    "beforeRa": "18.0 µm",
+    "afterRa": "2.40 µm",
+    "toolLifeGain": "+190% Fatigue Life",
+    "beforeImage": "/images/cutting-tool-1.jpg",
+    "afterImage": "/images/cutting-tool-2.png",
+    "material": "Ti-6Al-4V Grade 23",
+    "specs": {
+      "material": "Ti-6Al-4V Additive",
+      "process": "MMP Additive Superfinish",
+      "duration": "4 hours per batch"
+    },
+    "published": true,
+    "createdAt": "2026-03-15T08:00:00.000Z"
+  },
+  {
+    "id": "cs-6",
+    "slug": "mould-cavity-release-drag",
+    "title": "Mould Cavity, Release Drag Across Multi-Cavity Tool",
+    "industry": "Plastic Injection Molds",
+    "industryId": "plastic-injection-molds",
+    "challenge": "EDM texture in deep mold ribs caused part sticking, high ejection forces, and cosmetic drag marks on molded optical casings.",
+    "solution": "Applied isotropic non-directional MMP polish that eliminates demolding resistance without rounding sharp shutoff corners.",
+    "process": "Precision masking on parting lines with targeted cavity media finishing.",
+    "result": "Ejection forces dropped by 45%, cycle time reduced by 3.2 seconds, and cosmetic drag marks eliminated.",
+    "results": [
+      {
+        "label": "Cavity Finish",
+        "value": "< Ra 0.01 µm",
+        "direction": "down"
+      },
+      {
+        "label": "Ejection Force",
+        "value": "-45% Reduction",
+        "direction": "down"
+      },
+      {
+        "label": "Cycle Time",
+        "value": "-3.2s Faster",
+        "direction": "up"
+      }
+    ],
+    "beforeRa": "0.75 µm",
+    "afterRa": "0.01 µm",
+    "toolLifeGain": "-45% Ejection Force",
+    "beforeImage": "/images/cutting-tool-2.png",
+    "afterImage": "/images/cutting-tool-3.png",
+    "material": "H13 Tool Steel (52 HRC)",
+    "specs": {
+      "material": "Premium H13 Tool Steel",
+      "process": "MMP Non-Directional Mold Polish",
+      "duration": "Toolroom Cycle"
+    },
+    "published": true,
+    "createdAt": "2026-04-02T15:00:00.000Z"
+  }
+]

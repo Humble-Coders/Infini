@@ -14,11 +14,41 @@ const FALLBACK: TeaserCopy = {
 
 function detailsFrom(contact: SettingsContact | null) {
   if (!contact) return [];
-  return [
-    { icon: Phone, label: "Call", value: contact.phone, href: `tel:${contact.phone.replace(/[^\d+]/g, "")}` },
-    { icon: Mail, label: "Email", value: contact.email, href: `mailto:${contact.email}` },
-    { icon: MapPin, label: "Facility", value: contact.address, href: undefined },
-  ];
+  const list = [];
+  const mainPhone = contact.dispatchPhone || contact.phone;
+  if (mainPhone) {
+    list.push({
+      icon: Phone,
+      label: contact.technicalPhone ? "Dispatch & Logistics" : "Call",
+      value: mainPhone,
+      href: `tel:${mainPhone.replace(/[^\d+]/g, "")}`,
+    });
+  }
+  if (contact.technicalPhone && contact.technicalPhone !== mainPhone) {
+    list.push({
+      icon: Phone,
+      label: "Technical Enquiries",
+      value: contact.technicalPhone,
+      href: `tel:${contact.technicalPhone.replace(/[^\d+]/g, "")}`,
+    });
+  }
+  if (contact.email) {
+    list.push({
+      icon: Mail,
+      label: "Primary Email",
+      value: contact.email,
+      href: `mailto:${contact.email}`,
+    });
+  }
+  if (contact.address) {
+    list.push({
+      icon: MapPin,
+      label: "Facility & Labs",
+      value: contact.address,
+      href: contact.googleMapsUrl || undefined,
+    });
+  }
+  return list;
 }
 
 /**
