@@ -16,9 +16,6 @@ import {
   TrendingUp,
   Image as ImageIcon,
   X,
-  CheckCircle2,
-  Clock,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/components/ui/utils";
@@ -113,9 +110,11 @@ export function ModernDashboard({
   const totalInquiries = leads.length >= 3 ? leads.length : 38;
   const newInquiriesCount = leads.filter((l) => l.status === "New").length;
 
+  const [now] = useState(() => (typeof window !== "undefined" ? Date.now() : 0));
+
   const isBannerActive = eventBanner.enabled;
-  const daysRemaining = eventBanner.endDate
-    ? Math.max(0, Math.ceil((new Date(eventBanner.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+  const daysRemaining = eventBanner.endDate && now
+    ? Math.max(0, Math.ceil((new Date(eventBanner.endDate).getTime() - now) / (1000 * 60 * 60 * 24)))
     : 18;
 
   const publishedCaseStudiesCount = caseStudies.length > 0 ? caseStudies.length : 12;
