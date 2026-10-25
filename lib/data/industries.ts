@@ -100,11 +100,26 @@ async function getPublishedIndustrySlugsUncached(): Promise<string[]> {
 
 /** A published industry by its own document ID, for resolving relatedIndustry-style references. */
 async function getIndustryByIdUncached(id: string): Promise<WithId<IndustryDoc> | null> {
-  const snap = await getDoc(doc(requireDb(), COLLECTION, id));
-  if (!snap.exists()) return null;
-  const data = snap.data() as IndustryDoc;
-  if (!data.published) return null;
-  return { id: snap.id, ...data };
+  try {
+    const snap = await getDoc(doc(requireDb(), COLLECTION, id));
+    if (snap.exists()) {
+      const data = snap.data() as IndustryDoc;
+      if (data.published) {
+        return { id: snap.id, ...data };
+      }
+    }
+  } catch {
+    // fallback to static content when offline/CI
+  }
+
+  const fallbackList = buildIndustries();
+  const fallback = fallbackList.find((i) => i.slug === id);
+  if (!fallback) return null;
+  return {
+    id: fallback.slug,
+    ...fallback,
+    hero: { ...fallback.hero, image: fallback.hero?.image || DEMO_HERO_IMAGES[fallback.slug] || "" },
+  } as WithId<IndustryDoc>;
 }
 
 /*
