@@ -5,12 +5,18 @@
     "company": "AeroJet Propulsion",
     "email": "d.miller@aerojet.com",
     "phone": "+1 555 123 4567",
-    "industry": "aerospace",
+    "industry": "Aerospace",
     "message": "Urgent surface finishing for inconel fuel injectors Ra 0.02 um.",
-    "date": "25 Oct 2026",
+    "date": "25 Oct 2026, 01:41 AM",
+    "createdAt": "25 Oct 2026, 01:41 AM",
     "status": "In Review",
     "hasDrawing": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "notes": [
+      "Inquiry submitted via website contact form.",
+      "Assigned to Senior Metallurgical Engineer for Inconel evaluation.",
+      "Sent preliminary Ra 0.02 um feasibility report to engineering lead."
+    ]
   },
   {
     "id": "lead-1",
@@ -20,10 +26,14 @@
     "phone": "+91 98201 54321",
     "industry": "Aerospace",
     "message": "Titanium compressor blades need Ra reduction from 0.8 to 0.04 um with zero profile loss.",
-    "date": "14 Oct 2026",
+    "date": "14 Oct 2026, 11:20 AM",
+    "createdAt": "14 Oct 2026, 11:20 AM",
     "status": "New",
     "hasDrawing": true,
-    "imageUrl": "/images/placeholders/gallery-01-turbine-ring.jpg"
+    "imageUrl": "/images/placeholders/gallery-01-turbine-ring.jpg",
+    "notes": [
+      "Initial inquiry received via website contact form with uploaded component drawing."
+    ]
   },
   {
     "id": "lead-2",
@@ -33,10 +43,15 @@
     "phone": "+91 94330 98765",
     "industry": "Medical",
     "message": "CoCr knee femoral heads batch validation inquiry, Ra target 0.01 um mirror finish.",
-    "date": "12 Oct 2026",
+    "date": "12 Oct 2026, 03:45 PM",
+    "createdAt": "12 Oct 2026, 03:45 PM",
     "status": "In Review",
     "hasDrawing": true,
-    "imageUrl": "/images/placeholders/gallery-03-knee-implant.jpg"
+    "imageUrl": "/images/placeholders/gallery-03-knee-implant.jpg",
+    "notes": [
+      "Assigned to Senior Metallurgist for recipe recommendation.",
+      "Sample coupons requested from client."
+    ]
   },
   {
     "id": "lead-3",
@@ -46,9 +61,14 @@
     "phone": "+49 711 987654",
     "industry": "Cutting Tools",
     "message": "Carbide micro-drills flutes polishing for friction reduction and tool life extension.",
-    "date": "10 Oct 2026",
+    "date": "10 Oct 2026, 09:15 AM",
+    "createdAt": "10 Oct 2026, 09:15 AM",
     "status": "Quoted",
-    "hasDrawing": false,
-    "imageUrl": "/images/placeholders/gallery-05-carbide-drills.jpg"
+    "hasDrawing": true,
+    "imageUrl": "/images/placeholders/gallery-05-carbide-drills.jpg",
+    "notes": [
+      "Quotation Q-2026-88 dispatched to client.",
+      "Expected decision by end of month."
+    ]
   }
 ]

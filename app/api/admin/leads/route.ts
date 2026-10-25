@@ -1,8 +1,13 @@
 import "server-only";
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth/session";
-import { getStoredLeads, updateStoredLeadStatus } from "@/lib/data/leadsStorage";
+import {
+  getStoredLeads,
+  updateStoredLeadStatus,
+  addStoredLeadNote,
+  deleteStoredLead,
+} from "@/lib/data/leadsStorage";
 
 export async function GET() {
   try {
@@ -20,7 +25,7 @@ export async function GET() {
   }
 }
 
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
   try {
     const session = await verifySession();
     if (!session && process.env.NODE_ENV !== "development") {
@@ -28,7 +33,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { id, status } = body;
+    const { id, status, note } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Missing lead id" }, { status: 400 });
@@ -38,9 +43,35 @@ export async function PATCH(request: Request) {
       await updateStoredLeadStatus(id, status);
     }
 
+    if (note) {
+      await addStoredLeadNote(id, note);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[api/admin/leads] PATCH error:", err);
     return NextResponse.json({ ok: false }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await verifySession();
+    if (!session && process.env.NODE_ENV !== "development") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing lead id" }, { status: 400 });
+    }
+
+    await deleteStoredLead(id);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[api/admin/leads] DELETE error:", err);
+    return NextResponse.json({ error: "Failed to delete lead" }, { status: 500 });
   }
 }
