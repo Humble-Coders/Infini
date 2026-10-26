@@ -2,16 +2,13 @@
 
 import { useState, useEffect } from "react";
 import {
-  Inbox,
   Search,
   Download,
   Eye,
   FileImage,
-  Clock,
   Phone,
   Mail,
   Building,
-  CheckCircle2,
   X,
   MessageSquare,
   Send,
@@ -36,9 +33,9 @@ export interface LeadRecord {
   notes: string[];
 }
 
-export function LeadsCRMManager() {
-  const [leads, setLeads] = useState<LeadRecord[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function LeadsCRMManager({ initialLeads }: { initialLeads?: any[] } = {}) {
+  const [leads, setLeads] = useState<LeadRecord[]>(() => initialLeads && initialLeads.length > 0 ? initialLeads.map((l: any) => ({ ...l, createdAt: l.createdAt || l.date || "Recent", date: l.date || l.createdAt || "Recent", notes: Array.isArray(l.notes) ? l.notes : [], status: l.status === "new" ? "New" : l.status || "New" })) : []);
+  const [isLoading, setIsLoading] = useState(!initialLeads || initialLeads.length === 0);
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLead, setSelectedLead] = useState<LeadRecord | null>(null);
@@ -72,8 +69,9 @@ export function LeadsCRMManager() {
   }
 
   useEffect(() => {
+    if (initialLeads) return;
     loadLeads();
-  }, []);
+  }, [initialLeads]);
 
   const counts = {
     All: leads.length,

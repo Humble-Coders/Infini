@@ -2,25 +2,16 @@ import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { adminAuth } from "@/backend/firebase/admin";
-import { clientIp, isRateLimited } from "@/lib/rateLimit";
+import { isAllowedOrigin } from "@/lib/auth/csrf";
+import { sendPasswordResetEmail } from "@/lib/leadNotification";
+import { clientIp, isRateLimited, isRateLimitedShared } from "@/lib/rateLimit";
 
-function isAllowedOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) {
-    const secFetchSite = request.headers.get("sec-fetch-site");
-    if (secFetchSite && secFetchSite === "cross-site") {
-      return false;
-    }
-    return true;
-  }
-  const host = request.headers.get("host");
-  try {
-    const originUrl = new URL(origin);
-    return Boolean(host && originUrl.host === host);
-  } catch {
-    return false;
-  }
-}
+// Same reply whether or not the address exists, so the form can't be used
+// to discover which emails have admin accounts.
+const GENERIC_REPLY = {
+  ok: true,
+  message: "If that address belongs to an INFINI team account, a reset link is on its way.",
+};
 
 export async function POST(request: NextRequest) {
   if (!isAllowedOrigin(request)) {
@@ -42,22 +33,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Please enter a valid administrator email address." }, { status: 400 });
   }
 
-  try {
-    // Attempt to generate standard Firebase Admin reset link if Admin SDK is configured
-    try {
-      await adminAuth.generatePasswordResetLink(email);
-    } catch {
-      // Gracefully continue even if external Firebase service account is pending
-    }
-
-    return NextResponse.json({
-      ok: true,
-      message: `If ${email} is registered in the administrator directory, a secure reset link has been dispatched.`,
-    });
-  } catch {
-    return NextResponse.json({
-      ok: true,
-      message: "Password reset request recorded. Please check your administrator inbox.",
-    });
+  if (await isRateLimitedShared(`forgot-password-email:${email}`, 3, 60 * 60 * 1000)) {
+    return NextResponse.json(GENERIC_REPLY);
   }
+
+  try {
+    // Only team members with an admin role get a link. The owner account
+    // lives in the environment; its password is changed there, not here.
+    const user = await adminAuth.getUserByEmail(email);
+    if (user.disabled || !user.customClaims?.role) return NextResponse.json(GENERIC_REPLY);
+
+    const link = await adminAuth.generatePasswordResetLink(email);
+    const result = await sendPasswordResetEmail(email, link);
+    if (result.status !== "sent") {
+      console.error("[api/auth/forgot-password] reset email not sent:", result.status);
+    }
+  } catch {
+    // Unknown address or Auth unavailable: same reply either way.
+  }
+
+  return NextResponse.json(GENERIC_REPLY);
 }

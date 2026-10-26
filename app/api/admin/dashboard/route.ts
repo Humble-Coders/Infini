@@ -1,26 +1,28 @@
 import "server-only";
 
-import { NextResponse } from "next/server";
-import { verifySession } from "@/lib/auth/session";
+import { NextRequest, NextResponse } from "next/server";
+import { requireApiRole, LEADS_ROLES } from "@/lib/auth/requireApiRole";
 import { getStoredEventBanner } from "@/lib/data/eventBannerStorage";
 import { getStoredCaseStudies } from "@/lib/data/caseStudiesStorage";
 import { getStoredTestimonials } from "@/lib/data/testimonialsStorage";
 import { getStoredCompanySettings } from "@/lib/data/companySettingsStorage";
 import { getStoredLeads } from "@/lib/data/leadsStorage";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, ["superAdmin", "contentEditor", "leadsManager"]);
+    if (guard.error) return guard.error;
+
+    // Leads carry customer contact details: only the roles that may read
+    // them in Firestore rules get them here too.
+    const canSeeLeads = LEADS_ROLES.includes(guard.session.role);
 
     const [eventBanner, caseStudies, testimonials, companySettings, leads] = await Promise.all([
       getStoredEventBanner(),
       getStoredCaseStudies(),
       getStoredTestimonials(),
       getStoredCompanySettings(),
-      getStoredLeads(),
+      canSeeLeads ? getStoredLeads() : Promise.resolve([]),
     ]);
 
     return NextResponse.json({

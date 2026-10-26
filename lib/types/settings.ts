@@ -40,4 +40,6 @@ export interface SettingsDoc {
   footerLegalLinks: NavLink[];
   defaultSeo: SeoMap;
   cookieBanner: CookieBannerSettings;
+  /** Brand assets the admin manages in Settings. */
+  branding?: { logoUrl?: string; brochureUrl?: string };
 }

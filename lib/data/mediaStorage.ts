@@ -142,6 +142,8 @@ function readFallbackFile(): MediaAsset[] | null {
 }
 
 function writeFallbackFile(assets: MediaAsset[]) {
+  // Production disk is ephemeral and per instance: Firestore is the only store there.
+  if (process.env.NODE_ENV === "production") return;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -156,40 +158,30 @@ function writeFallbackFile(assets: MediaAsset[]) {
  * Retrieve all media assets with dual-layer cloud/local persistence.
  */
 export async function getStoredMedia(): Promise<MediaAsset[]> {
-  const isProd = process.env.NODE_ENV === "production";
-
-  if (isProd) {
-    try {
-      const { adminDb } = await import("@/backend/firebase/admin");
-      const snap = await adminDb.collection("media").orderBy("uploadedAt", "desc").limit(100).get();
-      if (!snap.empty) {
-        return snap.docs.map((doc) => {
-          const d = doc.data();
-          return {
-            id: doc.id,
-            filename: d.filename || "file",
-            alt: d.alt || "",
-            url: d.url || "",
-            category: d.category || "parts",
-            contentType: d.contentType || "image/jpeg",
-            dimensions: d.dimensions || "Uploaded Web Asset",
-            sizeKb: d.sizeKb || 1,
-            uploadedAt: d.uploadedAt || "Recent",
-          };
-        });
-      }
-    } catch (err) {
-      console.warn("[mediaStorage] Firestore read fallback:", err);
-    }
+  // Firestore in every environment, so the library shows the real assets;
+  // data/media.json is only an offline fallback for local development.
+  try {
+    const { adminDb } = await import("@/backend/firebase/admin");
+    const snap = await adminDb.collection("media").orderBy("uploadedAt", "desc").limit(100).get();
+    return snap.docs.map((doc) => {
+      const d = doc.data();
+      return {
+        id: doc.id,
+        filename: d.filename || "file",
+        alt: d.alt || "",
+        url: d.url || "",
+        category: d.category || "parts",
+        contentType: d.contentType || "image/jpeg",
+        dimensions: d.dimensions || "Uploaded Web Asset",
+        sizeKb: d.sizeKb || 1,
+        uploadedAt: d.uploadedAt || "Recent",
+      };
+    });
+  } catch (err) {
+    if (process.env.NODE_ENV === "production") throw err;
+    console.warn("[mediaStorage] Firestore unreachable, using data/media.json:", err);
+    return readFallbackFile() ?? DEFAULT_MEDIA_ASSETS;
   }
-
-  const fileData = readFallbackFile();
-  if (fileData && fileData.length > 0) {
-    return fileData;
-  }
-
-  writeFallbackFile(DEFAULT_MEDIA_ASSETS);
-  return DEFAULT_MEDIA_ASSETS;
 }
 
 /**
@@ -234,6 +226,7 @@ export async function saveStoredMediaAsset(assetData: Partial<MediaAsset>): Prom
     await adminDb.collection("media").doc(id).set(newAsset, { merge: true });
   } catch (err) {
     console.warn("[mediaStorage] Firestore write skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return newAsset;
@@ -252,6 +245,7 @@ export async function deleteStoredMediaAsset(id: string): Promise<boolean> {
     await adminDb.collection("media").doc(id).delete();
   } catch (err) {
     console.warn("[mediaStorage] Firestore delete skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return true;

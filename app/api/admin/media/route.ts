@@ -2,7 +2,7 @@ import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { verifySession } from "@/lib/auth/session";
+import { requireApiRole, CONTENT_ROLES } from "@/lib/auth/requireApiRole";
 
 export const dynamic = "force-dynamic";
 import {
@@ -11,28 +11,23 @@ import {
   deleteStoredMediaAsset,
 } from "@/lib/data/mediaStorage";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, CONTENT_ROLES);
+    if (guard.error) return guard.error;
 
     const assets = await getStoredMedia();
     return NextResponse.json({ ok: true, assets });
   } catch (error) {
     console.error("[api/admin/media] GET error:", error);
-    const assets = await getStoredMedia();
-    return NextResponse.json({ ok: true, assets });
+    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, CONTENT_ROLES);
+    if (guard.error) return guard.error;
 
     const payload = await request.json();
     if (!payload.url) {
@@ -53,10 +48,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, CONTENT_ROLES);
+    if (guard.error) return guard.error;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

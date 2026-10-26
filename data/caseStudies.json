@@ -30,7 +30,7 @@
     "afterRa": "0.03 µm",
     "toolLifeGain": "+280% Fatigue Life",
     "beforeImage": "/images/cutting-tool-1.jpg",
-    "afterImage": "/images/cutting-tool-3.png",
+    "afterImage": "/images/cutting-tool-3.webp",
     "material": "Inconel 718",
     "specs": {
       "material": "Inconel 718",
@@ -71,7 +71,7 @@
     "afterRa": "0.02 µm",
     "toolLifeGain": "+320% Tool Life",
     "beforeImage": "/images/cutting-tool-2.png",
-    "afterImage": "/images/cutting-tool-3.png",
+    "afterImage": "/images/cutting-tool-3.webp",
     "material": "Tungsten Carbide",
     "specs": {
       "material": "Sub-micron Grain Tungsten Carbide",
@@ -235,7 +235,7 @@
     "afterRa": "0.01 µm",
     "toolLifeGain": "-45% Ejection Force",
     "beforeImage": "/images/cutting-tool-2.png",
-    "afterImage": "/images/cutting-tool-3.png",
+    "afterImage": "/images/cutting-tool-3.webp",
     "material": "H13 Tool Steel (52 HRC)",
     "specs": {
       "material": "Premium H13 Tool Steel",

@@ -105,6 +105,8 @@ function readFallbackFile(): StoredArticle[] | null {
 }
 
 function writeFallbackFile(data: StoredArticle[]) {
+  // Production disk is ephemeral and per instance: Firestore is the only store there.
+  if (process.env.NODE_ENV === "production") return;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -201,6 +203,8 @@ export async function getStoredArticles(): Promise<StoredArticle[]> {
           };
         });
       }
+      // An empty collection is a real answer in production, never a cue for demo data.
+      return [];
     } catch (err) {
       console.warn("[newsStorage] Production Firestore read fallback:", err);
     }
@@ -364,6 +368,7 @@ export async function saveStoredArticle(payload: Partial<StoredArticle>): Promis
     await adminDb.collection("news").doc(id).set(docData, { merge: true });
   } catch (err) {
     console.warn("[newsStorage] Firestore Admin write skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return fullArticle;
@@ -384,6 +389,7 @@ export async function deleteStoredArticle(idOrSlug: string): Promise<boolean> {
     await adminDb.collection("news").doc(idOrSlug).delete();
   } catch (err) {
     console.warn("[newsStorage] Firestore Admin delete skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return true;

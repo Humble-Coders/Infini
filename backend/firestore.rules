@@ -116,6 +116,12 @@ service cloud.firestore {
     }
 
     // Everything else stays deny-all by default.
+    // Server-only: sign-in / contact rate-limit counters (lib/rateLimit.ts),
+    // written through the Admin SDK. Spelled out so it survives rule edits.
+    match /rateLimits/{docId} {
+      allow read, write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

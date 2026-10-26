@@ -2,7 +2,8 @@ import fs from "fs";
 import path from "path";
 import type { CompanySettings } from "@/components/modules/CompanySettingsManager";
 export type { CompanySettings };
-import type { SettingsDoc } from "@/lib/types";
+import type { NavLink, SettingsDoc } from "@/lib/types";
+import { DEFAULT_LEGAL_LINKS, DEFAULT_NAV } from "@/lib/constants/navigation";
 
 export const DEFAULT_SETTINGS: CompanySettings = {
   primaryEmail: "superfinish@infini.co.in",
@@ -19,7 +20,7 @@ export const DEFAULT_SETTINGS: CompanySettings = {
   metaDescription: "Super precision surface finishing and micro-edge honing for aerospace, medical implants, cutting tools, and critical dies.",
   cookieBannerEnabled: true,
   logoUrl: "/brand/infini-finish-unlimited.png",
-  brochureUrl: "/docs/infini-precision-capability-brochure.pdf",
+  brochureUrl: "",
 };
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -38,6 +39,8 @@ function readFallbackFile(): CompanySettings | null {
 }
 
 function writeFallbackFile(data: CompanySettings) {
+  // Production disk is ephemeral and per instance: Firestore is the only store there.
+  if (process.env.NODE_ENV === "production") return;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -79,6 +82,8 @@ export async function getStoredCompanySettings(): Promise<CompanySettings> {
           cookieBannerEnabled: data.cookieBanner?.enabled ?? DEFAULT_SETTINGS.cookieBannerEnabled,
           logoUrl: data.branding?.logoUrl || DEFAULT_SETTINGS.logoUrl,
           brochureUrl: data.branding?.brochureUrl || DEFAULT_SETTINGS.brochureUrl,
+          nav: navLinks(data.nav),
+          footerLegalLinks: navLinks(data.footerLegalLinks),
         };
       }
     } catch (err) {
@@ -118,6 +123,8 @@ export async function getStoredCompanySettings(): Promise<CompanySettings> {
           cookieBannerEnabled: data.cookieBanner?.enabled ?? DEFAULT_SETTINGS.cookieBannerEnabled,
           logoUrl: data.branding?.logoUrl || DEFAULT_SETTINGS.logoUrl,
           brochureUrl: data.branding?.brochureUrl || DEFAULT_SETTINGS.brochureUrl,
+          nav: navLinks(data.nav),
+          footerLegalLinks: navLinks(data.footerLegalLinks),
         };
         writeFallbackFile(merged);
         return merged;
@@ -130,6 +137,10 @@ export async function getStoredCompanySettings(): Promise<CompanySettings> {
   // Seed default settings file
   writeFallbackFile(DEFAULT_SETTINGS);
   return DEFAULT_SETTINGS;
+}
+
+function navLinks(value: unknown): NavLink[] | undefined {
+  return Array.isArray(value) && value.length > 0 ? (value as NavLink[]) : undefined;
 }
 
 /**
@@ -155,8 +166,8 @@ export async function getStoredSettingsDoc(): Promise<SettingsDoc> {
       facebook: s.facebook,
       maps: s.googleMapsUrl,
     },
-    nav: [],
-    footerLegalLinks: [],
+    nav: s.nav?.length ? s.nav : DEFAULT_NAV,
+    footerLegalLinks: s.footerLegalLinks?.length ? s.footerLegalLinks : DEFAULT_LEGAL_LINKS,
     defaultSeo: {
       title: s.metaTitle,
       description: s.metaDescription,
@@ -169,8 +180,9 @@ export async function getStoredSettingsDoc(): Promise<SettingsDoc> {
     cookieBanner: {
       enabled: s.cookieBannerEnabled,
       message: "We use cookies to analyze site traffic and optimize your user experience.",
-      policyUrl: "/privacy-policy",
+      policyUrl: "/privacy",
     },
+    branding: { logoUrl: s.logoUrl || undefined, brochureUrl: s.brochureUrl || undefined },
   };
 }
 
@@ -223,6 +235,7 @@ export async function saveStoredCompanySettings(payload: Partial<CompanySettings
     await adminDb.collection("settings").doc("global").set(firestoreData, { merge: true });
   } catch (err) {
     console.warn("[companySettingsStorage] Firestore Admin write skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return merged;

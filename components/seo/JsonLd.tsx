@@ -62,3 +62,21 @@ export function articleJsonLd({
     publisher: { "@type": "Organization", name: "INFINI" },
   };
 }
+
+export interface BreadcrumbItem {
+  name: string;
+  path: string;
+}
+
+export function breadcrumbJsonLd(origin: string, items: BreadcrumbItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.path.startsWith("http") ? item.path : (origin + item.path),
+    })),
+  };
+}

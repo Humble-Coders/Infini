@@ -31,11 +31,24 @@ async function getPublishedEventsUncached(): Promise<WithId<EventDoc>[]> {
   }
 }
 
-/** Configured event/announcement banner from persistent storage with Firestore fallback */
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** A banner shows only when enabled, titled, and not yet past its end date (kept up through the end day itself). */
+function isBannerLive(banner: EventBannerData | null): banner is EventBannerData {
+  if (!banner?.enabled || !banner.title?.trim()) return false;
+  const end = banner.endDate ? Date.parse(banner.endDate) : NaN;
+  return Number.isNaN(end) || end + DAY_MS > Date.now();
+}
+
+/**
+ * The site-wide announcement banner, or null when it is off or its event
+ * has ended, so a past exhibition never keeps advertising itself.
+ */
 async function getEventBannerUncached(): Promise<EventBannerData | null> {
   try {
     const { getStoredEventBanner } = await import("./eventBannerStorage");
-    return (await getStoredEventBanner()) as EventBannerData;
+    const banner = (await getStoredEventBanner()) as EventBannerData;
+    return isBannerLive(banner) ? banner : null;
   } catch {
     return null;
   }

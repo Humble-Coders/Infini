@@ -2,34 +2,29 @@ import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { verifySession } from "@/lib/auth/session";
+import { requireApiRole, SETTINGS_ROLES } from "@/lib/auth/requireApiRole";
 import {
   getStoredCompanySettings,
   saveStoredCompanySettings,
 } from "@/lib/data/companySettingsStorage";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, SETTINGS_ROLES);
+    if (guard.error) return guard.error;
 
     const settings = await getStoredCompanySettings();
     return NextResponse.json({ ok: true, settings });
   } catch (error) {
     console.error("[api/admin/settings] GET error:", error);
-    const settings = await getStoredCompanySettings();
-    return NextResponse.json({ ok: true, settings });
+    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, SETTINGS_ROLES);
+    if (guard.error) return guard.error;
 
     const payload = await request.json();
     const saved = await saveStoredCompanySettings(payload);

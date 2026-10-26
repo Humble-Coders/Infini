@@ -6,7 +6,7 @@ import { getPage, getSection } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { getSettings } from "@/lib/data/settings";
 import { INFINI_CONTACT } from "@/lib/constants/contact";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
 import type { TeaserCopy } from "@/lib/types";
 
 /*
@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   // Without its own openGraph block this page inherited the root layout's,
   // so sharing /contact or /request-a-quote surfaced the home page's title.
   openGraph: { title: ogTitle(COPY.title), description: COPY.description, type: "website" },
+  // Also re-exported by /request-a-quote, which is the same page: both declare
+  // /contact as canonical so search engines index one URL, not two.
+  alternates: { canonical: canonicalUrl("/contact") },
 };
 
 export default async function ContactPage() {
@@ -40,7 +43,7 @@ export default async function ContactPage() {
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
   const contact = settings?.contact ?? INFINI_CONTACT;
   const mapSrc =
-    contact?.googleMapsUrl ||
+    contact.googleMapsUrl ||
     "https://maps.google.com/maps?q=1%20Taksal%20Road%2C%20Parwanoo%2C%20Himachal%20Pradesh%20173220&z=14&output=embed";
 
   return (
@@ -58,7 +61,7 @@ export default async function ContactPage() {
         <Container>
           <div className="overflow-hidden rounded-3xl border border-border">
             <iframe
-              title={`INFINI facility, ${contact?.address || "1 Taksal Road, Parwanoo, Himachal Pradesh, India"}`}
+              title={`INFINI facility on the map: ${contact.address}`}
               src={mapSrc}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

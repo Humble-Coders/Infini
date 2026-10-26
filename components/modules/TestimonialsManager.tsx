@@ -6,14 +6,11 @@ import {
   Plus,
   Search,
   Star,
-  CheckCircle2,
   Eye,
   EyeOff,
   Edit3,
   Trash2,
   Building,
-  User,
-  ArrowUpDown,
   Save,
   X,
   UploadCloud,
@@ -24,8 +21,8 @@ import { AdminSelect } from "@/components/admin/AdminSelect";
 import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
 import type { TestimonialDoc, WithId } from "@/lib/types";
 
-export function TestimonialsManager() {
-  const [testimonials, setTestimonials] = useState<WithId<TestimonialDoc>[]>(DEMO_TESTIMONIALS);
+export function TestimonialsManager({ initialTestimonials }: { initialTestimonials?: WithId<TestimonialDoc>[] } = {}) {
+  const [testimonials, setTestimonials] = useState<WithId<TestimonialDoc>[]>(() => initialTestimonials ?? DEMO_TESTIMONIALS);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "published" | "draft">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +31,7 @@ export function TestimonialsManager() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialTestimonials) return;
     fetch("/api/admin/testimonials")
       .then((res) => res.json())
       .then((data) => {
@@ -42,7 +40,7 @@ export function TestimonialsManager() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [initialTestimonials]);
 
   const logoFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -666,10 +664,11 @@ export function TestimonialsManager() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90"
+                  disabled={saving}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90 disabled:opacity-50"
                 >
                   <Save className="size-3.5" />
-                  <span>{editingItem ? "Update Testimonial" : "Create Review"}</span>
+                  <span>{saving ? "Saving..." : editingItem ? "Update Testimonial" : "Create Review"}</span>
                 </button>
               </div>
             </form>

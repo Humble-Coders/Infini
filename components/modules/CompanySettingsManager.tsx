@@ -1,16 +1,14 @@
 "use client";
 
+import type { NavLink } from "@/lib/types";
+
 import { useState, useRef, useEffect } from "react";
 import {
   Settings,
   Mail,
-  Phone,
-  MapPin,
-  Globe,
   Share2,
   Check,
   Users,
-  ShieldCheck,
   Building,
   UploadCloud,
   FileText,
@@ -35,6 +33,8 @@ export interface CompanySettings {
   cookieBannerEnabled: boolean;
   logoUrl?: string;
   brochureUrl?: string;
+  nav?: NavLink[];
+  footerLegalLinks?: NavLink[];
 }
 
 const DEFAULT_SETTINGS: CompanySettings = {
@@ -55,15 +55,16 @@ const DEFAULT_SETTINGS: CompanySettings = {
   brochureUrl: "/docs/infini-precision-capability-brochure.pdf",
 };
 
-export function CompanySettingsManager() {
+export function CompanySettingsManager({ initialSettings }: { initialSettings?: CompanySettings } = {}) {
   const [activeTab, setActiveTab] = useState<"company" | "team">("company");
-  const [settings, setSettings] = useState<CompanySettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<CompanySettings>(() => ({ ...DEFAULT_SETTINGS, ...initialSettings }));
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const brochureFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (initialSettings) return;
     fetch("/api/admin/settings")
       .then((res) => res.json())
       .then((data) => {
@@ -74,7 +75,7 @@ export function CompanySettingsManager() {
       .catch((err) => {
         console.error("Failed to load settings:", err);
       });
-  }, []);
+  }, [initialSettings]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

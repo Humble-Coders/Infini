@@ -60,7 +60,7 @@ export const INITIAL_CASE_STUDIES: StoredCaseStudy[] = [
     afterRa: "0.03 µm",
     toolLifeGain: "+280% Fatigue Life",
     beforeImage: "/images/cutting-tool-1.jpg",
-    afterImage: "/images/cutting-tool-3.png",
+    afterImage: "/images/cutting-tool-3.webp",
     material: "Inconel 718",
     specs: {
       material: "Inconel 718",
@@ -93,7 +93,7 @@ export const INITIAL_CASE_STUDIES: StoredCaseStudy[] = [
     afterRa: "0.02 µm",
     toolLifeGain: "+320% Tool Life",
     beforeImage: "/images/cutting-tool-2.png",
-    afterImage: "/images/cutting-tool-3.png",
+    afterImage: "/images/cutting-tool-3.webp",
     material: "Tungsten Carbide",
     specs: {
       material: "Sub-micron Grain Tungsten Carbide",
@@ -225,7 +225,7 @@ export const INITIAL_CASE_STUDIES: StoredCaseStudy[] = [
     afterRa: "0.01 µm",
     toolLifeGain: "-45% Ejection Force",
     beforeImage: "/images/cutting-tool-2.png",
-    afterImage: "/images/cutting-tool-3.png",
+    afterImage: "/images/cutting-tool-3.webp",
     material: "H13 Tool Steel (52 HRC)",
     specs: {
       material: "Premium H13 Tool Steel",
@@ -256,6 +256,8 @@ function readFallbackFile(): StoredCaseStudy[] | null {
 }
 
 function writeFallbackFile(data: StoredCaseStudy[]) {
+  // Production disk is ephemeral and per instance: Firestore is the only store there.
+  if (process.env.NODE_ENV === "production") return;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -319,7 +321,7 @@ export function caseStudyToDoc(item: StoredCaseStudy): WithId<CaseStudyDoc> {
     result: item.result || item.toolLifeGain || "Surface roughness improved to mirror finish.",
     results,
     beforeImage: item.beforeImage || "/images/cutting-tool-1.jpg",
-    afterImage: item.afterImage || "/images/cutting-tool-3.png",
+    afterImage: item.afterImage || "/images/cutting-tool-3.webp",
     gallery: item.gallery || [],
     specs: {
       material: item.material || item.specs?.material || "Specialty Alloy",
@@ -373,7 +375,7 @@ export async function getStoredCaseStudies(): Promise<StoredCaseStudy[]> {
             afterRa: data.afterRa || (data.results?.[1]?.value ?? "0.02 µm"),
             toolLifeGain: data.toolLifeGain || (data.results?.[2]?.value ?? data.result ?? "+280%"),
             beforeImage: data.beforeImage || "/images/cutting-tool-1.jpg",
-            afterImage: data.afterImage || "/images/cutting-tool-3.png",
+            afterImage: data.afterImage || "/images/cutting-tool-3.webp",
             material: data.material || data.specs?.material || "Specialty Alloy",
             published: typeof data.published === "boolean" ? data.published : true,
             createdAt: data.createdAt || (data.publishedAt?.toDate ? data.publishedAt.toDate().toISOString() : undefined),
@@ -381,6 +383,8 @@ export async function getStoredCaseStudies(): Promise<StoredCaseStudy[]> {
           };
         });
       }
+      // An empty collection is a real answer in production, never a cue for demo data.
+      return [];
     } catch (err) {
       console.warn("[caseStudiesStorage] Production Firestore read fallback:", err);
     }
@@ -499,7 +503,7 @@ export async function saveStoredCaseStudy(payload: Partial<StoredCaseStudy>): Pr
     afterRa: payload.afterRa || "0.02 µm",
     toolLifeGain: payload.toolLifeGain || "+280% Gain",
     beforeImage: payload.beforeImage || "/images/cutting-tool-1.jpg",
-    afterImage: payload.afterImage || "/images/cutting-tool-3.png",
+    afterImage: payload.afterImage || "/images/cutting-tool-3.webp",
     material: payload.material || "Specialty Alloy",
     specs: {
       material: payload.material || "Specialty Alloy",
@@ -548,6 +552,7 @@ export async function saveStoredCaseStudy(payload: Partial<StoredCaseStudy>): Pr
     await adminDb.collection("caseStudies").doc(id).set(docData, { merge: true });
   } catch (err) {
     console.warn("[caseStudiesStorage] Firestore Admin write skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return fullCaseStudy;
@@ -568,6 +573,7 @@ export async function deleteStoredCaseStudy(idOrSlug: string): Promise<boolean> 
     await adminDb.collection("caseStudies").doc(idOrSlug).delete();
   } catch (err) {
     console.warn("[caseStudiesStorage] Firestore Admin delete skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return true;

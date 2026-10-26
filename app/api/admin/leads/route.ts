@@ -1,50 +1,54 @@
 import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
-import { verifySession } from "@/lib/auth/session";
+import { requireApiRole, LEADS_ROLES } from "@/lib/auth/requireApiRole";
 import {
   getStoredLeads,
   updateStoredLeadStatus,
   addStoredLeadNote,
   deleteStoredLead,
+  isLeadStatus,
 } from "@/lib/data/leadsStorage";
 
-export async function GET() {
+const NOTE_MAX = 2000;
+
+export async function GET(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, LEADS_ROLES);
+    if (guard.error) return guard.error;
 
     const leads = await getStoredLeads();
     return NextResponse.json({ ok: true, leads });
   } catch (error) {
     console.error("[api/admin/leads] GET error:", error);
-    const leads = await getStoredLeads();
-    return NextResponse.json({ ok: true, leads });
+    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
 
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, LEADS_ROLES);
+    if (guard.error) return guard.error;
 
     const body = await request.json();
     const { id, status, note } = body;
 
-    if (!id) {
+    if (typeof id !== "string" || !id) {
       return NextResponse.json({ error: "Missing lead id" }, { status: 400 });
     }
-
-    if (status) {
-      await updateStoredLeadStatus(id, status);
+    if (status !== undefined && !isLeadStatus(status)) {
+      return NextResponse.json({ error: "Unknown lead status" }, { status: 400 });
+    }
+    if (note !== undefined && (typeof note !== "string" || note.trim().length === 0 || note.length > NOTE_MAX)) {
+      return NextResponse.json({ error: `Notes must be 1–${NOTE_MAX} characters` }, { status: 400 });
     }
 
-    if (note) {
-      await addStoredLeadNote(id, note);
+    if (status && !(await updateStoredLeadStatus(id, status))) {
+      return NextResponse.json({ error: "Lead not found" }, { status: 404 });
+    }
+
+    if (note && !(await addStoredLeadNote(id, note.trim()))) {
+      return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
 
     return NextResponse.json({ ok: true });
@@ -56,10 +60,8 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, LEADS_ROLES);
+    if (guard.error) return guard.error;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

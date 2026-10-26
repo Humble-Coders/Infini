@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { canonicalUrl } from "@/lib/seo";
+import { Suspense } from "react";
 import { Container } from "@/components/ui/container";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { PhotoHero } from "@/components/sections/shared/PhotoHero";
 import { ProcessStrip } from "@/components/sections/shared/ProcessStrip";
 import { MarqueeBand } from "@/components/sections/shared/MarqueeBand";
 import { DetailRows } from "@/components/sections/shared/DetailRows";
 import { HERO_IMAGERY } from "@/lib/constants/heroImagery";
-import { cn } from "@/components/ui/utils";
-import { getPublishedCaseStudies, getCaseStudiesByIndustry } from "@/lib/data/caseStudies";
+import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getPublishedIndustries } from "@/lib/data/industries";
-import { CaseStudyCard } from "@/components/case-studies/CaseStudyCard";
-import { CaseStudyShowcaseLoader } from "@/components/case-studies/CaseStudyShowcaseLoader";
+import { CaseStudyIndex, CaseStudyIndexView } from "@/components/case-studies/CaseStudyIndex";
 
 
 /*
@@ -102,21 +100,15 @@ export const metadata: Metadata = {
   title: "Case Studies",
   description: COPY.body,
   openGraph: { title: "Case Studies | INFINI", description: COPY.body, type: "website" },
+  // ?industry= filtered views are the same list narrowed, so they all point here.
+  alternates: { canonical: canonicalUrl("/case-studies") },
 };
 
-export default async function CaseStudiesIndexPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ industry?: string }>;
-}) {
-  const { industry: industryFilter } = await searchParams;
-  const industries = await getPublishedIndustries();
-  const caseStudies = industryFilter
-    ? await getCaseStudiesByIndustry(industryFilter)
-    : await getPublishedCaseStudies();
-
-  const industryNameById = new Map(industries.map((i) => [i.id, i.name]));
-  const activeIndustryName = industryFilter ? industryNameById.get(industryFilter) : undefined;
+export default async function CaseStudiesIndexPage() {
+  const [industries, published] = await Promise.all([getPublishedIndustries(), getPublishedCaseStudies()]);
+  // Plain data only across the client boundary: Firestore Timestamps can't be serialised.
+  const caseStudies = published.map(({ publishedAt: _publishedAt, ...rest }) => rest);
+  const industryOptions = industries.map((i) => ({ id: i.id, slug: i.slug, name: i.name }));
 
   return (
     <main className="min-h-screen bg-background">
@@ -144,79 +136,9 @@ export default async function CaseStudiesIndexPage({
 
       <section className="bg-background py-16 sm:py-24">
         <Container className="flex flex-col gap-10">
-          <div className="flex flex-col gap-6 border-b border-border pb-8">
-            <div className="flex flex-col gap-5">
-              <Eyebrow index={2}>Dossiers</Eyebrow>
-              <h2 className="text-[clamp(1.6rem,3.2vw,2.5rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-foreground">
-                {activeIndustryName ? `${activeIndustryName} work.` : "Filter by industry."}
-              </h2>
-            </div>
-
-            <nav aria-label="Filter by industry" className="flex flex-wrap gap-2">
-              <Link
-                href="/case-studies"
-                className={cn(
-                  "border px-4 py-2 font-mono text-[10px] tracking-[0.14em] uppercase transition-colors",
-                  !industryFilter
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
-                )}
-              >
-                All industries
-              </Link>
-              {industries.map((industry) => (
-                <Link
-                  key={industry.slug}
-                  href={`/case-studies?industry=${industry.slug}`}
-                  className={cn(
-                    "border px-4 py-2 font-mono text-[10px] tracking-[0.14em] uppercase transition-colors",
-                    industryFilter === industry.slug
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
-                  )}
-                >
-                  {industry.name}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {caseStudies.length === 0 ? (
-            <div className="flex max-w-2xl flex-col gap-4">
-              <p className="text-lg leading-relaxed text-foreground">
-                {activeIndustryName
-                  ? `No ${activeIndustryName} dossier is published yet.`
-                  : "The first dossiers are being prepared for publication."}
-              </p>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                The trial work behind them is running now. Until a dossier clears customer sign-off it stays unpublished,
-                because a result nobody has agreed to is not evidence.
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Sticky scroll showcase: pinned left text + scrolling imagery */}
-              <CaseStudyShowcaseLoader caseStudies={caseStudies} industryNameById={industryNameById} />
-
-              <div className="flex items-center gap-4 pt-6">
-                <span className="h-px flex-1 bg-border" />
-                <span className="font-mono text-[10px] tracking-[0.18em] tabular-nums text-muted-foreground uppercase">
-                  All {caseStudies.length} dossiers
-                </span>
-                <span className="h-px flex-1 bg-border" />
-              </div>
-
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {caseStudies.map((caseStudy) => (
-                  <CaseStudyCard
-                    key={caseStudy.slug}
-                    caseStudy={caseStudy}
-                    industryName={industryNameById.get(caseStudy.industryId)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+          <Suspense fallback={<CaseStudyIndexView caseStudies={caseStudies} industries={industryOptions} filter={null} />}>
+            <CaseStudyIndex caseStudies={caseStudies} industries={industryOptions} />
+          </Suspense>
         </Container>
       </section>
 

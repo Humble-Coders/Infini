@@ -22,6 +22,8 @@ function readFallbackFile(): WithId<TestimonialDoc>[] | null {
 }
 
 function writeFallbackFile(data: WithId<TestimonialDoc>[]) {
+  // Production disk is ephemeral and per instance: Firestore is the only store there.
+  if (process.env.NODE_ENV === "production") return;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -54,6 +56,8 @@ export async function getStoredTestimonials(): Promise<WithId<TestimonialDoc>[]>
           ...(doc.data() as TestimonialDoc),
         }));
       }
+      // An empty collection is a real answer in production, never a cue for demo data.
+      return [];
     } catch (err) {
       console.warn("[testimonialsStorage] Production Firestore read fallback:", err);
     }
@@ -112,6 +116,8 @@ export async function getStoredPublishedTestimonials(): Promise<WithId<Testimoni
           ...(doc.data() as TestimonialDoc),
         }));
       }
+      // An empty collection is a real answer in production, never a cue for demo data.
+      return [];
     } catch (err) {
       console.warn("[testimonialsStorage] Production Firestore published query fallback:", err);
     }
@@ -151,6 +157,7 @@ export async function saveStoredTestimonial(
     await adminDb.collection("testimonials").doc(id).set(docData, { merge: true });
   } catch (err) {
     console.warn("[testimonialsStorage] Firestore Admin write skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return item;
@@ -172,6 +179,7 @@ export async function deleteStoredTestimonial(id: string): Promise<boolean> {
     await adminDb.collection("testimonials").doc(id).delete();
   } catch (err) {
     console.warn("[testimonialsStorage] Firestore Admin delete skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return true;

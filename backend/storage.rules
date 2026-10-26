@@ -16,7 +16,7 @@ service firebase.storage {
     // Images: max 10MB, image/* only.
     function isValidImage() {
       return request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches("image/.*");
+        && request.resource.contentType.matches("image/(jpeg|png|webp|avif|gif)");
     }
 
     // Certification/case-study documents: max 20MB, PDF only.

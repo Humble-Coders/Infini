@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import {
-  BookOpen,
   Plus,
   Save,
   Link2,
@@ -74,9 +73,9 @@ function generateCaseStudyId(): string {
   return `cs-${Date.now()}`;
 }
 
-export function CaseStudiesManager() {
-  const [studies, setStudies] = useState<CaseStudyItem[]>(DEMO_CASE_STUDIES);
-  const [selected, setSelected] = useState<CaseStudyItem>(DEMO_CASE_STUDIES[0]);
+export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?: any[] } = {}) {
+  const [studies, setStudies] = useState<CaseStudyItem[]>(() => initialCaseStudies && initialCaseStudies.length > 0 ? initialCaseStudies.map((cs: any) => ({ ...cs, published: typeof cs.published === "boolean" ? cs.published : true })) : DEMO_CASE_STUDIES);
+  const [selected, setSelected] = useState<CaseStudyItem>(() => studies[0] ?? DEMO_CASE_STUDIES[0]);
   const [linkedInUrl, setLinkedInUrl] = useState("");
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -85,6 +84,7 @@ export function CaseStudiesManager() {
   const afterFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (initialCaseStudies) return;
     fetch("/api/admin/case-studies")
       .then((res) => res.json())
       .then((data) => {
@@ -110,7 +110,7 @@ export function CaseStudiesManager() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [initialCaseStudies]);
 
   function handleImageUpload(type: "before" | "after", e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

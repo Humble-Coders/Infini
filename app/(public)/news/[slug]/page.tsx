@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { getNewsBySlug, getPublishedNewsSlugs } from "@/lib/data/news";
 import { NewsBody } from "@/components/news/NewsBody";
-import { JsonLd, articleJsonLd } from "@/components/seo/JsonLd";
+import { JsonLd, articleJsonLd, breadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { ogTitle, pageTitle, canonicalUrl, siteUrl } from "@/lib/seo";
 
 
@@ -32,6 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: pageTitle(post.seo.title),
     description: post.seo.description,
     alternates: { canonical: canonicalUrl(`/news/${slug}`, post.seo.canonical) },
+    // Editor-set seo.noindex keeps a published post reachable by link but out of search.
+    ...(post.seo.noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: ogTitle(post.seo.title),
       description: post.seo.description,
@@ -59,8 +61,15 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           headline: post.seo.title || post.title,
           description: post.seo.description,
           image: post.seo.ogImage || post.coverImage || undefined,
-          datePublished: post.publishedAt.toDate().toISOString(),
+          datePublished: post.publishedAt?.toDate?.().toISOString(),
         })}
+      />
+      <JsonLd
+        data={breadcrumbJsonLd(siteUrl(), [
+          { name: "Home", path: "/" },
+          { name: "News", path: "/news" },
+          { name: post.title, path: `/news/${slug}` },
+        ])}
       />
       <article>
         <section className="border-b border-border/60 py-16 sm:py-24">

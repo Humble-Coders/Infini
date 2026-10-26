@@ -10,7 +10,8 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import type { CaseStudyResult, CaseStudyDoc, WithId } from "@/lib/types";
+import type { CaseStudyResult } from "@/lib/types";
+import type { ClientCaseStudy } from "@/components/case-studies/CaseStudyCard";
 
 /**
  * A sticky two-column showcase of the case studies loaded for the current
@@ -26,7 +27,7 @@ export function CaseStudyShowcase({
   caseStudies,
   industryNameById,
 }: {
-  caseStudies: WithId<CaseStudyDoc>[];
+  caseStudies: ClientCaseStudy[];
   industryNameById: Map<string, string | undefined>;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -95,7 +96,7 @@ function ShowcaseSlide({
   progress,
   industryName,
 }: {
-  caseStudy: WithId<CaseStudyDoc>;
+  caseStudy: ClientCaseStudy;
   index: number;
   total: number;
   progress: MotionValue<number>;
@@ -171,7 +172,7 @@ function ShowcaseImage({
   total,
   progress,
 }: {
-  caseStudy: WithId<CaseStudyDoc>;
+  caseStudy: ClientCaseStudy;
   index: number;
   total: number;
   progress: MotionValue<number>;
@@ -218,7 +219,7 @@ function MobileStudyCard({
   caseStudy,
   industryName,
 }: {
-  caseStudy: WithId<CaseStudyDoc>;
+  caseStudy: ClientCaseStudy;
   industryName?: string;
 }) {
   return (

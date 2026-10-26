@@ -14,22 +14,30 @@ export interface SessionUser {
   role: Role;
 }
 
-function getSessionSecret(): string {
-  const secret =
-    process.env.ADMIN_SESSION_SECRET ||
-    process.env.FIREBASE_ADMIN_PRIVATE_KEY ||
-    process.env.FIREBASE_PRIVATE_KEY;
+const ROLES: readonly Role[] = ["superAdmin", "contentEditor", "leadsManager"];
 
-  if (secret) return secret;
+export function isRole(value: unknown): value is Role {
+  return typeof value === "string" && (ROLES as readonly string[]).includes(value);
+}
 
-  if (process.env.NODE_ENV === "production") {
-    // In production, derive a runtime secret or warn to avoid hardcoded static keys
-    return process.env.FIREBASE_CLIENT_EMAIL
-      ? crypto.createHash("sha256").update(process.env.FIREBASE_CLIENT_EMAIL).digest("hex")
-      : "infini-runtime-protected-session-secret-key";
+/** Thrown when the server has no session secret, so admin sign-in must stay off. */
+export class SessionSecretMissingError extends Error {
+  constructor() {
+    super("ADMIN_SESSION_SECRET is not configured (32+ random characters required).");
   }
+}
 
-  return "infini-local-dev-session-secret-key";
+/**
+ * The HMAC key for owner-account session cookies. Production fails closed:
+ * without a dedicated, long ADMIN_SESSION_SECRET no cookie can be signed or
+ * verified, so a missing secret disables admin sign-in instead of falling
+ * back to a value anyone could reproduce.
+ */
+function getSessionSecret(): string {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (secret && secret.length >= 32) return secret;
+  if (process.env.NODE_ENV === "development") return "infini-local-dev-session-secret-key";
+  throw new SessionSecretMissingError();
 }
 
 export function signHmacSession(user: { uid: string; email: string; role: Role }): string {
@@ -63,18 +71,9 @@ export function verifyHmacSession(cookieValue: string): SessionUser | null {
 
     const payload = JSON.parse(Buffer.from(payloadB64, "base64url").toString("utf-8"));
     if (!payload.exp || Date.now() > payload.exp) return null;
-    if (!payload.email || !payload.role) return null;
+    if (!payload.uid || !payload.email || !isRole(payload.role)) return null;
 
-    // Real admin validation: must have valid email
-    const email = String(payload.email || "").toLowerCase();
-    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!isEmailValid) return null;
-
-    return {
-      uid: payload.uid || "admin-authenticated",
-      email: payload.email,
-      role: payload.role as Role,
-    };
+    return { uid: String(payload.uid), email: String(payload.email), role: payload.role };
   } catch {
     return null;
   }
@@ -82,38 +81,30 @@ export function verifyHmacSession(cookieValue: string): SessionUser | null {
 
 /**
  * The authoritative auth check. Runs in the Node runtime (layouts/route
- * handlers). Accepts both Firebase Admin SDK session cookies and cryptographically
- * signed HMAC admin tokens for resilience across cloud environments.
+ * handlers). Accepts the owner account's signed HMAC cookie and Firebase
+ * session cookies whose user carries a role custom claim.
  */
 export async function verifySession(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get(SESSION_COOKIE)?.value;
   if (!sessionCookie) return null;
 
-  // 1. Check for cryptographically signed HMAC admin session
   if (sessionCookie.startsWith("admin-auth:")) {
-    const verified = verifyHmacSession(sessionCookie);
-    if (verified) return verified;
+    return verifyHmacSession(sessionCookie);
   }
 
-  // 2. Local development fallback for offline localhost testing
+  // Local development only: the "Quick Dev Sign-In" button on localhost.
   if (process.env.NODE_ENV === "development" && sessionCookie.startsWith("dev-session:")) {
     const parts = sessionCookie.split(":");
-    const role = (parts[1] as Role) || "superAdmin";
+    const role = isRole(parts[1]) ? parts[1] : "superAdmin";
     const email = parts[2] || "admin@infini.co.in";
-    return {
-      uid: "dev-super-admin-uid",
-      email,
-      role,
-    };
+    return { uid: "dev-super-admin-uid", email, role };
   }
 
-  // 3. Firebase Admin SDK verification (when service credentials are provided)
   try {
     const decoded = await adminAuth.verifySessionCookie(sessionCookie, true);
-    const role = (decoded.role as Role) || (decoded.email === "admin@infini.co.in" ? "superAdmin" : undefined);
-    if (!role) return null;
-    return { uid: decoded.uid, email: decoded.email ?? "", role };
+    if (!isRole(decoded.role)) return null;
+    return { uid: decoded.uid, email: decoded.email ?? "", role: decoded.role };
   } catch {
     // Expired, revoked, or forged cookie, treat as signed out.
     return null;

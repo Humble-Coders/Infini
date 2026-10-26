@@ -43,6 +43,8 @@ function readFallbackFile(): EventBannerConfig | null {
 }
 
 function writeFallbackFile(data: EventBannerConfig) {
+  // Production disk is ephemeral and per instance: Firestore is the only store there.
+  if (process.env.NODE_ENV === "production") return;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -123,6 +125,7 @@ export async function saveStoredEventBanner(payload: Partial<EventBannerConfig>)
     await adminDb.collection("settings").doc("eventBanner").set(merged, { merge: true });
   } catch (err) {
     console.warn("[eventBannerStorage] Firestore Admin write skipped/failed:", err);
+    if (process.env.NODE_ENV === "production") throw err;
   }
 
   return merged;

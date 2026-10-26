@@ -7,7 +7,8 @@ import { Container } from "@/components/ui/container";
 import { getCaseStudyBySlug, getPublishedCaseStudySlugs } from "@/lib/data/caseStudies";
 import { getIndustryById } from "@/lib/data/industries";
 import { BeforeAfterComparison } from "@/components/case-studies/BeforeAfterComparison";
-import { ogTitle, pageTitle, canonicalUrl } from "@/lib/seo";
+import { JsonLd, articleJsonLd, breadcrumbJsonLd } from "@/components/seo/JsonLd";
+import { ogTitle, pageTitle, canonicalUrl, siteUrl } from "@/lib/seo";
 
 
 /*
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: pageTitle(caseStudy.seo.title),
     description: caseStudy.seo.description,
     alternates: { canonical: canonicalUrl(`/case-studies/${slug}`, caseStudy.seo.canonical) },
+    ...(caseStudy.seo.noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: ogTitle(caseStudy.seo.title),
       description: caseStudy.seo.description,
@@ -50,6 +52,23 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
 
   return (
     <main className="min-h-screen bg-background">
+      <JsonLd
+        data={articleJsonLd({
+          origin: siteUrl(),
+          path: `/case-studies/${slug}`,
+          headline: caseStudy.seo.title || caseStudy.title,
+          description: caseStudy.seo.description || caseStudy.challenge,
+          image: caseStudy.seo.ogImage || caseStudy.afterImage || undefined,
+          datePublished: caseStudy.publishedAt?.toDate?.().toISOString(),
+        })}
+      />
+      <JsonLd
+        data={breadcrumbJsonLd(siteUrl(), [
+          { name: "Home", path: "/" },
+          { name: "Case Studies", path: "/case-studies" },
+          { name: caseStudy.title, path: `/case-studies/${slug}` },
+        ])}
+      />
       <section className="border-b border-border/60 py-16 sm:py-24">
         <Container className="flex flex-col gap-5">
           {industry && (

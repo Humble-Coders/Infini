@@ -16,7 +16,6 @@ import {
   ExternalLink,
   RefreshCw,
   Loader2,
-  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -145,9 +144,9 @@ const FALLBACK_ASSETS: MediaAsset[] = [
   },
 ];
 
-export function MediaLibraryManager() {
-  const [assets, setAssets] = useState<MediaAsset[]>(FALLBACK_ASSETS);
-  const [loading, setLoading] = useState(true);
+export function MediaLibraryManager({ initialAssets }: { initialAssets?: MediaAsset[] } = {}) {
+  const [assets, setAssets] = useState<MediaAsset[]>(() => initialAssets && initialAssets.length > 0 ? initialAssets : FALLBACK_ASSETS);
+  const [loading, setLoading] = useState(!initialAssets || initialAssets.length === 0);
   const [refreshing, setRefreshing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -178,8 +177,9 @@ export function MediaLibraryManager() {
   }, []);
 
   useEffect(() => {
+    if (initialAssets) return;
     fetchAssets(true);
-  }, [fetchAssets]);
+  }, [fetchAssets, initialAssets]);
 
   // Read file as Base64 Data URL and measure dimensions
   const processFile = async (file: File): Promise<{

@@ -7,7 +7,7 @@ export function CaseStudyCard({
   caseStudy,
   industryName,
 }: {
-  caseStudy: WithId<CaseStudyDoc>;
+  caseStudy: ClientCaseStudy;
   industryName?: string;
 }) {
   return (
@@ -52,3 +52,5 @@ export function CaseStudyCard({
     </Link>
   );
 }
+
+export type ClientCaseStudy = Omit<WithId<CaseStudyDoc>, "publishedAt"> & { publishedAt?: unknown; };

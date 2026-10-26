@@ -70,10 +70,12 @@ const DEFAULT_DATA: DashboardData = {
 export function ModernDashboard({
   email,
   role,
+  now: serverNow,
   initialData,
 }: {
   email: string;
   role: Role;
+  now?: number;
   initialData?: DashboardData;
 }) {
   const [data, setData] = useState<DashboardData>(() => initialData || DEFAULT_DATA);
@@ -110,7 +112,7 @@ export function ModernDashboard({
   const totalInquiries = leads.length >= 3 ? leads.length : 38;
   const newInquiriesCount = leads.filter((l) => l.status === "New").length;
 
-  const [now] = useState(() => (typeof window !== "undefined" ? Date.now() : 0));
+  const [now] = useState(() => serverNow ?? (typeof window !== "undefined" ? Date.now() : 0));
 
   const isBannerActive = eventBanner.enabled;
   const daysRemaining = eventBanner.endDate && now

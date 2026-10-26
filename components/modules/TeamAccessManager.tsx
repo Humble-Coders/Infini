@@ -6,11 +6,7 @@ import {
   ShieldCheck,
   UserPlus,
   Mail,
-  CheckCircle2,
-  Lock,
   Edit2,
-  Trash2,
-  Save,
   X,
   Search,
 } from "lucide-react";
@@ -57,7 +53,7 @@ const DEFAULT_TEAM: TeamMember[] = [
   },
 ];
 
-export function TeamAccessManager({ currentUid }: { currentUid?: string }) {
+export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: string }) {
   const [team, setTeam] = useState<TeamMember[]>(DEFAULT_TEAM);
   const [searchQuery, setSearchQuery] = useState("");
   const [isInviteOpen, setIsInviteOpen] = useState(false);

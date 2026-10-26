@@ -29,12 +29,11 @@ function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 }
 
-export async function sendLeadNotification(lead: LeadForEmail): Promise<NotificationResult> {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, LEAD_NOTIFY_TO, SMTP_FROM, ADMIN_DASHBOARD_URL } = process.env;
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !LEAD_NOTIFY_TO) return { status: "not_configured" };
-
+function smtpTransport() {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
   const port = Number(SMTP_PORT) || 465;
-  const transport = nodemailer.createTransport({
+  return nodemailer.createTransport({
     host: SMTP_HOST,
     port,
     secure: port === 465,
@@ -42,6 +41,12 @@ export async function sendLeadNotification(lead: LeadForEmail): Promise<Notifica
     connectionTimeout: 8000,
     socketTimeout: 10000,
   });
+}
+
+export async function sendLeadNotification(lead: LeadForEmail): Promise<NotificationResult> {
+  const { SMTP_USER, LEAD_NOTIFY_TO, SMTP_FROM, ADMIN_DASHBOARD_URL } = process.env;
+  const transport = smtpTransport();
+  if (!transport || !LEAD_NOTIFY_TO) return { status: "not_configured" };
 
   const rows: Array<[string, string | null]> = [
     ["Name", lead.name],
@@ -50,7 +55,7 @@ export async function sendLeadNotification(lead: LeadForEmail): Promise<Notifica
     ["Phone", lead.phone],
     ["Industry", lead.industry],
   ];
-  const adminLink = ADMIN_DASHBOARD_URL ? `${ADMIN_DASHBOARD_URL.replace(/\/$/, "")}/admin/leads/${lead.id}` : null;
+  const adminLink = ADMIN_DASHBOARD_URL ? `${ADMIN_DASHBOARD_URL.replace(/\/$/, "")}/admin/leads` : null;
 
   const text = [
     ...rows.filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`),
@@ -84,6 +89,32 @@ export async function sendLeadNotification(lead: LeadForEmail): Promise<Notifica
   } catch (error) {
     const message = (error as Error)?.message?.slice(0, 200) || "Unknown SMTP error";
     console.error("[lead-notification] send failed:", message);
+    return { status: "failed", error: message };
+  }
+}
+
+/** Emails a Firebase password-reset link to a team member. */
+export async function sendPasswordResetEmail(to: string, link: string): Promise<NotificationResult> {
+  const transport = smtpTransport();
+  if (!transport) return { status: "not_configured" };
+  try {
+    await transport.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to,
+      subject: "Reset your INFINI admin password",
+      text: `Use this link to choose a new password for the INFINI admin dashboard:
+
+${link}
+
+If you didn't ask for this, you can ignore this email.`,
+      html: `<p style="font-family:Arial,sans-serif;font-size:14px">Use this link to choose a new password for the INFINI admin dashboard:</p>
+        <p><a href="${escapeHtml(link)}">Reset my password</a></p>
+        <p style="font-family:Arial,sans-serif;font-size:13px;color:#666">If you didn't ask for this, you can ignore this email.</p>`,
+    });
+    return { status: "sent" };
+  } catch (error) {
+    const message = (error as Error)?.message?.slice(0, 200) || "Unknown SMTP error";
+    console.error("[password-reset] send failed:", message);
     return { status: "failed", error: message };
   }
 }

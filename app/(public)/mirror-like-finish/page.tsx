@@ -3,7 +3,7 @@ import { getPage, getSection, getContentBlocks } from "@/lib/data/pages";
 import { getPublishedIndustries } from "@/lib/data/industries";
 import { MirrorFinishPageContent } from "@/components/sections/capability/MirrorFinishPageContent";
 import type { GalleryCopy, PageHeroCopy, SpecTableCopy, StatTripletCopy } from "@/lib/types";
-import { ogTitle, pageTitle } from "@/lib/seo";
+import { canonicalUrl, ogTitle, pageTitle } from "@/lib/seo";
 
 
 /*
@@ -20,6 +20,7 @@ const FALLBACK: Metadata = {
   title: "Mirror-Like Finish: MMP Surface Treatment",
   description:
     "How INFINI achieves a true mirror-like finish through MMP surface treatment, total roughness elimination with minimal material removal.",
+  alternates: { canonical: canonicalUrl("/mirror-like-finish") },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle(page.seo.title),
     description: page.seo.description,
+    alternates: { canonical: canonicalUrl("/mirror-like-finish", page.seo.canonical) },
     openGraph: { title: ogTitle(page.seo.title), description: page.seo.description, type: "website" },
   };
 }

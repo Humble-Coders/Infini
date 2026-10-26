@@ -2,35 +2,30 @@ import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { verifySession } from "@/lib/auth/session";
+import { requireApiRole, CONTENT_ROLES } from "@/lib/auth/requireApiRole";
 import {
   getStoredCaseStudies,
   saveStoredCaseStudy,
   deleteStoredCaseStudy,
 } from "@/lib/data/caseStudiesStorage";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, CONTENT_ROLES);
+    if (guard.error) return guard.error;
 
     const caseStudies = await getStoredCaseStudies();
     return NextResponse.json({ ok: true, caseStudies });
   } catch (error) {
     console.error("[api/admin/case-studies] GET error:", error);
-    const caseStudies = await getStoredCaseStudies();
-    return NextResponse.json({ ok: true, caseStudies });
+    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, CONTENT_ROLES);
+    if (guard.error) return guard.error;
 
     const payload = await request.json();
     const { title } = payload;
@@ -55,10 +50,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await verifySession();
-    if (!session && process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireApiRole(request, CONTENT_ROLES);
+    if (guard.error) return guard.error;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

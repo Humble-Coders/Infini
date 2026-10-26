@@ -9,9 +9,11 @@ const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
   images: {
-    // Modern formats first (smaller files), week-long optimizer cache so
-    // repeat visits never re-pay the resize cost.
-    formats: ["image/avif", "image/webp"],
+    // WebP only: AVIF is a little smaller but several times slower to encode,
+    // and on a serverless host with a cold optimizer cache that encode sits in
+    // front of the first visitor's images (worst on phones, which ask for more
+    // distinct widths). Week-long cache so repeat visits never re-pay it.
+    formats: ["image/webp"],
     minimumCacheTTL: 604800,
     // getDownloadURL() from Firebase Storage always resolves to this host,
     // regardless of the project's bucket-naming style, needed so
@@ -24,24 +26,58 @@ const nextConfig: NextConfig = {
       // lib/data/industries.ts). Delete with that map once real
       // photography is supplied.
       { protocol: "https", hostname: "images.unsplash.com" },
+      // Cover images pulled in by the admin's LinkedIn case-study import.
+      { protocol: "https", hostname: "media.licdn.com" },
     ],
   },
+  // Legacy WordPress URL map, docs/PRD.md §7 (launch-blocking). Permanent
+  // (301/308) so ranking signal transfers. /technology, /validation,
+  // /deburring-polishing, /mirror-like-finish and /contact keep their exact
+  // slugs and need no entry; their old trailing-slash forms ("/technology/")
+  // are normalised by Next's built-in trailing-slash redirect, which also runs
+  // before these, so "/aero/" lands via "/aero".
+  async redirects() {
+    const legacyIndustries: Array<[string, string]> = [
+      ["/aero", "/industries/aerospace"],
+      ["/forge-stamping-die", "/industries/forge-stamping-die"],
+      ["/additive-fabrication", "/industries/additive-manufacturing"],
+      ["/medical", "/industries/medical-implants"],
+      ["/plastic-injection-molds", "/industries/plastic-injection-molds"],
+      ["/cutting-tools", "/industries/cutting-tools"],
+      ["/transmissions", "/industries/gears-transmission"],
+      // WordPress's own alias for the front page; old links and bookmarks still use it.
+      ["/home", "/"],
+      // The cookie policy's old link target.
+      ["/privacy-policy", "/privacy"],
+    ];
+    return legacyIndustries.map(([source, destination]) => ({ source, destination, permanent: true }));
+  },
   async headers() {
-    // The route curtain's clip is a fixed, versionless asset that every page
-    // load and reload asks for. Without an explicit header, /public files are
-    // revalidated on each visit, which puts a round trip in front of an
-    // animation whose whole job is to start instantly. It is immutable in
-    // practice: replacing it means shipping a new file.
-    const assetCaching = {
-      source: "/infinity_animation.mp4",
-      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-    };
+    // Content-Security-Policy. Inline scripts stay allowed because Next.js and
+    // the theme bootstrap emit them (a nonce-based policy needs middleware and
+    // dynamic rendering, which would cost the static/ISR pages); everything
+    // else is pinned down: no plugins, no foreign scripts, no framing by other
+    // sites, forms only to this origin, images/frames only from known hosts.
+    const isDev = process.env.NODE_ENV !== "production";
+    const csp = [
+      "default-src 'self'",
+      `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
+      "style-src 'self' 'unsafe-inline'",
+      `img-src 'self' data: blob: https://firebasestorage.googleapis.com https://*.firebasestorage.app https://images.unsplash.com https://media.licdn.com https://*.google-analytics.com https://www.googletagmanager.com${isDev ? " http://127.0.0.1:9199 http://localhost:9199" : ""}`,
+      "font-src 'self' data:",
+      "media-src 'self'",
+      `connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com${isDev ? " ws: http://127.0.0.1:8080 http://localhost:8080" : ""}`,
+      "frame-src https://maps.google.com https://www.google.com",
+      "worker-src 'self' blob:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'",
+      ...(isDev ? [] : ["upgrade-insecure-requests"]),
+    ].join("; ");
 
-    // Baseline hardening. Deliberately no Content-Security-Policy here: the
-    // app ships inline scripts/styles (route curtain, fonts, oily anti-flicker
-    // bits) that a static CSP string would break. A nonce-based CSP is the
-    // right follow-up and needs middleware support, not a one-line header.
     const securityHeaders = [
+      { key: "Content-Security-Policy", value: csp },
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "X-Frame-Options", value: "SAMEORIGIN" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -61,9 +97,8 @@ const nextConfig: NextConfig = {
 
     const globalSecurity = { source: "/:path*", headers: securityHeaders };
 
-    if (isProduction) return [assetCaching, globalSecurity];
+    if (isProduction) return [globalSecurity];
     return [
-      assetCaching,
       globalSecurity,
       {
         source: "/:path*",

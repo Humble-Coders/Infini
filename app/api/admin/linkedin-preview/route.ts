@@ -1,5 +1,63 @@
 import { NextResponse } from "next/server";
-import { verifySession } from "@/lib/auth/session";
+import { requireApiRole, CONTENT_ROLES } from "@/lib/auth/requireApiRole";
+
+const MAX_HTML_BYTES = 1024 * 1024;
+const MAX_REDIRECTS = 3;
+
+function isLinkedInHttps(url: URL): boolean {
+  const host = url.hostname.toLowerCase();
+  return url.protocol === "https:" && (host === "linkedin.com" || host.endsWith(".linkedin.com"));
+}
+
+/**
+ * Fetches a LinkedIn page's HTML. Redirects are followed by hand so every
+ * hop is re-checked against the LinkedIn allow-list, the timeout covers the
+ * body as well as the headers, and the body is capped.
+ */
+async function fetchLinkedInHtml(start: URL): Promise<string | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3500);
+  try {
+    let url = start;
+    for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+      const resp = await fetch(url, {
+        signal: controller.signal,
+        redirect: "manual",
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; LinkedInBot/1.0; +http://www.linkedin.com)",
+          Accept: "text/html,application/xhtml+xml",
+        },
+      });
+      if (resp.status >= 300 && resp.status < 400) {
+        const location = resp.headers.get("location");
+        if (!location) return null;
+        const next = new URL(location, url);
+        if (!isLinkedInHttps(next)) return null;
+        url = next;
+        continue;
+      }
+      if (!resp.ok || !resp.body) return null;
+
+      const reader = resp.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let size = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        size += value.byteLength;
+        if (size > MAX_HTML_BYTES) {
+          await reader.cancel();
+          break;
+        }
+        chunks.push(value);
+      }
+      return Buffer.concat(chunks).toString("utf-8");
+    }
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 interface LinkedInPreviewResult {
   title: string;
@@ -16,10 +74,8 @@ interface LinkedInPreviewResult {
 }
 
 export async function POST(req: Request) {
-  const session = await verifySession();
-  if (!session || !["superAdmin", "contentEditor"].includes(session.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const guard = await requireApiRole(req, CONTENT_ROLES);
+  if (guard.error) return guard.error;
 
   try {
     const { url } = await req.json();
@@ -37,14 +93,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
     }
 
-    if (parsedUrl.protocol !== "https:") {
-      return NextResponse.json({ error: "Only HTTPS URLs are permitted" }, { status: 400 });
-    }
-
-    const host = parsedUrl.hostname.toLowerCase();
-    const isLinkedIn = host === "linkedin.com" || host.endsWith(".linkedin.com");
-    if (!isLinkedIn) {
-      return NextResponse.json({ error: "Only official LinkedIn URLs are permitted" }, { status: 400 });
+    if (!isLinkedInHttps(parsedUrl)) {
+      return NextResponse.json({ error: "Only https://linkedin.com URLs are permitted" }, { status: 400 });
     }
 
     let ogTitle = "";
@@ -53,21 +103,8 @@ export async function POST(req: Request) {
 
     // Attempt to fetch OpenGraph metadata with social bot crawler user agent
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3500);
-
-      const resp = await fetch(trimmedUrl, {
-        signal: controller.signal,
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (compatible; LinkedInBot/1.0; +http://www.linkedin.com)",
-          Accept: "text/html,application/xhtml+xml",
-        },
-      });
-      clearTimeout(timeout);
-
-      if (resp.ok) {
-        const html = await resp.text();
+      const html = await fetchLinkedInHtml(parsedUrl);
+      if (html) {
         const titleMatch =
           html.match(/<meta\s+property=["']og:title["']\s+content=["']([^"']+)["']/i) ||
           html.match(/<meta\s+name=["']twitter:title["']\s+content=["']([^"']+)["']/i);
@@ -81,7 +118,8 @@ export async function POST(req: Request) {
         const imgMatch =
           html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i) ||
           html.match(/<meta\s+name=["']twitter:image["']\s+content=["']([^"']+)["']/i);
-        if (imgMatch?.[1]) ogImage = imgMatch[1].trim();
+        // Only ever hand back an https image URL; anything else is dropped.
+        if (imgMatch?.[1] && /^https:\/\//i.test(imgMatch[1].trim())) ogImage = imgMatch[1].trim();
       }
     } catch {
       // Social crawler fetch timed out or was blocked, continue with URL slug parsing
@@ -218,7 +256,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, study: result });
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : "Failed to parse LinkedIn URL";
-    return NextResponse.json({ error: errorMsg }, { status: 500 });
+    console.error("[api/admin/linkedin-preview] error:", err);
+    return NextResponse.json({ error: "Failed to read that LinkedIn URL" }, { status: 500 });
   }
 }

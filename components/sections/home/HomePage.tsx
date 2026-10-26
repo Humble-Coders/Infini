@@ -23,7 +23,6 @@ import { getPublishedTestimonials } from "@/lib/data/testimonials";
 import { getSettings } from "@/lib/data/settings";
 import { INFINI_CONTACT } from "@/lib/constants/contact";
 import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
-import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
 import type { GalleryCopy, HeroCopy, StatsCopy, TeaserCopy, TechnologyCopy } from "@/lib/types";
 
 const FALLBACK_TITLE = "INFINI | Precision Surface-Finishing";

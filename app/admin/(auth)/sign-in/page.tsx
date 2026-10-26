@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { requireAuth } from "@/lib/firebase/requireAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,6 +57,36 @@ export default function SignInPage() {
     }
   }
 
+  async function signInTeamMember(cleanEmail: string) {
+    const auth = requireAuth();
+    try {
+      const credential = await signInWithEmailAndPassword(auth, cleanEmail, password);
+      const idToken = await credential.user.getIdToken(true);
+      const response = await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        await signOut(auth);
+        throw new Error(data.error || "This account doesn't have admin access.");
+      }
+      router.push("/admin");
+      router.refresh();
+    } catch (err) {
+      const code = (err as { code?: string })?.code ?? "";
+      if (code.startsWith("auth/")) {
+        throw new Error(
+          code === "auth/too-many-requests"
+            ? "Too many attempts. Please wait a few minutes and try again."
+            : "Incorrect administrator email or password."
+        );
+      }
+      throw err;
+    }
+  }
+
   async function handleSignIn(event: FormEvent) {
     event.preventDefault();
     setError(null);
@@ -79,6 +111,12 @@ export default function SignInPage() {
       if (response.ok) {
         router.push("/admin");
         router.refresh();
+        return;
+      }
+
+      // Not the owner account: try a team member's own Firebase login.
+      if (response.status === 401) {
+        await signInTeamMember(cleanEmail);
         return;
       }
 

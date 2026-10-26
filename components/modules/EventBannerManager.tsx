@@ -90,13 +90,14 @@ function parseLocation(locationStr: string): { booth: string; city: string } {
   };
 }
 
-export function EventBannerManager() {
-  const [config, setConfig] = useState<EventBannerConfig>(INITIAL_CONFIG);
+export function EventBannerManager({ initialConfig }: { initialConfig?: EventBannerConfig } = {}) {
+  const [config, setConfig] = useState<EventBannerConfig>(() => initialConfig ?? INITIAL_CONFIG);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialConfig) return;
     fetch("/api/admin/events")
       .then((res) => res.json())
       .then((data) => {
@@ -105,7 +106,7 @@ export function EventBannerManager() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [initialConfig]);
 
   async function handleSave() {
     setSaving(true);

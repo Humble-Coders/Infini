@@ -1,11 +1,11 @@
 import "server-only";
 
-import { NextRequest, NextResponse } from "next/server";
-import { FieldValue } from "firebase-admin/firestore";
-import { adminDb } from "@/backend/firebase/admin";
-import { clientIp, isRateLimited } from "@/lib/rateLimit";
-import * as fs from "fs";
-import * as path from "path";
+import { after, NextRequest, NextResponse } from "next/server";
+import { adminDb, adminStorage } from "@/backend/firebase/admin";
+import { isAllowedOrigin } from "@/lib/auth/csrf";
+import { saveStoredLead } from "@/lib/data/leadsStorage";
+import { sendLeadNotification } from "@/lib/leadNotification";
+import { clientIp, isRateLimited, isRateLimitedShared } from "@/lib/rateLimit";
 import * as crypto from "crypto";
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB limit
@@ -49,26 +49,6 @@ function isValidImageMagicBytes(buffer: Buffer): boolean {
   return false;
 }
 
-function isAllowedOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) {
-    const secFetchSite = request.headers.get("sec-fetch-site");
-    if (secFetchSite && secFetchSite === "cross-site") {
-      return false;
-    }
-    return true;
-  }
-  const host = request.headers.get("host");
-  try {
-    const originUrl = new URL(origin);
-    if (host && originUrl.host === host) {
-      return true;
-    }
-  } catch {
-    return false;
-  }
-  return false;
-}
 
 /**
  * Contact / enquiry submission endpoint.
@@ -78,11 +58,11 @@ function isAllowedOrigin(request: NextRequest): boolean {
  * writes, and this route is the sole writer via the Admin SDK):
  *
  *   validate → spam checks → rate limit → write to Firestore → success
+ *   → (after the response) email the INFINI team
  *
- * Email notification to the INFINI team is intentionally not sent here yet —
- * SMTP dispatch lands with its own ticket (same as the RFQ function), at
- * which point it runs *after* the write, never before. A lead's existence
- * must never depend on mail delivery.
+ * The notification runs after the write and never before: a lead's
+ * existence must never depend on mail delivery. Its outcome is recorded on
+ * the lead so a silent SMTP outage is visible in the dashboard.
  *
  * Anti-spam, layered (no third-party keys required):
  *   1. Honeypot field (`website`) — bots fill it, humans never see it.
@@ -118,6 +98,12 @@ export async function POST(request: NextRequest) {
   // --- CSRF Layer: Validate origin/fetch-site to block cross-site request forgery ---
   if (!isAllowedOrigin(request)) {
     return NextResponse.json({ error: "Cross-site request blocked." }, { status: 403 });
+  }
+
+  // Reject oversized bodies before buffering them (image limit plus form fields).
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  if (contentLength > MAX_IMAGE_BYTES + 64 * 1024) {
+    return NextResponse.json({ error: "That submission is too large. Images must be under 5MB." }, { status: 413 });
   }
 
   let body: Record<string, unknown> = {};
@@ -173,7 +159,11 @@ export async function POST(request: NextRequest) {
   }
 
   // --- Spam layer 3: rate limit (after validation, so bots can't burn real users' quota with junk). ---
-  if (isRateLimited(`contact:${clientIp(request.headers)}`, RATE_LIMIT, RATE_WINDOW_MS)) {
+  const ip = clientIp(request.headers);
+  if (
+    isRateLimited(`contact:${ip}`, RATE_LIMIT, RATE_WINDOW_MS) ||
+    (await isRateLimitedShared(`contact:${ip}`, RATE_LIMIT, RATE_WINDOW_MS))
+  ) {
     return NextResponse.json(
       { error: "Too many enquiries from this connection. Please try again in a few minutes." },
       { status: 429 }
@@ -181,6 +171,7 @@ export async function POST(request: NextRequest) {
   }
 
   let imageUrl: string | null = null;
+  let attachmentFailed = false;
   if (imageFile && imageFile.size > 0) {
     if (imageFile.size > MAX_IMAGE_BYTES) {
       return invalid("The uploaded image exceeds the 5MB size limit.", { message: "Uploaded image must be under 5MB." });
@@ -203,22 +194,22 @@ export async function POST(request: NextRequest) {
       return invalid("The uploaded file does not match a valid image format.", { message: "Corrupted or invalid image file." });
     }
 
+    // Private Storage path (no public read rule): admins open it through
+    // /api/admin/leads/attachment, never through a public URL.
+    const objectPath = `leadAttachments/${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${ext}`;
     try {
-      const safeFilename = `lead-${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${ext}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      fs.writeFileSync(path.join(uploadDir, safeFilename), buffer);
-      imageUrl = `/uploads/${safeFilename}`;
+      await adminStorage.bucket().file(objectPath).save(buffer, { contentType: mimeType, resumable: false });
+      imageUrl = `/api/admin/leads/attachment?path=${encodeURIComponent(objectPath)}`;
     } catch (e) {
-      console.error("Failed to save image", e);
+      // The enquiry still matters more than its attachment: keep the lead and flag it.
+      console.error("[api/contact] attachment upload failed:", e);
+      attachmentFailed = true;
     }
   }
 
+  let leadId: string;
   try {
-    const { saveStoredLead } = await import("@/lib/data/leadsStorage");
-    await saveStoredLead({
+    const lead = await saveStoredLead({
       name,
       company: company || "Individual / Private",
       email,
@@ -228,28 +219,35 @@ export async function POST(request: NextRequest) {
       hasDrawing: Boolean(imageUrl),
       imageUrl: imageUrl || null,
       status: "New",
-      date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+      notes: attachmentFailed ? ["An image was attached but could not be stored. Ask the customer to resend it."] : [],
     });
-  } catch (err) {
-    console.warn("contact API: failed to store lead in local storage", err);
+    leadId = lead.id;
+  } catch (error) {
+    console.error("[api/contact] failed to store lead:", error);
+    return NextResponse.json(
+      { error: "We couldn't send your enquiry just now. Please try again, or email us directly." },
+      { status: 500 }
+    );
   }
 
-  try {
-    await adminDb.collection("leads").add({
+  const origin = request.nextUrl.origin;
+  after(async () => {
+    const result = await sendLeadNotification({
+      id: leadId,
       name,
       company: company || null,
       email,
       phone: phone || null,
       industry: industry || null,
       message,
-      imageUrl,
-      source: "contact-form",
-      status: "new",
-      createdAt: FieldValue.serverTimestamp(),
+      imageUrl: imageUrl ? `${origin}${imageUrl}` : null,
     });
-  } catch (error) {
-    console.warn("contact API: Firestore write failed (fallback used):", error);
-  }
+    try {
+      await adminDb.collection("leads").doc(leadId).set({ notification: result }, { merge: true });
+    } catch (e) {
+      console.error("[api/contact] could not record notification result:", e);
+    }
+  });
 
   return NextResponse.json({ ok: true });
 }

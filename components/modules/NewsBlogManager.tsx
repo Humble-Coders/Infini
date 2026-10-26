@@ -100,8 +100,8 @@ const INITIAL_ARTICLES: NewsArticleItem[] = [
   },
 ];
 
-export function NewsBlogManager() {
-  const [articles, setArticles] = useState<NewsArticleItem[]>(INITIAL_ARTICLES);
+export function NewsBlogManager({ initialArticles }: { initialArticles?: any[] } = {}) {
+  const [articles, setArticles] = useState<NewsArticleItem[]>(() => initialArticles && initialArticles.length > 0 ? initialArticles : INITIAL_ARTICLES);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
   const [selectedTag, setSelectedTag] = useState<string>("all");
@@ -112,6 +112,7 @@ export function NewsBlogManager() {
   const coverFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (initialArticles) return;
     fetch("/api/admin/news")
       .then((res) => res.json())
       .then((data) => {
@@ -120,7 +121,7 @@ export function NewsBlogManager() {
         }
       })
       .catch((err) => console.error("Error loading news articles:", err));
-  }, []);
+  }, [initialArticles]);
 
   // Form state
   const [formData, setFormData] = useState<NewsArticleItem>({
