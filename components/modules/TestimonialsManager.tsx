@@ -18,11 +18,12 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { AdminSelect } from "@/components/admin/AdminSelect";
-import { DEMO_TESTIMONIALS } from "@/lib/demo/testimonials";
 import type { TestimonialDoc, WithId } from "@/lib/types";
+import { uploadAdminFile } from "@/lib/storage/uploadAdminFile";
+import { toast } from "sonner";
 
 export function TestimonialsManager({ initialTestimonials }: { initialTestimonials?: WithId<TestimonialDoc>[] } = {}) {
-  const [testimonials, setTestimonials] = useState<WithId<TestimonialDoc>[]>(() => initialTestimonials ?? DEMO_TESTIMONIALS);
+  const [testimonials, setTestimonials] = useState<WithId<TestimonialDoc>[]>(initialTestimonials ?? []);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "published" | "draft">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,17 +45,16 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
 
   const logoFileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      const result = uploadEvent.target?.result as string;
-      if (result) {
-        setFormData((prev) => ({ ...prev, logoUrl: result }));
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const { url } = await uploadAdminFile(file);
+      setFormData((prev) => ({ ...prev, logoUrl: url }));
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
   };
 
   // Form State for create/edit

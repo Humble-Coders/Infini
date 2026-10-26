@@ -18,6 +18,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { AdminImage } from "@/components/admin/media/AdminImage";
+import { uploadAdminFile } from "@/lib/storage/uploadAdminFile";
 
 export interface MediaAsset {
   id: string;
@@ -31,122 +33,9 @@ export interface MediaAsset {
   uploadedAt: string;
 }
 
-const FALLBACK_ASSETS: MediaAsset[] = [
-  {
-    id: "med-1",
-    filename: "gallery-01-turbine-ring.jpg",
-    alt: "Aerospace turbine blisk ring after MMP superfinishing",
-    url: "/images/placeholders/gallery-01-turbine-ring.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1600 x 1067",
-    sizeKb: 284,
-    uploadedAt: "12 Oct 2026",
-  },
-  {
-    id: "med-2",
-    filename: "gallery-02-spur-gear.jpg",
-    alt: "Automotive transmission spur gear flank finish",
-    url: "/images/placeholders/gallery-02-spur-gear.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1600 x 1067",
-    sizeKb: 310,
-    uploadedAt: "10 Oct 2026",
-  },
-  {
-    id: "med-3",
-    filename: "gallery-03-knee-implant.jpg",
-    alt: "Medical CoCr knee femoral component mirror polish",
-    url: "/images/placeholders/gallery-03-knee-implant.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1600 x 1067",
-    sizeKb: 245,
-    uploadedAt: "08 Oct 2026",
-  },
-  {
-    id: "med-4",
-    filename: "gallery-04-die-halves.jpg",
-    alt: "Plastic injection mold cavity halves with polished ribs",
-    url: "/images/placeholders/gallery-04-die-halves.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1600 x 1067",
-    sizeKb: 298,
-    uploadedAt: "05 Oct 2026",
-  },
-  {
-    id: "med-5",
-    filename: "gallery-05-carbide-drills.jpg",
-    alt: "Solid carbide drills and endmill micro-honed cutting edges",
-    url: "/images/placeholders/gallery-05-carbide-drills.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1600 x 1067",
-    sizeKb: 270,
-    uploadedAt: "03 Oct 2026",
-  },
-  {
-    id: "med-6",
-    filename: "gallery-06-additive-ring.jpg",
-    alt: "Laser powder bed 3D printed additive lattice ring",
-    url: "/images/placeholders/gallery-06-additive-ring.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1600 x 1067",
-    sizeKb: 340,
-    uploadedAt: "01 Oct 2026",
-  },
-  {
-    id: "med-7",
-    filename: "process-01-bevel-pinion.jpg",
-    alt: "Bevel pinion gear tooth roughness before and after MMP",
-    url: "/images/placeholders/process-01-bevel-pinion.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1200 x 800",
-    sizeKb: 195,
-    uploadedAt: "28 Sep 2026",
-  },
-  {
-    id: "med-8",
-    filename: "process-02-turbo-wheels.jpg",
-    alt: "Dual turbo compressor wheels comparison",
-    url: "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
-    category: "parts",
-    contentType: "image/jpeg",
-    dimensions: "1200 x 800",
-    sizeKb: 215,
-    uploadedAt: "25 Sep 2026",
-  },
-  {
-    id: "med-9",
-    filename: "iso-9001-2015-certificate.pdf",
-    alt: "TUV SUD ISO 9001:2015 official accredited certificate",
-    url: "/docs/iso-9001-2015-infini.pdf",
-    category: "documents",
-    contentType: "application/pdf",
-    dimensions: "PDF Document",
-    sizeKb: 1420,
-    uploadedAt: "15 Jan 2026",
-  },
-  {
-    id: "med-10",
-    filename: "as9100d-aerospace-certificate.pdf",
-    alt: "Bureau Veritas AS9100D aerospace quality document",
-    url: "/docs/as9100d-aerospace-infini.pdf",
-    category: "documents",
-    contentType: "application/pdf",
-    dimensions: "PDF Document",
-    sizeKb: 1890,
-    uploadedAt: "10 Mar 2026",
-  },
-];
-
 export function MediaLibraryManager({ initialAssets }: { initialAssets?: MediaAsset[] } = {}) {
-  const [assets, setAssets] = useState<MediaAsset[]>(() => initialAssets && initialAssets.length > 0 ? initialAssets : FALLBACK_ASSETS);
-  const [loading, setLoading] = useState(!initialAssets || initialAssets.length === 0);
+  const [assets, setAssets] = useState<MediaAsset[]>(initialAssets ?? []);
+  const [loading, setLoading] = useState(!initialAssets);
   const [refreshing, setRefreshing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -164,7 +53,7 @@ export function MediaLibraryManager({ initialAssets }: { initialAssets?: MediaAs
       const res = await fetch("/api/admin/media", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data.assets) && data.assets.length > 0) {
+        if (Array.isArray(data.assets)) {
           setAssets(data.assets);
         }
       }
@@ -181,84 +70,56 @@ export function MediaLibraryManager({ initialAssets }: { initialAssets?: MediaAs
     fetchAssets(true);
   }, [fetchAssets, initialAssets]);
 
-  // Read file as Base64 Data URL and measure dimensions
+  // Store the file in Firebase Storage and describe it for the library entry.
   const processFile = async (file: File): Promise<{
     url: string;
     dimensions: string;
     category: "parts" | "drawings" | "documents";
+    contentType: string;
+    sizeKb: number;
   }> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-      const isDrawing = /cad|drawing|schematic|blueprint|dwg|dxf/i.test(file.name);
-      const category: "parts" | "drawings" | "documents" = isPdf
-        ? "documents"
-        : isDrawing
-        ? "drawings"
-        : "parts";
-
-      reader.onload = () => {
-        const dataUrl = reader.result as string;
-        if (isPdf) {
-          resolve({
-            url: dataUrl,
-            dimensions: "PDF Document",
-            category: "documents",
-          });
-        } else {
-          const img = new Image();
-          img.onload = () => {
-            resolve({
-              url: dataUrl,
-              dimensions: `${img.naturalWidth} x ${img.naturalHeight}`,
-              category,
-            });
-          };
-          img.onerror = () => {
-            resolve({
-              url: dataUrl,
-              dimensions: "Uploaded Graphic",
-              category,
-            });
-          };
-          img.src = dataUrl;
-        }
-      };
-
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    const isDrawing = /cad|drawing|schematic|blueprint|dwg|dxf/i.test(file.name);
+    const uploaded = await uploadAdminFile(file);
+    return {
+      url: uploaded.url,
+      contentType: uploaded.contentType,
+      sizeKb: uploaded.sizeKb,
+      dimensions: isPdf ? "PDF Document" : uploaded.width ? `${uploaded.width} x ${uploaded.height}` : "Uploaded Graphic",
+      category: isPdf ? "documents" : isDrawing ? "drawings" : "parts",
+    };
   };
 
   // Upload handler
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setIsUploading(true);
-    setUploadStatus(`Encoding and synchronizing ${files.length} file${files.length > 1 ? "s" : ""}...`);
+    setUploadStatus(`Uploading ${files.length} file${files.length > 1 ? "s" : ""}...`);
 
     const fileList = Array.from(files);
     let successCount = 0;
 
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
-      // Size check (max 25MB)
-      if (file.size > 25 * 1024 * 1024) {
-        toast.error(`File ${file.name} exceeds 25MB limit.`);
+      // Photos are resized before upload; PDFs go as they are, so they must already fit.
+      const isPdfFile = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+      if (isPdfFile ? file.size > 4 * 1024 * 1024 : file.size > 25 * 1024 * 1024) {
+        toast.error(`${file.name} is too large (${isPdfFile ? "PDFs up to 4 MB" : "images up to 25 MB"}).`);
         continue;
       }
 
       try {
         setUploadStatus(`Uploading ${file.name} (${i + 1}/${fileList.length})...`);
-        const { url, dimensions, category } = await processFile(file);
+        const { url, dimensions, category, contentType, sizeKb } = await processFile(file);
 
         const payload = {
           filename: file.name,
           alt: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
           url,
           category,
-          contentType: file.type || (file.name.endsWith(".pdf") ? "application/pdf" : "image/jpeg"),
+          contentType,
           dimensions,
-          sizeKb: Math.max(1, Math.round(file.size / 1024)),
+          sizeKb,
         };
 
         const res = await fetch("/api/admin/media", {
@@ -278,14 +139,14 @@ export function MediaLibraryManager({ initialAssets }: { initialAssets?: MediaAs
         }
       } catch (err) {
         console.error("Upload error for file:", file.name, err);
-        toast.error(`Failed to upload ${file.name}`);
+        toast.error(`${file.name}: ${(err as Error).message || "upload failed"}`);
       }
     }
 
     setIsUploading(false);
     if (successCount > 0) {
-      setUploadStatus(`Synchronized ${successCount} asset${successCount > 1 ? "s" : ""} across cloud database.`);
-      toast.success(`Successfully uploaded and synced ${successCount} file${successCount > 1 ? "s" : ""}!`);
+      setUploadStatus(`Uploaded ${successCount} file${successCount > 1 ? "s" : ""}.`);
+      toast.success(`Uploaded ${successCount} file${successCount > 1 ? "s" : ""}.`);
       setTimeout(() => setUploadStatus(null), 4000);
     } else {
       setUploadStatus(null);
@@ -566,11 +427,11 @@ export function MediaLibraryManager({ initialAssets }: { initialAssets?: MediaAs
                       </span>
                     </div>
                   ) : (
-                    <img
+                    <AdminImage
                       src={asset.url}
                       alt={asset.alt}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
+                      sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                      className="transition-transform duration-300 group-hover:scale-105"
                     />
                   )}
 

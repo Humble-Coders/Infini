@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { TeamAccessManager } from "./TeamAccessManager";
+import { uploadAdminFile } from "@/lib/storage/uploadAdminFile";
 
 export interface CompanySettings {
   primaryEmail: string;
@@ -77,33 +78,21 @@ export function CompanySettingsManager({ initialSettings }: { initialSettings?: 
       });
   }, [initialSettings]);
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  async function uploadSettingsFile(e: React.ChangeEvent<HTMLInputElement>, field: "logoUrl" | "brochureUrl") {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result as string;
-      if (result) {
-        setSettings((prev) => ({ ...prev, logoUrl: result }));
-        toast.success("Logo uploaded. Click 'Save Settings' to apply live.");
-      }
-    };
-    reader.readAsDataURL(file);
-  };
+    try {
+      const { url } = await uploadAdminFile(file);
+      setSettings((prev) => ({ ...prev, [field]: url }));
+      toast.success(`${field === "logoUrl" ? "Logo" : "Brochure"} uploaded. Click 'Save Settings' to apply live.`);
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
+  }
 
-  const handleBrochureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result as string;
-      if (result) {
-        setSettings((prev) => ({ ...prev, brochureUrl: result }));
-        toast.success("Brochure uploaded. Click 'Save Settings' to apply live.");
-      }
-    };
-    reader.readAsDataURL(file);
-  };
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => void uploadSettingsFile(e, "logoUrl");
+  const handleBrochureUpload = (e: React.ChangeEvent<HTMLInputElement>) => void uploadSettingsFile(e, "brochureUrl");
 
   async function handleSave() {
     setIsSaving(true);

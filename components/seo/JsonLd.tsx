@@ -1,6 +1,6 @@
 /**
  * Typed JSON-LD injector for structured data (Organization, WebSite,
- * Article). The payload is built from plain data and serialised with
+ * Article, BreadcrumbList). The payload is built from plain data and serialised with
  * JSON.stringify into a script tag with opening bracket escaping to
  * eliminate HTML script tag breakout attacks.
  * Render inside a server component on the page the entity describes.
@@ -63,20 +63,20 @@ export function articleJsonLd({
   };
 }
 
-export interface BreadcrumbItem {
-  name: string;
-  path: string;
-}
-
-export function breadcrumbJsonLd(origin: string, items: BreadcrumbItem[]) {
+/**
+ * BreadcrumbList for a detail page: the trail from home to this document, in
+ * order. Paths are site-relative ("/news"); origin is prepended here so every
+ * `item` is the absolute URL schema.org expects.
+ */
+export function breadcrumbJsonLd(origin: string, trail: Array<{ name: string; path: string }>) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
+    itemListElement: trail.map((crumb, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      name: item.name,
-      item: item.path.startsWith("http") ? item.path : (origin + item.path),
+      name: crumb.name,
+      item: `${origin}${crumb.path}`,
     })),
   };
 }

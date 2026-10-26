@@ -14,6 +14,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { AdminSelect } from "@/components/admin/AdminSelect";
+import { uploadAdminFile } from "@/lib/storage/uploadAdminFile";
+import { toast } from "sonner";
 
 export interface CaseStudyItem {
   id: string;
@@ -32,50 +34,59 @@ export interface CaseStudyItem {
   sourceUrl?: string;
 }
 
-const DEMO_CASE_STUDIES: CaseStudyItem[] = [
-  {
-    id: "cs-1",
-    slug: "turbine-blisk-internal-passages",
-    title: "Turbine Blisk Internal Passages Superfinishing",
-    industry: "Aerospace",
-    challenge:
-      "Complex internal aerofoil cooling passages suffered from micro-scratches and recast layer following EDM, creating stress concentrations.",
-    solution:
-      "Multi-axis selective MMP formulation filtered high-frequency surface wave-lengths without eroding leading edge tolerances.",
-    beforeRa: "0.80 µm",
-    afterRa: "0.03 µm",
-    toolLifeGain: "+280% Fatigue Life",
-    beforeImage: "/images/cutting-tool-1.jpg",
-    afterImage: "/images/cutting-tool-3.png",
-    material: "Inconel 718",
-    published: true,
-  },
-  {
-    id: "cs-2",
-    slug: "carbide-gun-drills-edge-honing",
-    title: "Solid Carbide Gun Drills Edge Honing",
-    industry: "Cutting Tools",
-    challenge:
-      "Micro-chipping on cutting edges led to premature tool failure during deep hole automotive crankshaft drilling.",
-    solution:
-      "Controlled MMP micro-edge honing imparted an exact 15 µm symmetric edge radius while polishing flutes to mirror brilliance.",
-    beforeRa: "0.45 µm",
-    afterRa: "0.02 µm",
-    toolLifeGain: "+320% Tool Life",
-    beforeImage: "/images/cutting-tool-2.png",
-    afterImage: "/images/cutting-tool-3.png",
-    material: "Tungsten Carbide",
-    published: true,
-  },
-];
-
 function generateCaseStudyId(): string {
   return `cs-${Date.now()}`;
 }
 
-export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?: any[] } = {}) {
-  const [studies, setStudies] = useState<CaseStudyItem[]>(() => initialCaseStudies && initialCaseStudies.length > 0 ? initialCaseStudies.map((cs: any) => ({ ...cs, published: typeof cs.published === "boolean" ? cs.published : true })) : DEMO_CASE_STUDIES);
-  const [selected, setSelected] = useState<CaseStudyItem>(() => studies[0] ?? DEMO_CASE_STUDIES[0]);
+type StoredCaseStudyJson = Partial<CaseStudyItem> & {
+  industryId?: string;
+  result?: string;
+  results?: Array<{ label?: string; value?: string }>;
+  specs?: { material?: string };
+};
+
+/** Admin view of a stored case study (same mapping for page data and refreshes). */
+function toCaseStudyItem(cs: StoredCaseStudyJson): CaseStudyItem {
+  return {
+    id: cs.id || cs.slug || generateCaseStudyId(),
+    slug: cs.slug || cs.id || "",
+    title: cs.title || "",
+    industry: cs.industry || (cs.industryId ? cs.industryId.replace(/-/g, " ") : "Aerospace"),
+    challenge: cs.challenge || "",
+    solution: cs.solution || "",
+    beforeRa: cs.beforeRa || (cs.results?.[0]?.value ?? ""),
+    afterRa: cs.afterRa || (cs.results?.[1]?.value ?? ""),
+    toolLifeGain: cs.toolLifeGain || (cs.results?.[2]?.value ?? cs.result ?? ""),
+    beforeImage: cs.beforeImage || "/images/cutting-tool-1.jpg",
+    afterImage: cs.afterImage || "/images/cutting-tool-3.webp",
+    material: cs.material || cs.specs?.material || "",
+    published: typeof cs.published === "boolean" ? cs.published : false,
+    sourceUrl: cs.sourceUrl,
+  };
+}
+
+/** An empty draft to edit when there are no case studies yet. */
+function blankStudy(): CaseStudyItem {
+  return {
+    id: generateCaseStudyId(),
+    slug: "",
+    title: "",
+    industry: "Aerospace",
+    challenge: "",
+    solution: "",
+    beforeRa: "",
+    afterRa: "",
+    toolLifeGain: "",
+    beforeImage: "/images/cutting-tool-1.jpg",
+    afterImage: "/images/cutting-tool-3.webp",
+    material: "",
+    published: false,
+  };
+}
+
+export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?: StoredCaseStudyJson[] } = {}) {
+  const [studies, setStudies] = useState<CaseStudyItem[]>(() => (initialCaseStudies ?? []).map(toCaseStudyItem));
+  const [selected, setSelected] = useState<CaseStudyItem>(() => studies[0] ?? blankStudy());
   const [linkedInUrl, setLinkedInUrl] = useState("");
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -84,27 +95,12 @@ export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?
   const afterFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (initialCaseStudies) return;
+    if (initialCaseStudies) return; // the page already sent the list
     fetch("/api/admin/case-studies")
       .then((res) => res.json())
       .then((data) => {
         if (data.ok && Array.isArray(data.caseStudies) && data.caseStudies.length > 0) {
-          const formatted: CaseStudyItem[] = data.caseStudies.map((cs: Partial<CaseStudyItem> & { industryId?: string; result?: string; results?: Array<{ label?: string; value?: string }>; specs?: { material?: string } }) => ({
-            id: cs.id,
-            slug: cs.slug || cs.id,
-            title: cs.title,
-            industry: cs.industry || (cs.industryId ? cs.industryId.replace(/-/g, " ") : "Aerospace"),
-            challenge: cs.challenge || "",
-            solution: cs.solution || "",
-            beforeRa: cs.beforeRa || (cs.results?.[0]?.value ?? "0.60 µm"),
-            afterRa: cs.afterRa || (cs.results?.[1]?.value ?? "0.02 µm"),
-            toolLifeGain: cs.toolLifeGain || (cs.results?.[2]?.value ?? cs.result ?? "+260%"),
-            beforeImage: cs.beforeImage || "/images/cutting-tool-1.jpg",
-            afterImage: cs.afterImage || "/images/cutting-tool-3.png",
-            material: cs.material || cs.specs?.material || "Steel",
-            published: typeof cs.published === "boolean" ? cs.published : true,
-            sourceUrl: cs.sourceUrl,
-          }));
+          const formatted = (data.caseStudies as StoredCaseStudyJson[]).map(toCaseStudyItem);
           setStudies(formatted);
           setSelected(formatted[0]);
         }
@@ -112,20 +108,20 @@ export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?
       .catch(() => {});
   }, [initialCaseStudies]);
 
-  function handleImageUpload(type: "before" | "after", e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImageUpload(type: "before" | "after", e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      const result = uploadEvent.target?.result as string;
-      if (result) {
-        setSelected((prev) => ({
-          ...prev,
-          [type === "before" ? "beforeImage" : "afterImage"]: result,
-        }));
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const { url } = await uploadAdminFile(file);
+      setSelected((prev) => ({
+        ...prev,
+        [type === "before" ? "beforeImage" : "afterImage"]: url,
+      }));
+      toast.success("Image uploaded. Save the case study to publish it.");
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
   }
 
   function parseSlugFromUrl(urlStr: string): { title: string; industry: string; material: string } {
@@ -198,9 +194,10 @@ export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?
           afterRa: item.afterRa,
           toolLifeGain: item.toolLifeGain,
           beforeImage: "/images/cutting-tool-1.jpg",
-          afterImage: item.imageUrl || "/images/cutting-tool-3.png",
+          afterImage: item.imageUrl || "/images/cutting-tool-3.webp",
           material: item.material,
-          published: true,
+          // Imported results are guesses from the post's wording: a draft until someone checks them.
+          published: false,
           sourceUrl: linkedInUrl,
         };
         setStudies((prev) => [newStudy, ...prev]);
@@ -231,9 +228,9 @@ export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?
       afterRa: "0.03 µm",
       toolLifeGain: "+260% Cycle Life",
       beforeImage: "/images/cutting-tool-1.jpg",
-      afterImage: "/images/cutting-tool-3.png",
+      afterImage: "/images/cutting-tool-3.webp",
       material,
-      published: true,
+      published: false,
       sourceUrl: linkedInUrl,
     };
     setStudies((prev) => [newStudy, ...prev]);
@@ -254,21 +251,21 @@ export function CaseStudiesManager({ initialCaseStudies }: { initialCaseStudies?
       afterRa: "0.02 µm",
       toolLifeGain: "+300% Tool Life",
       beforeImage: "/images/cutting-tool-1.jpg",
-      afterImage: "/images/cutting-tool-3.png",
+      afterImage: "/images/cutting-tool-3.webp",
       material: "Inconel 718",
-      published: true,
+      published: false,
     };
     setStudies((prev) => [newStudy, ...prev]);
     setSelected(newStudy);
   }
 
   async function handleDeleteSelected() {
-    if (studies.length <= 1) return;
+    if (studies.length === 0) return;
     if (!confirm(`Delete case study "${selected.title}"?`)) return;
     const toDeleteId = selected.id;
     const remaining = studies.filter((s) => s.id !== toDeleteId);
     setStudies(remaining);
-    setSelected(remaining[0]);
+    setSelected(remaining[0] ?? blankStudy());
     try {
       await fetch(`/api/admin/case-studies?id=${encodeURIComponent(toDeleteId)}`, {
         method: "DELETE",

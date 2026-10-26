@@ -6,10 +6,9 @@ import { ArrowRight } from "lucide-react";
 import { IndustryIcon } from "@/lib/constants/industryIcons";
 import type { IndustryDoc, WithId } from "@/lib/types";
 
-const TiltCard = dynamic(
-  () => import("@/components/ui/tilt-card").then((m) => m.TiltCard),
-  { ssr: false }
-);
+// Code-split (framer-motion loads with this chunk) but still server-rendered:
+// the cards and their links must be in the HTML, not appear after hydration.
+const TiltCard = dynamic(() => import("@/components/ui/tilt-card").then((m) => m.TiltCard));
 
 /**
  * Bento grid of industry cards with 3D tilt + glow.

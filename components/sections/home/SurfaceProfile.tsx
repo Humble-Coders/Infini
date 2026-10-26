@@ -115,7 +115,14 @@ export function SurfaceProfile() {
     const bar = barRef.current;
     if (!root || !path || !scan || !ra || !status || !dot || !bar) return;
 
+    // The trace sits still for most of each cycle (pause, hold): skip frames
+    // that would write the same values, which otherwise forced a style,
+    // layout and paint pass every frame for nothing.
+    let lastKey = "";
     function apply(progress: number, fade = 1) {
+      const key = `${progress.toFixed(3)}|${fade.toFixed(2)}`;
+      if (key === lastKey) return;
+      lastKey = key;
       path!.setAttribute("d", pathAt(progress));
       path!.style.opacity = fade.toFixed(2);
 
@@ -138,8 +145,16 @@ export function SurfaceProfile() {
 
     let frame = 0;
     let origin = 0;
+    let lastFrame = 0;
+    // Touch devices: ~30fps is indistinguishable for a slow sweep and halves the work.
+    const minFrameMs = window.matchMedia("(pointer: coarse), (max-width: 767px)").matches ? 33 : 0;
 
     function tick(now: number) {
+      if (minFrameMs && now - lastFrame < minFrameMs) {
+        frame = requestAnimationFrame(tick);
+        return;
+      }
+      lastFrame = now;
       if (!origin) origin = now;
       const t = (now - origin) % CYCLE_MS;
 

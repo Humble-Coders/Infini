@@ -493,15 +493,18 @@ export async function saveStoredCaseStudy(payload: Partial<StoredCaseStudy>): Pr
     challenge: payload.challenge || "",
     solution: payload.solution || "",
     process: payload.process || payload.solution || "Controlled MMP precision micro-finishing.",
-    result: payload.toolLifeGain || "Surface roughness improved to mirror finish.",
-    results: [
-      { label: "Initial Ra", value: payload.beforeRa || "0.60 µm", direction: "down" },
-      { label: "Target Ra", value: payload.afterRa || "0.02 µm", direction: "up" },
-      { label: "Tool Life / Gain", value: payload.toolLifeGain || "+280%", direction: "check" },
-    ],
-    beforeRa: payload.beforeRa || "0.60 µm",
-    afterRa: payload.afterRa || "0.02 µm",
-    toolLifeGain: payload.toolLifeGain || "+280% Gain",
+    result: payload.toolLifeGain || "",
+    // Only the measurements the editor entered: a published dossier never carries invented numbers.
+    results: (
+      [
+        { label: "Initial Ra", value: payload.beforeRa || "", direction: "down" },
+        { label: "Target Ra", value: payload.afterRa || "", direction: "up" },
+        { label: "Tool Life / Gain", value: payload.toolLifeGain || "", direction: "check" },
+      ] as CaseStudyResult[]
+    ).filter((r) => r.value.trim() !== ""),
+    beforeRa: payload.beforeRa || "",
+    afterRa: payload.afterRa || "",
+    toolLifeGain: payload.toolLifeGain || "",
     beforeImage: payload.beforeImage || "/images/cutting-tool-1.jpg",
     afterImage: payload.afterImage || "/images/cutting-tool-3.webp",
     material: payload.material || "Specialty Alloy",
@@ -511,12 +514,15 @@ export async function saveStoredCaseStudy(payload: Partial<StoredCaseStudy>): Pr
       duration: "Validated Production",
       ...payload.specs,
     },
-    published: typeof payload.published === "boolean" ? payload.published : true,
+    // Unspecified means draft: nothing goes live without an explicit publish.
+    published: typeof payload.published === "boolean" ? payload.published : false,
     createdAt: payload.createdAt || nowIso,
     sourceUrl: payload.sourceUrl,
   };
 
   const existingIdx = all.findIndex((cs) => cs.id === id || cs.slug === slug);
+  // Editing keeps the original publish date, so a correction doesn't reorder the list.
+  const firstPublished = existingIdx >= 0 ? all[existingIdx].createdAt : undefined;
   let updatedList: StoredCaseStudy[];
 
   if (existingIdx >= 0) {
@@ -538,7 +544,7 @@ export async function saveStoredCaseStudy(payload: Partial<StoredCaseStudy>): Pr
     const { Timestamp } = await import("firebase-admin/firestore");
     const docData = {
       ...fullCaseStudy,
-      publishedAt: Timestamp.now(),
+      publishedAt: firstPublished && !Number.isNaN(Date.parse(firstPublished)) ? Timestamp.fromDate(new Date(firstPublished)) : Timestamp.now(),
       seo: {
         title: `${fullCaseStudy.title} | Case Study | INFINI`,
         description: fullCaseStudy.challenge || fullCaseStudy.title,
@@ -563,14 +569,16 @@ export async function saveStoredCaseStudy(payload: Partial<StoredCaseStudy>): Pr
  */
 export async function deleteStoredCaseStudy(idOrSlug: string): Promise<boolean> {
   const all = await getStoredCaseStudies();
+  const target = all.find((cs) => cs.id === idOrSlug || cs.slug === idOrSlug);
   const filtered = all.filter((cs) => cs.id !== idOrSlug && cs.slug !== idOrSlug);
 
   writeFallbackFile(filtered);
 
-  // Attempt Firestore delete
+  // Attempt Firestore delete: by the document id, which can differ from the slug.
   try {
     const { adminDb } = await import("@/backend/firebase/admin");
-    await adminDb.collection("caseStudies").doc(idOrSlug).delete();
+    const ids = new Set([idOrSlug, ...(target?.id ? [target.id] : [])]);
+    await Promise.all([...ids].map((docId) => adminDb.collection("caseStudies").doc(docId).delete()));
   } catch (err) {
     console.warn("[caseStudiesStorage] Firestore Admin delete skipped/failed:", err);
     if (process.env.NODE_ENV === "production") throw err;

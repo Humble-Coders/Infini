@@ -5,6 +5,7 @@ import { adminDb, adminStorage } from "@/backend/firebase/admin";
 import { isAllowedOrigin } from "@/lib/auth/csrf";
 import { saveStoredLead } from "@/lib/data/leadsStorage";
 import { sendLeadNotification } from "@/lib/leadNotification";
+import { verifyRecaptcha } from "@/lib/recaptcha";
 import { clientIp, isRateLimited, isRateLimitedShared } from "@/lib/rateLimit";
 import * as crypto from "crypto";
 
@@ -120,6 +121,8 @@ export async function POST(request: NextRequest) {
       body.message = formData.get("message") || "";
       body.website = formData.get("website") || "";
       body.startedAt = Number(formData.get("startedAt")) || 0;
+      body.submissionId = formData.get("submissionId") || "";
+      body.recaptchaToken = formData.get("recaptchaToken") || "";
       imageFile = formData.get("image") as File | null;
     } else {
       body = await request.json();
@@ -170,6 +173,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // --- Spam layer 4: reCAPTCHA v3 (only once keys are configured). ---
+  if (!(await verifyRecaptcha(typeof body.recaptchaToken === "string" ? body.recaptchaToken : "", ip))) {
+    return NextResponse.json(
+      { error: "We couldn't verify this submission. Please refresh the page and try again." },
+      { status: 400 }
+    );
+  }
+
+  // One lead per filled-in form: a double click or retried request reuses the same id.
+  const submissionId = typeof body.submissionId === "string" && /^[0-9a-f-]{36}$/i.test(body.submissionId) ? body.submissionId : null;
+
   let imageUrl: string | null = null;
   let attachmentFailed = false;
   if (imageFile && imageFile.size > 0) {
@@ -210,6 +224,7 @@ export async function POST(request: NextRequest) {
   let leadId: string;
   try {
     const lead = await saveStoredLead({
+      ...(submissionId ? { id: `lead-${submissionId}` } : {}),
       name,
       company: company || "Individual / Private",
       email,
@@ -220,7 +235,7 @@ export async function POST(request: NextRequest) {
       imageUrl: imageUrl || null,
       status: "New",
       notes: attachmentFailed ? ["An image was attached but could not be stored. Ask the customer to resend it."] : [],
-    });
+    }, { isNew: true });
     leadId = lead.id;
   } catch (error) {
     console.error("[api/contact] failed to store lead:", error);

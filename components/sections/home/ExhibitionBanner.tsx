@@ -22,37 +22,37 @@ export interface ExhibitionBannerProps {
   isActive?: boolean;
 }
 
+/**
+ * "18 - 23 Sep 2026" from ISO dates. Dates are calendar days ("2026-09-18"),
+ * so they are read and printed in UTC: server and browser then agree whatever
+ * their time zones, and hydration never sees two different strings.
+ */
 function formatBannerDate(startDate?: string, endDate?: string, fallbackDate?: string): string {
   if (!startDate) return fallbackDate || "";
-  try {
-    const s = new Date(startDate);
-    if (isNaN(s.getTime())) return fallbackDate || startDate;
+  const s = new Date(startDate);
+  if (isNaN(s.getTime())) return fallbackDate || startDate;
 
-    const startDay = s.getDate();
-    const startMonth = s.toLocaleDateString("en-US", { month: "short" });
-    const startYear = s.getFullYear();
+  const month = (d: Date) => d.toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" });
+  const startDay = s.getUTCDate();
+  const startMonth = month(s);
+  const startYear = s.getUTCFullYear();
 
-    if (!endDate) {
-      return `${startDay} ${startMonth} ${startYear}`;
-    }
+  if (!endDate) return `${startDay} ${startMonth} ${startYear}`;
 
-    const e = new Date(endDate);
-    if (isNaN(e.getTime())) return `${startDate} - ${endDate}`;
+  const e = new Date(endDate);
+  if (isNaN(e.getTime())) return `${startDate} - ${endDate}`;
 
-    const endDay = e.getDate();
-    const endMonth = e.toLocaleDateString("en-US", { month: "short" });
-    const endYear = e.getFullYear();
+  const endDay = e.getUTCDate();
+  const endMonth = month(e);
+  const endYear = e.getUTCFullYear();
 
-    if (startYear === endYear && startMonth === endMonth) {
-      return `${startDay} - ${endDay} ${startMonth} ${startYear}`;
-    }
-    if (startYear === endYear) {
-      return `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear}`;
-    }
-    return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
-  } catch {
-    return startDate && endDate ? `${startDate} - ${endDate}` : startDate || fallbackDate || "";
+  if (startYear === endYear && startMonth === endMonth) {
+    return `${startDay} - ${endDay} ${startMonth} ${startYear}`;
   }
+  if (startYear === endYear) {
+    return `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear}`;
+  }
+  return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
 }
 
 /** Dismissal is remembered per event title + date, so a new event shows again. */
@@ -84,13 +84,13 @@ export function ExhibitionBanner(props: ExhibitionBannerProps) {
   // Resolve values prioritizing banner object, falling back to individual props or defaults
   const isActive = banner ? (banner.enabled ?? true) : (props.isActive ?? true);
   const badge = banner?.badge || props.badge || "Upcoming Exhibition";
-  const title = banner?.title || props.title || "EMO Hannover 2026";
+  const title = banner?.title || props.title || "";
   const subtitle = banner?.subtitle !== undefined ? banner.subtitle : props.subtitle;
-  const location = banner?.location || props.location || "Hannover, Germany (Hall 11, Booth D32)";
+  const location = banner?.location || props.location;
   const booth = banner?.booth || props.booth;
   const startDate = banner?.startDate || props.startDate;
   const endDate = banner?.endDate || props.endDate;
-  const formattedDate = formatBannerDate(startDate, endDate, props.date || "18 - 23 Sep 2026");
+  const formattedDate = formatBannerDate(startDate, endDate, props.date);
   const ctaText = banner?.ctaText !== undefined ? banner.ctaText : props.ctaText;
   const ctaUrl = banner?.ctaUrl || props.ctaUrl || "/contact";
   const theme: "red" | "dark" | "gold" = banner?.theme || props.theme || "red";
@@ -101,7 +101,8 @@ export function ExhibitionBanner(props: ExhibitionBannerProps) {
   const dismissedEarlier = storedDismissed && mounted;
   const [dismissedNow, setDismissedNow] = useState(false);
 
-  if (!isActive || dismissedEarlier || dismissedNow) return null;
+  // No in-code event defaults: a banner shows only when the admin configured one.
+  if (!isActive || !title || dismissedEarlier || dismissedNow) return null;
 
   function dismiss() {
     setDismissedNow(true);

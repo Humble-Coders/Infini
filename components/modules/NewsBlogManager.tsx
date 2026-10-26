@@ -20,6 +20,8 @@ import {
   Check,
 } from "lucide-react";
 import { AdminSelect } from "@/components/admin/AdminSelect";
+import { uploadAdminFile } from "@/lib/storage/uploadAdminFile";
+import { toast } from "sonner";
 
 export interface NewsArticleItem {
   id: string;
@@ -37,71 +39,8 @@ export interface NewsArticleItem {
   seoDesc: string;
 }
 
-const INITIAL_ARTICLES: NewsArticleItem[] = [
-  {
-    id: "art-1",
-    slug: "mmp-vs-traditional-polishing",
-    title: "Why MMP Treatment Outperforms Traditional Polishing on Complex Geometry",
-    excerpt: "Traditional polishing abrades a whole surface indiscriminately. MMP treats only the roughness that is actually a problem, preserving critical cutting edges and profiles.",
-    body: "Traditional abrasive polishing removes material across all peaks and valleys alike, often degrading tight tolerances and rounding precision cutting edges. Micro Machining Process (MMP) utilizes controlled micro-friction tailored to specific material hardness and frequency thresholds. The result is selective roughness reduction down to sub-nanometer levels without altering the macro-geometry.",
-    coverImage: "/images/placeholders/process-01-bevel-pinion.jpg",
-    tags: ["Technology", "MMP", "Aerospace"],
-    status: "published",
-    publishedDate: "02 Jun 2026",
-    author: "Technical Metrology Team",
-    readTime: "5 min read",
-    seoTitle: "Why MMP Treatment Outperforms Traditional Polishing | Infini",
-    seoDesc: "How MMP frequency-based selective material removal compares to traditional abrasive polishing on complex geometry.",
-  },
-  {
-    id: "art-2",
-    slug: "medical-implant-surface-finishing",
-    title: "Surface Finishing for Medical Implants: ISO 13485-Aligned Control",
-    excerpt: "Implant surfaces need finishes verified to measurable Ra/Rz standards, not judged by eye. A breakdown of traceability and batch repeatability for orthopedic components.",
-    body: "Orthopedic implants demand validated surface topography to ensure patient biocompatibility and long fatigue life. Cobalt-chrome femoral heads and titanium bone screws require Ra below 0.02 um with zero abrasive residue embedding. Here we examine cleanroom passivation and traceable metrology logs.",
-    coverImage: "/images/placeholders/process-02-turbo-wheels-before-after.jpg",
-    tags: ["Medical", "Quality", "ISO 13485"],
-    status: "published",
-    publishedDate: "18 May 2026",
-    author: "Quality Directorate",
-    readTime: "6 min read",
-    seoTitle: "Surface Finishing for Medical Implants | Infini",
-    seoDesc: "What ISO 13485-aligned process control looks like for medical-grade surface finishing.",
-  },
-  {
-    id: "art-3",
-    slug: "extending-carbide-tool-life",
-    title: "Extending Carbide Tool Life by 300% via Controlled Micro-Honing",
-    excerpt: "How micro-polishing the flute valleys and rounding the cutting edge radius reduces friction, prevents chip welding, and doubles tool longevity.",
-    body: "Drills, endmills, and gear hobs fail prematurely when micro-cracks on the flutes cause chip clogging and heat buildup. Pre-coat and post-coat micro-finishing ensures uniform coating adhesion and eliminates stress risers along the cutting perimeter.",
-    coverImage: "/images/cutting-tool-1.jpg",
-    tags: ["Tooling", "Manufacturing"],
-    status: "published",
-    publishedDate: "28 Apr 2026",
-    author: "Engineering Team",
-    readTime: "4 min read",
-    seoTitle: "Extending Carbide Tool Life with Micro-Finishing | Infini",
-    seoDesc: "Engineering report on reducing cutting friction and extending tool operating cycles.",
-  },
-  {
-    id: "art-4",
-    slug: "aerospace-turbine-blade-aerodynamics",
-    title: "Aerospace Turbine Blade Aerodynamics and Boundary Layer Drag Reduction",
-    excerpt: "Achieving aerodynamic efficiency on nickel superalloy blades through isotropic surface refinement.",
-    body: "Superalloy turbine blades operate in severe thermal and aerodynamic environments. Minimizing skin friction drag directly translates to improved fuel efficiency. Draft notes and data awaiting final CFD validation charts.",
-    coverImage: "/images/cutting-tool-2.png",
-    tags: ["Aerospace", "Superalloys"],
-    status: "draft",
-    publishedDate: "12 Jul 2026",
-    author: "Chief Engineer",
-    readTime: "7 min read",
-    seoTitle: "Aerospace Turbine Blade Aerodynamics | Infini",
-    seoDesc: "Surface finish impact on aerodynamic drag in turbine components.",
-  },
-];
-
 export function NewsBlogManager({ initialArticles }: { initialArticles?: any[] } = {}) {
-  const [articles, setArticles] = useState<NewsArticleItem[]>(() => initialArticles && initialArticles.length > 0 ? initialArticles : INITIAL_ARTICLES);
+  const [articles, setArticles] = useState<NewsArticleItem[]>(initialArticles ?? []);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
   const [selectedTag, setSelectedTag] = useState<string>("all");
@@ -613,17 +552,15 @@ export function NewsBlogManager({ initialArticles }: { initialArticles?: any[] }
                   ref={coverFileRef}
                   type="file"
                   accept="image/*"
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = (uploadEvent) => {
-                        const result = uploadEvent.target?.result as string;
-                        if (result) {
-                          setFormData((prev) => ({ ...prev, coverImage: result }));
-                        }
-                      };
-                      reader.readAsDataURL(file);
+                    e.target.value = "";
+                    if (!file) return;
+                    try {
+                      const { url } = await uploadAdminFile(file);
+                      setFormData((prev) => ({ ...prev, coverImage: url }));
+                    } catch (err) {
+                      toast.error((err as Error).message);
                     }
                   }}
                   className="hidden"

@@ -133,8 +133,8 @@ async function getStoredLead(id: string): Promise<LeadItem | null> {
  * Save or insert a lead. New leads get a random id and a server createdAt,
  * which the CRM list is ordered by.
  */
-export async function saveStoredLead(leadData: Partial<LeadItem>): Promise<LeadItem> {
-  const isNew = !leadData.id;
+export async function saveStoredLead(leadData: Partial<LeadItem>, options: { isNew?: boolean } = {}): Promise<LeadItem> {
+  const isNew = options.isNew ?? !leadData.id;
   const id = leadData.id || `lead-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
   const nowFormatted = formatLeadDate(new Date());
 

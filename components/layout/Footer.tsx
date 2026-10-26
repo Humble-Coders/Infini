@@ -8,6 +8,7 @@ import {
   IconBrandYoutube,
 } from "@tabler/icons-react";
 import { Container } from "@/components/ui/container";
+import { CookieSettingsLink } from "@/components/layout/CookieConsent";
 import type { NavLink, SettingsContact, SettingsSocial } from "@/lib/types";
 
 function contactDetailsFrom(contact: SettingsContact | null) {
@@ -75,11 +76,14 @@ export function Footer({
   legalLinks,
   contact,
   social,
+  brochureUrl,
 }: {
   navItems: NavLink[];
   legalLinks: NavLink[];
   contact: SettingsContact | null;
   social: SettingsSocial | null;
+  /** Capability brochure PDF, set in the admin's Settings; the link only renders when there is one. */
+  brochureUrl?: string;
 }) {
   const year = new Date().getFullYear();
   const contactDetails = contactDetailsFrom(contact);
@@ -135,7 +139,7 @@ export function Footer({
             <h2 className={COLUMN_HEADING}>Contact</h2>
             <ul className="flex flex-col gap-3">
               {contactDetails.map((detail) => (
-                <li key={detail.label}>
+                <li key={`${detail.label}-${detail.value}`}>
                   {detail.href ? (
                     <a href={detail.href} className={COLUMN_LINK}>
                       {detail.value}
@@ -145,6 +149,13 @@ export function Footer({
                   )}
                 </li>
               ))}
+              {brochureUrl && (
+                <li>
+                  <a href={brochureUrl} target="_blank" rel="noopener" className={COLUMN_LINK}>
+                    Download the capability brochure (PDF)
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -155,20 +166,11 @@ export function Footer({
                 {link.label}
               </Link>
             ))}
+            <CookieSettingsLink className={`${COLUMN_LINK} text-left`} />
           </div>
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex justify-start sm:justify-end">
-            <a
-              href="https://www.humblesolutions.in/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase transition-colors hover:text-accent"
-            >
-              Crafted by Humble Solutions
-            </a>
-          </div>
           <div className="flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
               &copy; {year} INFINI Precision Pvt. Ltd. ISO 9001-certified MMP surface finishing.
@@ -200,9 +202,13 @@ export function Footer({
 
       {/* Oversized wordmark, cropped by the footer's bottom edge, a brand sign-off, not content. */}
       <div aria-hidden="true" className="pointer-events-none -mb-[3vw] select-none">
-        <p className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06]">
-          INFINI
-        </p>
+        {/* Decorative watermark, drawn from CSS so it isn't page text: no
+            screen-reader noise, and contrast audits rightly ignore it. */}
+        <div
+          aria-hidden="true"
+          data-wordmark="INFINI"
+          className="text-center text-[clamp(5rem,23vw,24rem)] leading-[0.8] font-bold tracking-[-0.07em] text-foreground/[0.06] select-none after:content-[attr(data-wordmark)]"
+        />
       </div>
     </footer>
   );

@@ -162,21 +162,27 @@ export async function getStoredMedia(): Promise<MediaAsset[]> {
   // data/media.json is only an offline fallback for local development.
   try {
     const { adminDb } = await import("@/backend/firebase/admin");
-    const snap = await adminDb.collection("media").orderBy("uploadedAt", "desc").limit(100).get();
-    return snap.docs.map((doc) => {
-      const d = doc.data();
-      return {
-        id: doc.id,
-        filename: d.filename || "file",
-        alt: d.alt || "",
-        url: d.url || "",
-        category: d.category || "parts",
-        contentType: d.contentType || "image/jpeg",
-        dimensions: d.dimensions || "Uploaded Web Asset",
-        sizeKb: d.sizeKb || 1,
-        uploadedAt: d.uploadedAt || "Recent",
-      };
-    });
+    // uploadedAt is stored as display text ("12 Oct 2026"), so Firestore would
+    // sort it alphabetically; read the set and order it by the parsed date here.
+    const snap = await adminDb.collection("media").limit(500).get();
+    const byDate = (value: unknown) => (typeof value === "string" ? Date.parse(value) || 0 : 0);
+    return snap.docs
+      .slice()
+      .sort((a, b) => byDate(b.get("uploadedAt")) - byDate(a.get("uploadedAt")))
+      .map((doc) => {
+        const d = doc.data();
+        return {
+          id: doc.id,
+          filename: d.filename || "file",
+          alt: d.alt || "",
+          url: d.url || "",
+          category: d.category || "parts",
+          contentType: d.contentType || "image/jpeg",
+          dimensions: d.dimensions || "Uploaded Web Asset",
+          sizeKb: d.sizeKb || 1,
+          uploadedAt: d.uploadedAt || "Recent",
+        };
+      });
   } catch (err) {
     if (process.env.NODE_ENV === "production") throw err;
     console.warn("[mediaStorage] Firestore unreachable, using data/media.json:", err);

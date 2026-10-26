@@ -59,13 +59,16 @@ export default async function ContactPage() {
       {/* Google Map of the INFINI facility in Parwanoo, India. */}
       <section aria-label="Our facility on the map" className="bg-background pb-20 sm:pb-24">
         <Container>
-          <div className="overflow-hidden rounded-3xl border border-border">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card">
             <iframe
               title={`INFINI facility on the map: ${contact.address}`}
               src={mapSrc}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="block h-[380px] w-full border-0 sm:h-[460px]"
+              // Google's embed can't take a custom map style, so the dark look is a
+              // filter: inverting the tiles makes them dark, and rotating the hue
+              // 180deg turns the inverted colours (red pin, blue water) back to their own.
+              className="block h-[380px] w-full border-0 [filter:invert(0.9)_hue-rotate(180deg)_brightness(0.95)_contrast(0.9)] sm:h-[460px]"
             />
           </div>
         </Container>

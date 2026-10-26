@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +95,8 @@ function Section({
 }
 
 export default function StyleguidePage() {
+  // Internal design reference: on staging and locally only, never on the live domain.
+  if (process.env.NEXT_PUBLIC_SITE_ENV === "production") notFound();
   return (
     <main className="min-h-screen bg-background pb-24">
       <Container className="flex flex-col gap-2 pt-16 pb-8">

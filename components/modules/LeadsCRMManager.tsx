@@ -134,12 +134,16 @@ export function LeadsCRMManager({ initialLeads }: { initialLeads?: any[] } = {})
     }
 
     try {
-      await fetch("/api/admin/leads", {
+      const res = await fetch("/api/admin/leads", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: leadId, note: noteText }),
       });
-      toast.success("Engineering note logged.");
+      if (res.ok) {
+        toast.success("Engineering note logged.");
+      } else {
+        toast.error("Failed to save note to server.");
+      }
     } catch {
       toast.error("Failed to save note to server.");
     }

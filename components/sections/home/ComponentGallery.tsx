@@ -87,7 +87,6 @@ export function ComponentGallery({ copy }: { copy: GalleryCopy | null }) {
                   alt={item.alt}
                   fill
                   sizes={TILE_SIZES[index % TILE_SIZES.length]}
-                  priority={index === 0}
                   className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
                 />
                 <div

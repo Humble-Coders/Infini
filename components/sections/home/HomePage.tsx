@@ -21,8 +21,6 @@ import { getPublishedCaseStudies } from "@/lib/data/caseStudies";
 import { getActiveCertifications } from "@/lib/data/certifications";
 import { getPublishedTestimonials } from "@/lib/data/testimonials";
 import { getSettings } from "@/lib/data/settings";
-import { INFINI_CONTACT } from "@/lib/constants/contact";
-import { DEMO_CASE_STUDIES } from "@/lib/demo/caseStudies";
 import type { GalleryCopy, HeroCopy, StatsCopy, TeaserCopy, TechnologyCopy } from "@/lib/types";
 
 const FALLBACK_TITLE = "INFINI | Precision Surface-Finishing";
@@ -69,9 +67,7 @@ export async function HomePage() {
   const industriesTeaser = getSection<TeaserCopy>(page, "industriesTeaser");
   const caseStudiesTeaser = getSection<TeaserCopy>(page, "caseStudiesTeaser");
   const contactTeaser = getSection<TeaserCopy>(page, "contactTeaser");
-
-  // Dynamic published customer testimonials (from dual-layer cloud/local storage)
-  const voices = testimonials;
+  const testimonialsTeaser = getSection<TeaserCopy>(page, "testimonialsTeaser");
 
   return (
     <MotionProvider>
@@ -80,7 +76,11 @@ export async function HomePage() {
 
         {/* White run straight after the hero: find your industry and the counters,
             the joint venture, then the customers who trust the work. */}
-        <SolutionFinder industries={industries} certificationsCount={certifications.length} />
+        <SolutionFinder
+          industries={industries}
+          certificationsCount={certifications.length}
+          facts={getSection<{ items: Array<{ value: number; label: string }> }>(page, "finder")?.items}
+        />
         <PartnershipSection />
         <TrustSection className="pb-28 sm:pb-36" />
 
@@ -95,18 +95,11 @@ export async function HomePage() {
           industriesCount={industries.length}
           showCertifications={false}
         />
-        {/* Demo studies stand in until the collection is seeded. Their slugs have no
-            Firestore document, so the cards must not link to a detail page. */}
-        <ProvenWork
-          copy={caseStudiesTeaser}
-          caseStudies={caseStudies.length > 0 ? caseStudies : DEMO_CASE_STUDIES}
-          industries={industries}
-          linkToDetail={caseStudies.length > 0}
-        />
-        <Testimonials copy={null} testimonials={voices} />
+        <ProvenWork copy={caseStudiesTeaser} caseStudies={caseStudies} industries={industries} />
+        <Testimonials copy={testimonialsTeaser} testimonials={testimonials} />
         <ContactPanel
           copy={contactTeaser}
-          contact={settings?.contact ?? INFINI_CONTACT}
+          contact={settings.contact}
           industries={industries}
         />
         <BackToTop />

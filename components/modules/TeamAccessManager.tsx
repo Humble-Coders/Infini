@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   Users,
   ShieldCheck,
@@ -23,43 +24,35 @@ export interface TeamMember {
   joinedDate: string;
 }
 
-const DEFAULT_TEAM: TeamMember[] = [
-  {
-    uid: "usr-1",
-    name: "Vikramjit Singh",
-    email: "superfinish@infini.co.in",
-    role: "superAdmin",
-    disabled: false,
-    lastActive: "Active Now",
-    joinedDate: "Jan 2025",
-  },
-  {
-    uid: "usr-2",
-    name: "Rajesh Malhotra",
-    email: "r.malhotra@infini.co.in",
-    role: "contentEditor",
-    disabled: false,
-    lastActive: "2 hours ago",
-    joinedDate: "Mar 2025",
-  },
-  {
-    uid: "usr-3",
-    name: "Pooja Verma",
-    email: "p.verma@infini.co.in",
-    role: "leadsManager",
-    disabled: false,
-    lastActive: "Yesterday",
-    joinedDate: "Apr 2025",
-  },
-];
-
-export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: string }) {
-  const [team, setTeam] = useState<TeamMember[]>(DEFAULT_TEAM);
+export function TeamAccessManager({ currentUid }: { currentUid?: string }) {
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteName, setInviteName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<Role>("contentEditor");
+  const [inviting, setInviting] = useState(false);
+  const [inviteLink, setInviteLink] = useState<{ email: string; link: string } | null>(null);
+
+  const loadTeam = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/users", { cache: "no-store" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not load the team.");
+      setTeam(data.team);
+      setLoadError(null);
+    } catch (err) {
+      setLoadError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadTeam();
+  }, [loadTeam]);
 
   const filteredTeam = team.filter(
     (u) =>
@@ -67,36 +60,58 @@ export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: st
       u.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  async function updateMember(uid: string, change: { role?: Role; disabled?: boolean }) {
+    const res = await fetch("/api/admin/users", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uid, ...change }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      toast.error(data.error || "Could not update this team member.");
+      return;
+    }
+    setTeam((prev) => prev.map((u) => (u.uid === uid ? { ...u, ...change } : u)));
+    toast.success("Access updated. They've been signed out so the change applies now.");
+  }
+
   const handleToggleDisabled = (uid: string) => {
-    setTeam((prev) =>
-      prev.map((u) => (u.uid === uid ? { ...u, disabled: !u.disabled } : u))
-    );
+    const member = team.find((u) => u.uid === uid);
+    if (member) void updateMember(uid, { disabled: !member.disabled });
   };
 
   const handleRoleChange = (uid: string, newRole: Role) => {
-    setTeam((prev) =>
-      prev.map((u) => (u.uid === uid ? { ...u, role: newRole } : u))
-    );
+    void updateMember(uid, { role: newRole });
   };
 
-  const handleInviteSubmit = (e: React.FormEvent) => {
+  const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteName || !inviteEmail) return;
 
-    const newMember: TeamMember = {
-      uid: `usr-${Date.now()}`,
-      name: inviteName,
-      email: inviteEmail,
-      role: inviteRole,
-      disabled: false,
-      lastActive: "Invited",
-      joinedDate: "Today",
-    };
-
-    setTeam((prev) => [...prev, newMember]);
-    setInviteName("");
-    setInviteEmail("");
-    setIsInviteOpen(false);
+    setInviting(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: inviteName, email: inviteEmail, role: inviteRole }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error || "Could not invite this team member.");
+        return;
+      }
+      if (data.emailed) {
+        toast.success(`Invitation emailed to ${inviteEmail}.`);
+      } else if (data.link) {
+        setInviteLink({ email: inviteEmail, link: data.link });
+      }
+      setInviteName("");
+      setInviteEmail("");
+      setIsInviteOpen(false);
+      await loadTeam();
+    } finally {
+      setInviting(false);
+    }
   };
 
   const roleLabels: Record<Role, string> = {
@@ -147,7 +162,7 @@ export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: st
             <span className="text-3xl font-bold text-foreground font-mono">
               {team.length}
             </span>
-            <span className="text-xs text-muted-foreground">active accounts</span>
+            <span className="text-xs text-muted-foreground">team accounts</span>
           </div>
         </div>
 
@@ -220,6 +235,26 @@ export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: st
         </span>
       </div>
 
+      {inviteLink && (
+        <div className="rounded-2xl border border-accent/30 bg-accent/5 p-4 text-xs text-foreground">
+          <p className="font-semibold">Email isn&apos;t set up, so send this set-password link to {inviteLink.email} yourself:</p>
+          <p className="mt-2 break-all font-mono text-muted-foreground select-all">{inviteLink.link}</p>
+          <button type="button" onClick={() => setInviteLink(null)} className="mt-2 text-accent hover:underline">
+            Done
+          </button>
+        </div>
+      )}
+
+      {loading ? (
+        <p className="text-xs text-muted-foreground">Loading team…</p>
+      ) : loadError ? (
+        <p className="text-xs text-destructive">{loadError}</p>
+      ) : team.length === 0 ? (
+        <p className="text-xs text-muted-foreground">
+          No team accounts yet. You&apos;re signed in with the owner account; invite colleagues with their own logins.
+        </p>
+      ) : null}
+
       {/* Team Member Bento Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredTeam.map((member) => (
@@ -287,6 +322,7 @@ export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: st
               <div className="w-36">
                 <AdminSelect
                   value={member.role}
+                  disabled={member.uid === currentUid}
                   onChange={(val) => handleRoleChange(member.uid, val as Role)}
                   options={[
                     { value: "superAdmin", label: "Super Admin" },
@@ -301,6 +337,7 @@ export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: st
 
               <button
                 type="button"
+                disabled={member.uid === currentUid}
                 onClick={() => handleToggleDisabled(member.uid)}
                 className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
                   member.disabled
@@ -394,10 +431,11 @@ export function TeamAccessManager({ currentUid: _currentUid }: { currentUid?: st
                 </button>
                 <button
                   type="submit"
+                  disabled={inviting}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90"
                 >
                   <UserPlus className="size-3.5" />
-                  <span>Send Invite</span>
+                  <span>{inviting ? "Inviting…" : "Send Invite"}</span>
                 </button>
               </div>
             </form>

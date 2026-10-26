@@ -61,7 +61,8 @@ const nextConfig: NextConfig = {
     const isDev = process.env.NODE_ENV !== "production";
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
+      // google.com / gstatic.com: reCAPTCHA on the contact form, loaded on submit.
+      `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google.com https://www.gstatic.com${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
       `img-src 'self' data: blob: https://firebasestorage.googleapis.com https://*.firebasestorage.app https://images.unsplash.com https://media.licdn.com https://*.google-analytics.com https://www.googletagmanager.com${isDev ? " http://127.0.0.1:9199 http://localhost:9199" : ""}`,
       "font-src 'self' data:",

@@ -19,7 +19,7 @@ export function ClaimsSync({ uid, role }: { uid: string; role: Role }) {
 
   useEffect(() => {
     // Local dev super admin or verified admin session does not need a remote client listener
-    if (!uid || uid === "local-super-admin" || uid.startsWith("admin-verified")) return;
+    if (!uid || uid === "owner" || uid === "dev-super-admin-uid") return;
 
     let unsubscribe: (() => void) | undefined;
     try {

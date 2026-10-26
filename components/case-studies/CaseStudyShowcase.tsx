@@ -22,6 +22,9 @@ import type { ClientCaseStudy } from "@/components/case-studies/CaseStudyCard";
  * Each sticky-side slide is its own component (`ShowcaseSlide`) so the
  * per-item useTransform hooks are stable across re-renders, never call
  * hooks inside a `.map()`.
+ *
+ * Desktop only: on small screens the card grid below it already lists every
+ * study, so phones skip the sticky layout and its images entirely.
  */
 export function CaseStudyShowcase({
   caseStudies,
@@ -41,7 +44,7 @@ export function CaseStudyShowcase({
   const total = caseStudies.length;
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative hidden lg:block">
       <div className="grid lg:grid-cols-2">
         {/* Sticky left column, text */}
         <div className="sticky top-20 hidden h-[70vh] items-center lg:flex">
@@ -73,17 +76,6 @@ export function CaseStudyShowcase({
         </div>
       </div>
 
-      {/* Mobile fallback: a vertical stack so the sticky layout isn't lost on
-          small screens. */}
-      <div className="mt-10 space-y-10 lg:hidden">
-        {caseStudies.map((caseStudy) => (
-          <MobileStudyCard
-            key={caseStudy.slug}
-            caseStudy={caseStudy}
-            industryName={industryNameById.get(caseStudy.industryId)}
-          />
-        ))}
-      </div>
     </div>
   );
 }
@@ -102,10 +94,13 @@ function ShowcaseSlide({
   progress: MotionValue<number>;
   industryName?: string;
 }) {
+  // Scroll-linked animations run as native keyframes, whose offsets must stay
+  // within 0..1: the last slide's fade-out point used to land past 1, which
+  // threw and crashed the page on client navigation.
   const opacity = useTransform(
     progress,
-    [index / total, (index + 0.5) / total, (index + 1.5) / total],
-    [0, 1, 0]
+    [index / total, (index + 0.5) / total, Math.min(1, (index + 1.5) / total)],
+    [0, 1, index === total - 1 ? 1 : 0]
   );
   const y = useTransform(
     progress,
@@ -214,41 +209,3 @@ function ShowcaseImage({
   );
 }
 
-/** Simple stacked card for small screens. */
-function MobileStudyCard({
-  caseStudy,
-  industryName,
-}: {
-  caseStudy: ClientCaseStudy;
-  industryName?: string;
-}) {
-  return (
-    <article className="flex flex-col gap-4">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted">
-        {caseStudy.afterImage && (
-          <Image
-            src={caseStudy.afterImage}
-            alt={`${caseStudy.title}, finished result`}
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
-          {industryName ?? "Case study"}
-        </span>
-        <h2 className="text-xl font-light text-foreground">{caseStudy.title}</h2>
-        <p className="text-sm text-muted-foreground">{caseStudy.challenge}</p>
-        <Link
-          href={`/case-studies/${caseStudy.slug}`}
-          className="inline-flex items-center gap-1.5 text-accent"
-        >
-          <span className="text-xs font-medium">Read case study</span>
-          <ArrowRight className="size-3.5" aria-hidden="true" />
-        </Link>
-      </div>
-    </article>
-  );
-}

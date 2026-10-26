@@ -1,10 +1,12 @@
 "use client";
 
 import { cn } from "@/components/ui/utils";
+import { PauseOffscreen } from "@/components/ui/pause-offscreen";
 
 /**
  * Infinite scrolling marquee. Duplicates its children so the scroll wraps
- * seamlessly. Pauses on hover via CSS `animation-play-state`.
+ * seamlessly. Pauses on hover via CSS `animation-play-state`, and while off
+ * screen (PauseOffscreen).
  *
  * Usage:
  * <Marquee speed={40}>
@@ -26,9 +28,7 @@ export function Marquee({
   reverse?: boolean;
 }) {
   return (
-    <div
-      className={cn("group/marquee relative flex overflow-hidden", className)}
-    >
+    <PauseOffscreen className={cn("group/marquee relative flex overflow-hidden", className)}>
       <div
         className={cn(
           "flex w-max shrink-0 gap-4",
@@ -49,6 +49,6 @@ export function Marquee({
           {children}
         </div>
       </div>
-    </div>
+    </PauseOffscreen>
   );
 }

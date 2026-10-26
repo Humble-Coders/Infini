@@ -70,12 +70,13 @@ const DEFAULT_DATA: DashboardData = {
 export function ModernDashboard({
   email,
   role,
-  now: serverNow,
+  now,
   initialData,
 }: {
   email: string;
   role: Role;
-  now?: number;
+  /** Server time of the render, so the banner countdown is the same on server and client. */
+  now: number;
   initialData?: DashboardData;
 }) {
   const [data, setData] = useState<DashboardData>(() => initialData || DEFAULT_DATA);
@@ -109,23 +110,22 @@ export function ModernDashboard({
       : leads.filter((l) => l.status === filter);
 
   // Dynamic Metrics
-  const totalInquiries = leads.length >= 3 ? leads.length : 38;
+  const totalInquiries = leads.length;
   const newInquiriesCount = leads.filter((l) => l.status === "New").length;
 
-  const [now] = useState(() => serverNow ?? (typeof window !== "undefined" ? Date.now() : 0));
-
   const isBannerActive = eventBanner.enabled;
-  const daysRemaining = eventBanner.endDate && now
-    ? Math.max(0, Math.ceil((new Date(eventBanner.endDate).getTime() - now) / (1000 * 60 * 60 * 24)))
-    : 18;
+  const endTime = eventBanner.endDate ? new Date(eventBanner.endDate).getTime() : NaN;
+  // Kept up through the end day itself, matching the public site's check.
+  const bannerEnded = !Number.isNaN(endTime) && endTime + 24 * 60 * 60 * 1000 <= now;
+  const daysRemaining = Number.isNaN(endTime) ? null : Math.max(0, Math.ceil((endTime - now) / (1000 * 60 * 60 * 24)));
 
-  const publishedCaseStudiesCount = caseStudies.length > 0 ? caseStudies.length : 12;
-  const uniqueIndustriesCount = new Set(caseStudies.map((c) => c.industry)).size || 7;
+  const publishedCaseStudiesCount = caseStudies.filter((c) => c.published !== false).length;
+  const uniqueIndustriesCount = new Set(caseStudies.map((c) => c.industry)).size;
   const averageGain = caseStudies[0]?.toolLifeGain
-    ? `Average tool life gain ${caseStudies[0].toolLifeGain}`
-    : "Average tool life gain +300%";
+    ? `Latest result: ${caseStudies[0].toolLifeGain}`
+    : "No results published yet";
 
-  const reviewsCount = testimonials.length > 0 ? testimonials.length : 24;
+  const reviewsCount = testimonials.length;
 
   // Event banner toggle handler
   async function handleToggleBanner() {
@@ -266,16 +266,18 @@ export function ModernDashboard({
               {eventBanner.title || "IMTEX Forming 2026"}
             </span>
             <p className="mt-1 text-xs text-muted-foreground line-clamp-1">
-              {eventBanner.location || "Hall 4, Stall B112, Bengaluru"}
+              {eventBanner.location || "No location set"}
             </p>
           </div>
           <div className="mt-3 flex items-center justify-between">
             <span className="text-[11px] font-mono text-accent">
-              {isBannerActive
-                ? daysRemaining > 0
-                  ? `Expires in ${daysRemaining} days`
-                  : "Active on public header"
-                : "Banner paused"}
+              {!isBannerActive
+                ? "Banner paused"
+                : bannerEnded
+                  ? "Event ended, hidden on the site"
+                  : daysRemaining !== null
+                    ? `Ends in ${daysRemaining} ${daysRemaining === 1 ? "day" : "days"}`
+                    : "Active on public header"}
             </span>
             <Link
               href="/admin/events"

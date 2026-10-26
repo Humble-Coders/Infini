@@ -323,7 +323,8 @@ export async function saveStoredArticle(payload: Partial<StoredArticle>): Promis
     body: payload.body || payload.excerpt || "",
     coverImage: payload.coverImage || "/images/placeholders/process-01-bevel-pinion.jpg",
     tags: Array.isArray(payload.tags) && payload.tags.length > 0 ? payload.tags : ["Technology"],
-    status: payload.status === "draft" ? "draft" : "published",
+    // Only an explicit "published" goes live; anything else is a draft.
+    status: payload.status === "published" ? "published" : "draft",
     publishedDate: payload.publishedDate || dateFormatted,
     author: payload.author || "Infini Engineering",
     readTime: payload.readTime || "5 min read",
@@ -333,6 +334,8 @@ export async function saveStoredArticle(payload: Partial<StoredArticle>): Promis
   };
 
   const existingIdx = all.findIndex((a) => a.id === id || a.slug === slug);
+  // Editing keeps the original publish date, so a correction doesn't jump to the top.
+  const firstPublished = existingIdx >= 0 ? all[existingIdx].createdAt : undefined;
   let updatedList: StoredArticle[];
 
   if (existingIdx >= 0) {
@@ -354,7 +357,7 @@ export async function saveStoredArticle(payload: Partial<StoredArticle>): Promis
     const { Timestamp } = await import("firebase-admin/firestore");
     const docData = {
       ...fullArticle,
-      publishedAt: Timestamp.now(),
+      publishedAt: firstPublished && !Number.isNaN(Date.parse(firstPublished)) ? Timestamp.fromDate(new Date(firstPublished)) : Timestamp.now(),
       seo: {
         title: fullArticle.seoTitle,
         description: fullArticle.seoDesc,
